@@ -1,0 +1,1500 @@
+{
+  "scope": "historical one-decision replay, not a live shadow run",
+  "policy_threshold": 0.4,
+  "source_sha256": "7db171c8a147dbbd691fe22462659f641f184e3b27fce33919fce0f015d553f8",
+  "entry_lead_days": [
+    7,
+    14,
+    21,
+    28
+  ],
+  "cohorts": {
+    "7": {
+      "book_now": {
+        "starts": 926,
+        "unique_profiles": 926,
+        "route_departure_groups": 102,
+        "book_now": 926,
+        "waits": 0,
+        "resolved_waits": 0,
+        "unresolved_waits": 0,
+        "unresolved_by_reason": {},
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 0,
+          "waited_unchanged_fare_observed": 0,
+          "waited_higher_fare_observed": 0
+        },
+        "known_net_fare_saving_usd": 0.0,
+        "customer_refund_proxy_usd": 0.0,
+        "platform_topup_proxy_usd": 0.0,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+        "largest_observed_topup_usd": 0.0,
+        "observed_book_now_next_day_drop_count": 143,
+        "missed_next_day_drop_proxy_usd": 6648.14,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.0,
+          "50": 0.0,
+          "100": 0.0,
+          "250": 0.0
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 272,
+            "unique_profiles": 272,
+            "route_departure_groups": 34,
+            "book_now": 272,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 68,
+            "missed_next_day_drop_proxy_usd": 3418.07,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 267,
+            "unique_profiles": 267,
+            "route_departure_groups": 34,
+            "book_now": 267,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 48,
+            "missed_next_day_drop_proxy_usd": 1824.02,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 387,
+            "unique_profiles": 387,
+            "route_departure_groups": 34,
+            "book_now": 387,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 27,
+            "missed_next_day_drop_proxy_usd": 1406.05,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "always_wait_one_day": {
+        "starts": 926,
+        "unique_profiles": 926,
+        "route_departure_groups": 102,
+        "book_now": 0,
+        "waits": 926,
+        "resolved_waits": 880,
+        "unresolved_waits": 46,
+        "unresolved_by_reason": {
+          "source_gap": 22,
+          "source_present_no_match": 24
+        },
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 143,
+          "waited_unchanged_fare_observed": 484,
+          "waited_higher_fare_observed": 253
+        },
+        "known_net_fare_saving_usd": -5380.51,
+        "customer_refund_proxy_usd": 6648.14,
+        "platform_topup_proxy_usd": 12028.65,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -12028.65,
+        "largest_observed_topup_usd": 234.0,
+        "observed_book_now_next_day_drop_count": 0,
+        "missed_next_day_drop_proxy_usd": 0.0,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": -5.81048596112311,
+          "50": -8.29428725701944,
+          "100": -10.778088552915767,
+          "250": -18.22949244060475
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 272,
+            "unique_profiles": 272,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 272,
+            "resolved_waits": 264,
+            "unresolved_waits": 8,
+            "unresolved_by_reason": {
+              "source_gap": 8
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 68,
+              "waited_unchanged_fare_observed": 127,
+              "waited_higher_fare_observed": 69
+            },
+            "known_net_fare_saving_usd": -199.94,
+            "customer_refund_proxy_usd": 3418.07,
+            "platform_topup_proxy_usd": 3618.01,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -3618.01,
+            "largest_observed_topup_usd": 170.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -0.7350735294117647,
+              "50": -2.2056617647058823,
+              "100": -3.67625,
+              "250": -8.088014705882353
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 267,
+            "unique_profiles": 267,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 267,
+            "resolved_waits": 247,
+            "unresolved_waits": 20,
+            "unresolved_by_reason": {
+              "source_present_no_match": 14,
+              "source_gap": 6
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 48,
+              "waited_unchanged_fare_observed": 137,
+              "waited_higher_fare_observed": 62
+            },
+            "known_net_fare_saving_usd": -2154.96,
+            "customer_refund_proxy_usd": 1824.02,
+            "platform_topup_proxy_usd": 3978.98,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -3978.98,
+            "largest_observed_topup_usd": 110.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -8.071011235955057,
+              "50": -11.816329588014982,
+              "100": -15.561647940074906,
+              "250": -26.797602996254682
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 387,
+            "unique_profiles": 387,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 387,
+            "resolved_waits": 369,
+            "unresolved_waits": 18,
+            "unresolved_by_reason": {
+              "source_present_no_match": 10,
+              "source_gap": 8
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 27,
+              "waited_unchanged_fare_observed": 220,
+              "waited_higher_fare_observed": 122
+            },
+            "known_net_fare_saving_usd": -3025.61,
+            "customer_refund_proxy_usd": 1406.05,
+            "platform_topup_proxy_usd": 4431.66,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -4431.66,
+            "largest_observed_topup_usd": 234.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -7.818113695090439,
+              "50": -10.143695090439277,
+              "100": -12.469276485788114,
+              "250": -19.446020671834624
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "frozen_model": {
+        "starts": 926,
+        "unique_profiles": 926,
+        "route_departure_groups": 102,
+        "book_now": 863,
+        "waits": 63,
+        "resolved_waits": 59,
+        "unresolved_waits": 4,
+        "unresolved_by_reason": {
+          "source_present_no_match": 4
+        },
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 20,
+          "waited_unchanged_fare_observed": 29,
+          "waited_higher_fare_observed": 10
+        },
+        "known_net_fare_saving_usd": 412.02,
+        "customer_refund_proxy_usd": 1047.03,
+        "platform_topup_proxy_usd": 635.01,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -635.01,
+        "largest_observed_topup_usd": 234.0,
+        "observed_book_now_next_day_drop_count": 123,
+        "missed_next_day_drop_proxy_usd": 5601.11,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.4449460043196544,
+          "50": 0.228963282937365,
+          "100": 0.012980561555075595,
+          "250": -0.6349676025917926
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 272,
+            "unique_profiles": 272,
+            "route_departure_groups": 34,
+            "book_now": 272,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 68,
+            "missed_next_day_drop_proxy_usd": 3418.07,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 267,
+            "unique_profiles": 267,
+            "route_departure_groups": 34,
+            "book_now": 244,
+            "waits": 23,
+            "resolved_waits": 21,
+            "unresolved_waits": 2,
+            "unresolved_by_reason": {
+              "source_present_no_match": 2
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 10,
+              "waited_unchanged_fare_observed": 10,
+              "waited_higher_fare_observed": 1
+            },
+            "known_net_fare_saving_usd": 281.01,
+            "customer_refund_proxy_usd": 381.01,
+            "platform_topup_proxy_usd": 100.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -100.0,
+            "largest_observed_topup_usd": 100.0,
+            "observed_book_now_next_day_drop_count": 38,
+            "missed_next_day_drop_proxy_usd": 1443.01,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 1.0524719101123596,
+              "50": 0.6779400749063671,
+              "100": 0.3034082397003745,
+              "250": -0.820187265917603
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 387,
+            "unique_profiles": 387,
+            "route_departure_groups": 34,
+            "book_now": 347,
+            "waits": 40,
+            "resolved_waits": 38,
+            "unresolved_waits": 2,
+            "unresolved_by_reason": {
+              "source_present_no_match": 2
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 10,
+              "waited_unchanged_fare_observed": 19,
+              "waited_higher_fare_observed": 9
+            },
+            "known_net_fare_saving_usd": 131.01,
+            "customer_refund_proxy_usd": 666.02,
+            "platform_topup_proxy_usd": 535.01,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -535.01,
+            "largest_observed_topup_usd": 234.0,
+            "observed_book_now_next_day_drop_count": 17,
+            "missed_next_day_drop_proxy_usd": 740.03,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.33852713178294574,
+              "50": 0.08012919896640827,
+              "100": -0.1782687338501292,
+              "250": -0.9534625322997416
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      }
+    },
+    "14": {
+      "book_now": {
+        "starts": 903,
+        "unique_profiles": 903,
+        "route_departure_groups": 102,
+        "book_now": 903,
+        "waits": 0,
+        "resolved_waits": 0,
+        "unresolved_waits": 0,
+        "unresolved_by_reason": {},
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 0,
+          "waited_unchanged_fare_observed": 0,
+          "waited_higher_fare_observed": 0
+        },
+        "known_net_fare_saving_usd": 0.0,
+        "customer_refund_proxy_usd": 0.0,
+        "platform_topup_proxy_usd": 0.0,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+        "largest_observed_topup_usd": 0.0,
+        "observed_book_now_next_day_drop_count": 97,
+        "missed_next_day_drop_proxy_usd": 2824.14,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.0,
+          "50": 0.0,
+          "100": 0.0,
+          "250": 0.0
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 272,
+            "unique_profiles": 272,
+            "route_departure_groups": 34,
+            "book_now": 272,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 26,
+            "missed_next_day_drop_proxy_usd": 830.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 250,
+            "unique_profiles": 250,
+            "route_departure_groups": 34,
+            "book_now": 250,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 26,
+            "missed_next_day_drop_proxy_usd": 931.03,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 381,
+            "unique_profiles": 381,
+            "route_departure_groups": 34,
+            "book_now": 381,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 45,
+            "missed_next_day_drop_proxy_usd": 1063.11,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "always_wait_one_day": {
+        "starts": 903,
+        "unique_profiles": 903,
+        "route_departure_groups": 102,
+        "book_now": 0,
+        "waits": 903,
+        "resolved_waits": 854,
+        "unresolved_waits": 49,
+        "unresolved_by_reason": {
+          "source_gap": 26,
+          "source_present_no_match": 23
+        },
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 97,
+          "waited_unchanged_fare_observed": 348,
+          "waited_higher_fare_observed": 409
+        },
+        "known_net_fare_saving_usd": -11586.45,
+        "customer_refund_proxy_usd": 2824.14,
+        "platform_topup_proxy_usd": 14410.59,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -14410.59,
+        "largest_observed_topup_usd": 286.0,
+        "observed_book_now_next_day_drop_count": 0,
+        "missed_next_day_drop_proxy_usd": 0.0,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": -12.831063122923588,
+          "50": -15.544241417497231,
+          "100": -18.257419712070874,
+          "250": -26.396954595791804
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 272,
+            "unique_profiles": 272,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 272,
+            "resolved_waits": 264,
+            "unresolved_waits": 8,
+            "unresolved_by_reason": {
+              "source_gap": 8
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 26,
+              "waited_unchanged_fare_observed": 86,
+              "waited_higher_fare_observed": 152
+            },
+            "known_net_fare_saving_usd": -4512.06,
+            "customer_refund_proxy_usd": 830.0,
+            "platform_topup_proxy_usd": 5342.06,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -5342.06,
+            "largest_observed_topup_usd": 109.99,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -16.588455882352942,
+              "50": -18.05904411764706,
+              "100": -19.529632352941178,
+              "250": -23.94139705882353
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 250,
+            "unique_profiles": 250,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 250,
+            "resolved_waits": 239,
+            "unresolved_waits": 11,
+            "unresolved_by_reason": {
+              "source_present_no_match": 5,
+              "source_gap": 6
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 26,
+              "waited_unchanged_fare_observed": 56,
+              "waited_higher_fare_observed": 157
+            },
+            "known_net_fare_saving_usd": -5910.8,
+            "customer_refund_proxy_usd": 931.03,
+            "platform_topup_proxy_usd": 6841.83,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -6841.83,
+            "largest_observed_topup_usd": 109.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -23.6432,
+              "50": -25.8432,
+              "100": -28.0432,
+              "250": -34.6432
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 381,
+            "unique_profiles": 381,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 381,
+            "resolved_waits": 351,
+            "unresolved_waits": 30,
+            "unresolved_by_reason": {
+              "source_present_no_match": 18,
+              "source_gap": 12
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 45,
+              "waited_unchanged_fare_observed": 206,
+              "waited_higher_fare_observed": 100
+            },
+            "known_net_fare_saving_usd": -1163.59,
+            "customer_refund_proxy_usd": 1063.11,
+            "platform_topup_proxy_usd": 2226.7,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -2226.7,
+            "largest_observed_topup_usd": 286.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -3.0540419947506563,
+              "50": -6.991049868766404,
+              "100": -10.928057742782153,
+              "250": -22.739081364829396
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "frozen_model": {
+        "starts": 903,
+        "unique_profiles": 903,
+        "route_departure_groups": 102,
+        "book_now": 872,
+        "waits": 31,
+        "resolved_waits": 30,
+        "unresolved_waits": 1,
+        "unresolved_by_reason": {
+          "source_gap": 1
+        },
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 13,
+          "waited_unchanged_fare_observed": 7,
+          "waited_higher_fare_observed": 10
+        },
+        "known_net_fare_saving_usd": 401.03,
+        "customer_refund_proxy_usd": 671.0,
+        "platform_topup_proxy_usd": 269.97,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -269.97,
+        "largest_observed_topup_usd": 60.0,
+        "observed_book_now_next_day_drop_count": 84,
+        "missed_next_day_drop_proxy_usd": 2153.14,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.44410852713178295,
+          "50": 0.3887375415282392,
+          "100": 0.33336655592469544,
+          "250": 0.16725359911406423
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 272,
+            "unique_profiles": 272,
+            "route_departure_groups": 34,
+            "book_now": 272,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 26,
+            "missed_next_day_drop_proxy_usd": 830.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 250,
+            "unique_profiles": 250,
+            "route_departure_groups": 34,
+            "book_now": 231,
+            "waits": 19,
+            "resolved_waits": 19,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 6,
+              "waited_unchanged_fare_observed": 3,
+              "waited_higher_fare_observed": 10
+            },
+            "known_net_fare_saving_usd": -45.99,
+            "customer_refund_proxy_usd": 223.98,
+            "platform_topup_proxy_usd": 269.97,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -269.97,
+            "largest_observed_topup_usd": 60.0,
+            "observed_book_now_next_day_drop_count": 20,
+            "missed_next_day_drop_proxy_usd": 707.05,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -0.18396,
+              "50": -0.18396,
+              "100": -0.18396,
+              "250": -0.18396
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 381,
+            "unique_profiles": 381,
+            "route_departure_groups": 34,
+            "book_now": 369,
+            "waits": 12,
+            "resolved_waits": 11,
+            "unresolved_waits": 1,
+            "unresolved_by_reason": {
+              "source_gap": 1
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 7,
+              "waited_unchanged_fare_observed": 4,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 447.02,
+            "customer_refund_proxy_usd": 447.02,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 38,
+            "missed_next_day_drop_proxy_usd": 616.09,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 1.1732808398950132,
+              "50": 1.0420472440944881,
+              "100": 0.9108136482939633,
+              "250": 0.5171128608923885
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      }
+    },
+    "21": {
+      "book_now": {
+        "starts": 873,
+        "unique_profiles": 873,
+        "route_departure_groups": 102,
+        "book_now": 873,
+        "waits": 0,
+        "resolved_waits": 0,
+        "unresolved_waits": 0,
+        "unresolved_by_reason": {},
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 0,
+          "waited_unchanged_fare_observed": 0,
+          "waited_higher_fare_observed": 0
+        },
+        "known_net_fare_saving_usd": 0.0,
+        "customer_refund_proxy_usd": 0.0,
+        "platform_topup_proxy_usd": 0.0,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+        "largest_observed_topup_usd": 0.0,
+        "observed_book_now_next_day_drop_count": 125,
+        "missed_next_day_drop_proxy_usd": 4092.94,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.0,
+          "50": 0.0,
+          "100": 0.0,
+          "250": 0.0
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 258,
+            "unique_profiles": 258,
+            "route_departure_groups": 34,
+            "book_now": 258,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 52,
+            "missed_next_day_drop_proxy_usd": 1539.97,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 256,
+            "unique_profiles": 256,
+            "route_departure_groups": 34,
+            "book_now": 256,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 41,
+            "missed_next_day_drop_proxy_usd": 1397.96,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 359,
+            "unique_profiles": 359,
+            "route_departure_groups": 34,
+            "book_now": 359,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 32,
+            "missed_next_day_drop_proxy_usd": 1155.01,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "always_wait_one_day": {
+        "starts": 873,
+        "unique_profiles": 873,
+        "route_departure_groups": 102,
+        "book_now": 0,
+        "waits": 873,
+        "resolved_waits": 834,
+        "unresolved_waits": 39,
+        "unresolved_by_reason": {
+          "source_gap": 29,
+          "source_present_no_match": 10
+        },
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 125,
+          "waited_unchanged_fare_observed": 505,
+          "waited_higher_fare_observed": 204
+        },
+        "known_net_fare_saving_usd": -1148.64,
+        "customer_refund_proxy_usd": 4092.94,
+        "platform_topup_proxy_usd": 5241.58,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -5241.58,
+        "largest_observed_topup_usd": 180.01,
+        "observed_book_now_next_day_drop_count": 0,
+        "missed_next_day_drop_proxy_usd": 0.0,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": -1.3157388316151202,
+          "50": -3.5494158075601376,
+          "100": -5.783092783505155,
+          "250": -12.484123711340207
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 258,
+            "unique_profiles": 258,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 258,
+            "resolved_waits": 250,
+            "unresolved_waits": 8,
+            "unresolved_by_reason": {
+              "source_gap": 8
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 52,
+              "waited_unchanged_fare_observed": 166,
+              "waited_higher_fare_observed": 32
+            },
+            "known_net_fare_saving_usd": 209.97,
+            "customer_refund_proxy_usd": 1539.97,
+            "platform_topup_proxy_usd": 1330.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -1330.0,
+            "largest_observed_topup_usd": 130.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.8138372093023256,
+              "50": -0.7365503875968992,
+              "100": -2.286937984496124,
+              "250": -6.938100775193798
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 256,
+            "unique_profiles": 256,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 256,
+            "resolved_waits": 242,
+            "unresolved_waits": 14,
+            "unresolved_by_reason": {
+              "source_present_no_match": 6,
+              "source_gap": 8
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 41,
+              "waited_unchanged_fare_observed": 86,
+              "waited_higher_fare_observed": 115
+            },
+            "known_net_fare_saving_usd": -1254.0,
+            "customer_refund_proxy_usd": 1397.96,
+            "platform_topup_proxy_usd": 2651.96,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -2651.96,
+            "largest_observed_topup_usd": 70.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -4.8984375,
+              "50": -7.6328125,
+              "100": -10.3671875,
+              "250": -18.5703125
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 359,
+            "unique_profiles": 359,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 359,
+            "resolved_waits": 342,
+            "unresolved_waits": 17,
+            "unresolved_by_reason": {
+              "source_present_no_match": 4,
+              "source_gap": 13
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 32,
+              "waited_unchanged_fare_observed": 253,
+              "waited_higher_fare_observed": 57
+            },
+            "known_net_fare_saving_usd": -104.61,
+            "customer_refund_proxy_usd": 1155.01,
+            "platform_topup_proxy_usd": 1259.62,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -1259.62,
+            "largest_observed_topup_usd": 180.01,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -0.29139275766016715,
+              "50": -2.6590807799442895,
+              "100": -5.026768802228412,
+              "250": -12.12983286908078
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "frozen_model": {
+        "starts": 873,
+        "unique_profiles": 873,
+        "route_departure_groups": 102,
+        "book_now": 860,
+        "waits": 13,
+        "resolved_waits": 13,
+        "unresolved_waits": 0,
+        "unresolved_by_reason": {},
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 5,
+          "waited_unchanged_fare_observed": 4,
+          "waited_higher_fare_observed": 4
+        },
+        "known_net_fare_saving_usd": 270.99,
+        "customer_refund_proxy_usd": 370.99,
+        "platform_topup_proxy_usd": 100.0,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -100.0,
+        "largest_observed_topup_usd": 30.0,
+        "observed_book_now_next_day_drop_count": 120,
+        "missed_next_day_drop_proxy_usd": 3721.95,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.3104123711340206,
+          "50": 0.3104123711340206,
+          "100": 0.3104123711340206,
+          "250": 0.3104123711340206
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 258,
+            "unique_profiles": 258,
+            "route_departure_groups": 34,
+            "book_now": 258,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 52,
+            "missed_next_day_drop_proxy_usd": 1539.97,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 256,
+            "unique_profiles": 256,
+            "route_departure_groups": 34,
+            "book_now": 246,
+            "waits": 10,
+            "resolved_waits": 10,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 3,
+              "waited_unchanged_fare_observed": 3,
+              "waited_higher_fare_observed": 4
+            },
+            "known_net_fare_saving_usd": 130.99,
+            "customer_refund_proxy_usd": 230.99,
+            "platform_topup_proxy_usd": 100.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -100.0,
+            "largest_observed_topup_usd": 30.0,
+            "observed_book_now_next_day_drop_count": 38,
+            "missed_next_day_drop_proxy_usd": 1166.97,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.5116796875,
+              "50": 0.5116796875,
+              "100": 0.5116796875,
+              "250": 0.5116796875
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 359,
+            "unique_profiles": 359,
+            "route_departure_groups": 34,
+            "book_now": 356,
+            "waits": 3,
+            "resolved_waits": 3,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 2,
+              "waited_unchanged_fare_observed": 1,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 140.0,
+            "customer_refund_proxy_usd": 140.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 30,
+            "missed_next_day_drop_proxy_usd": 1015.01,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.38997214484679665,
+              "50": 0.38997214484679665,
+              "100": 0.38997214484679665,
+              "250": 0.38997214484679665
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      }
+    },
+    "28": {
+      "book_now": {
+        "starts": 849,
+        "unique_profiles": 849,
+        "route_departure_groups": 101,
+        "book_now": 849,
+        "waits": 0,
+        "resolved_waits": 0,
+        "unresolved_waits": 0,
+        "unresolved_by_reason": {},
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 0,
+          "waited_unchanged_fare_observed": 0,
+          "waited_higher_fare_observed": 0
+        },
+        "known_net_fare_saving_usd": 0.0,
+        "customer_refund_proxy_usd": 0.0,
+        "platform_topup_proxy_usd": 0.0,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+        "largest_observed_topup_usd": 0.0,
+        "observed_book_now_next_day_drop_count": 86,
+        "missed_next_day_drop_proxy_usd": 2376.78,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.0,
+          "50": 0.0,
+          "100": 0.0,
+          "250": 0.0
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 256,
+            "unique_profiles": 256,
+            "route_departure_groups": 34,
+            "book_now": 256,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 17,
+            "missed_next_day_drop_proxy_usd": 649.93,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 252,
+            "unique_profiles": 252,
+            "route_departure_groups": 34,
+            "book_now": 252,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 41,
+            "missed_next_day_drop_proxy_usd": 1012.84,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 341,
+            "unique_profiles": 341,
+            "route_departure_groups": 33,
+            "book_now": 341,
+            "waits": 0,
+            "resolved_waits": 0,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 28,
+            "missed_next_day_drop_proxy_usd": 714.01,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "always_wait_one_day": {
+        "starts": 849,
+        "unique_profiles": 849,
+        "route_departure_groups": 101,
+        "book_now": 0,
+        "waits": 849,
+        "resolved_waits": 809,
+        "unresolved_waits": 40,
+        "unresolved_by_reason": {
+          "source_present_no_match": 10,
+          "source_gap": 30
+        },
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 86,
+          "waited_unchanged_fare_observed": 639,
+          "waited_higher_fare_observed": 84
+        },
+        "known_net_fare_saving_usd": 55.0,
+        "customer_refund_proxy_usd": 2376.78,
+        "platform_topup_proxy_usd": 2321.78,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -2321.78,
+        "largest_observed_topup_usd": 120.0,
+        "observed_book_now_next_day_drop_count": 0,
+        "missed_next_day_drop_proxy_usd": 0.0,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.06478209658421673,
+          "50": -2.2909305064782095,
+          "100": -4.646643109540636,
+          "250": -11.713780918727915
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 256,
+            "unique_profiles": 256,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 256,
+            "resolved_waits": 246,
+            "unresolved_waits": 10,
+            "unresolved_by_reason": {
+              "source_present_no_match": 2,
+              "source_gap": 8
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 17,
+              "waited_unchanged_fare_observed": 217,
+              "waited_higher_fare_observed": 12
+            },
+            "known_net_fare_saving_usd": 334.97,
+            "customer_refund_proxy_usd": 649.93,
+            "platform_topup_proxy_usd": 314.96,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -314.96,
+            "largest_observed_topup_usd": 49.99,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 1.3084765625,
+              "50": -0.6446484375,
+              "100": -2.5977734375,
+              "250": -8.4571484375
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 252,
+            "unique_profiles": 252,
+            "route_departure_groups": 34,
+            "book_now": 0,
+            "waits": 252,
+            "resolved_waits": 241,
+            "unresolved_waits": 11,
+            "unresolved_by_reason": {
+              "source_present_no_match": 3,
+              "source_gap": 8
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 41,
+              "waited_unchanged_fare_observed": 162,
+              "waited_higher_fare_observed": 38
+            },
+            "known_net_fare_saving_usd": -274.03,
+            "customer_refund_proxy_usd": 1012.84,
+            "platform_topup_proxy_usd": 1286.87,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -1286.87,
+            "largest_observed_topup_usd": 75.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -1.087420634920635,
+              "50": -3.2699603174603173,
+              "100": -5.4525,
+              "250": -12.000119047619048
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 341,
+            "unique_profiles": 341,
+            "route_departure_groups": 33,
+            "book_now": 0,
+            "waits": 341,
+            "resolved_waits": 322,
+            "unresolved_waits": 19,
+            "unresolved_by_reason": {
+              "source_present_no_match": 5,
+              "source_gap": 14
+            },
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 28,
+              "waited_unchanged_fare_observed": 260,
+              "waited_higher_fare_observed": 34
+            },
+            "known_net_fare_saving_usd": -5.94,
+            "customer_refund_proxy_usd": 714.01,
+            "platform_topup_proxy_usd": 719.95,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -719.95,
+            "largest_observed_topup_usd": 120.0,
+            "observed_book_now_next_day_drop_count": 0,
+            "missed_next_day_drop_proxy_usd": 0.0,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": -0.017419354838709676,
+              "50": -2.8033431085043987,
+              "100": -5.589266862170088,
+              "250": -13.947038123167156
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      },
+      "frozen_model": {
+        "starts": 849,
+        "unique_profiles": 849,
+        "route_departure_groups": 101,
+        "book_now": 834,
+        "waits": 15,
+        "resolved_waits": 15,
+        "unresolved_waits": 0,
+        "unresolved_by_reason": {},
+        "waited_lower_unchanged_higher": {
+          "waited_lower_fare_observed": 4,
+          "waited_unchanged_fare_observed": 8,
+          "waited_higher_fare_observed": 3
+        },
+        "known_net_fare_saving_usd": 221.99,
+        "customer_refund_proxy_usd": 260.0,
+        "platform_topup_proxy_usd": 38.01,
+        "platform_cash_before_fees_if_all_savings_refunded_usd": -38.01,
+        "largest_observed_topup_usd": 15.0,
+        "observed_book_now_next_day_drop_count": 82,
+        "missed_next_day_drop_proxy_usd": 2116.78,
+        "mean_advantage_per_start_by_unresolved_cost_usd": {
+          "0": 0.26147232037691404,
+          "50": 0.26147232037691404,
+          "100": 0.26147232037691404,
+          "250": 0.26147232037691404
+        },
+        "actual_bookable_offers": 0,
+        "by_route": {
+          "ATL-BOS": {
+            "starts": 256,
+            "unique_profiles": 256,
+            "route_departure_groups": 34,
+            "book_now": 252,
+            "waits": 4,
+            "resolved_waits": 4,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 0,
+              "waited_unchanged_fare_observed": 4,
+              "waited_higher_fare_observed": 0
+            },
+            "known_net_fare_saving_usd": 0.0,
+            "customer_refund_proxy_usd": 0.0,
+            "platform_topup_proxy_usd": 0.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": 0.0,
+            "largest_observed_topup_usd": 0.0,
+            "observed_book_now_next_day_drop_count": 17,
+            "missed_next_day_drop_proxy_usd": 649.93,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.0,
+              "50": 0.0,
+              "100": 0.0,
+              "250": 0.0
+            },
+            "actual_bookable_offers": 0
+          },
+          "JFK-LAX": {
+            "starts": 252,
+            "unique_profiles": 252,
+            "route_departure_groups": 34,
+            "book_now": 246,
+            "waits": 6,
+            "resolved_waits": 6,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 1,
+              "waited_unchanged_fare_observed": 4,
+              "waited_higher_fare_observed": 1
+            },
+            "known_net_fare_saving_usd": 41.99,
+            "customer_refund_proxy_usd": 50.0,
+            "platform_topup_proxy_usd": 8.01,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -8.01,
+            "largest_observed_topup_usd": 8.01,
+            "observed_book_now_next_day_drop_count": 40,
+            "missed_next_day_drop_proxy_usd": 962.84,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.16662698412698412,
+              "50": 0.16662698412698412,
+              "100": 0.16662698412698412,
+              "250": 0.16662698412698412
+            },
+            "actual_bookable_offers": 0
+          },
+          "LAX-SFO": {
+            "starts": 341,
+            "unique_profiles": 341,
+            "route_departure_groups": 33,
+            "book_now": 336,
+            "waits": 5,
+            "resolved_waits": 5,
+            "unresolved_waits": 0,
+            "unresolved_by_reason": {},
+            "waited_lower_unchanged_higher": {
+              "waited_lower_fare_observed": 3,
+              "waited_unchanged_fare_observed": 0,
+              "waited_higher_fare_observed": 2
+            },
+            "known_net_fare_saving_usd": 180.0,
+            "customer_refund_proxy_usd": 210.0,
+            "platform_topup_proxy_usd": 30.0,
+            "platform_cash_before_fees_if_all_savings_refunded_usd": -30.0,
+            "largest_observed_topup_usd": 15.0,
+            "observed_book_now_next_day_drop_count": 25,
+            "missed_next_day_drop_proxy_usd": 504.01,
+            "mean_advantage_per_start_by_unresolved_cost_usd": {
+              "0": 0.5278592375366569,
+              "50": 0.5278592375366569,
+              "100": 0.5278592375366569,
+              "250": 0.5278592375366569
+            },
+            "actual_bookable_offers": 0
+          }
+        }
+      }
+    }
+  },
+  "limitations": [
+    "All fares are 2022 Wong research observations, not executable supplier quotes.",
+    "Baggage and complete fare rules are unknown; no event is eligible for actual booking.",
+    "Unresolved next-day observations are missing data, not proven sold-out inventory.",
+    "Each cohort has one entry per profile; cohorts overlap and are not independent.",
+    "The late-2022 development period was previously inspected, so this is not a new holdout.",
+    "USD savings and top-ups are fare proxies, not platform profit or actual customer refunds."
+  ]
+}

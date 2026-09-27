@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Tracked Flights — Flyvis</title>
+  <meta name="description" content="Manage your active 24/7 price drop alerts and flight monitoring notifications on Flyvis." />
+  <link rel="stylesheet" href="css/styles.css?v=230" />
+  <link rel="stylesheet" href="css/sidebar.css?v=110" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+  <style>
+    :root {
+      --mf-primary: #2E7D7E;
+      --mf-primary-dark: #1F5F60;
+      --mf-navy: #0D1B2A;
+      --mf-muted: #64748B;
+      --mf-border: #E2E8F0;
+      --mf-bg: #FFFFFF;
+    }
+
+    body.my-flights-page {
+      background: var(--mf-bg);
+      color: var(--mf-navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .mf-main {
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 36px 80px;
+      box-sizing: border-box;
+    }
+
+    /* Header Bar */
+    .mf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--mf-border);
+      margin-bottom: 36px;
+      width: 100%;
+    }
+
+    .mf-title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.6px;
+      color: var(--mf-navy);
+      margin: 0 0 6px;
+    }
+
+    .mf-subtitle {
+      font-size: 14.5px;
+      color: var(--mf-muted);
+      margin: 0;
+    }
+
+    .mf-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-mf-refresh {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #F8FAFC;
+      border: 1.5px solid var(--mf-border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--mf-navy);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-mf-refresh:hover {
+      background: #EDF2F7;
+      border-color: #CBD5E1;
+    }
+
+    .refresh-icon {
+      transition: transform 0.2s ease;
+    }
+
+    .btn-mf-refresh.is-spinning .refresh-icon {
+      animation: spinRefresh 0.6s linear infinite;
+    }
+
+    @keyframes spinRefresh {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .btn-mf-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      background: var(--mf-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(46, 125, 126, 0.22);
+      transition: all 0.2s ease;
+    }
+
+    .btn-mf-primary:hover {
+      background: var(--mf-primary-dark);
+      transform: translateY(-1px);
+    }
+
+    /* Unboxed Clean Empty State */
+    .mf-empty-hero {
+      text-align: center;
+      padding: 30px 10px 40px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .mf-empty-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #EAF6F6;
+      color: var(--mf-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+    }
+
+    .mf-empty-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--mf-navy);
+      margin: 0 0 10px;
+      letter-spacing: -0.4px;
+    }
+
+    .mf-empty-desc {
+      font-size: 15px;
+      color: var(--mf-muted);
+      max-width: 540px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+
+    /* 3 Step Process Bar */
+    .mf-steps-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      text-align: left;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 700px) {
+      .mf-steps-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mf-step-card {
+      background: #F8FAFC;
+      border: 1px solid var(--mf-border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .mf-step-num {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--mf-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .mf-step-heading {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--mf-navy);
+      margin-bottom: 6px;
+    }
+
+    .mf-step-text {
+      font-size: 13px;
+      color: var(--mf-muted);
+      line-height: 1.45;
+    }
+
+    /* Popular Routes */
+    .mf-popular-box {
+      margin-bottom: 36px;
+    }
+
+    .mf-popular-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 14px;
+    }
+
+    .mf-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .mf-chip {
+      padding: 9px 18px;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--mf-navy);
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .mf-chip:hover {
+      border-color: var(--mf-primary);
+      color: var(--mf-primary);
+      background: #F8FAFC;
+    }
+
+    /* Tracked Flights List */
+    .mf-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .mf-list-count {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--mf-navy);
+    }
+
+    .mf-flights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .mf-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--mf-border);
+      border-radius: 14px;
+      padding: 22px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .mf-card:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .mf-card-route {
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--mf-navy);
+      letter-spacing: -0.3px;
+    }
+
+    .mf-card-badge {
+      font-size: 11px;
+      font-weight: 800;
+      background: #DCFCE7;
+      color: #166534;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .mf-card-meta {
+      background: #F8FAFC;
+      border: 1px solid var(--mf-border);
+      border-radius: 10px;
+      padding: 14px;
+      margin: 14px 0 18px;
+    }
+
+    .mf-card-meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      margin-bottom: 6px;
+    }
+
+    .mf-card-meta-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .btn-card-check {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      background: var(--mf-primary);
+      color: #FFFFFF;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .btn-card-check:hover {
+      background: var(--mf-primary-dark);
+    }
+
+    .btn-card-del {
+      padding: 10px 14px;
+      background: #FFF1F2;
+      border: 1px solid #FECDD3;
+      color: #E11D48;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-card-del:hover {
+      background: #FFE4E6;
+    }
+  </style>
+</head>
+<body class="my-flights-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner nav-inner-corner">
+      <!-- Corner Logo with 3-Dash Trigger -->
+      <div class="nav-logo-wrapper">
+        <button type="button" class="btn-sidebar-trigger" onclick="toggleFlyvisSidebar()" aria-label="Open Menu" title="Open Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+            <span class="nav-logo-tagline">Flight, Visa, Sorted.</span>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Floating Center Navigation Pill -->
+      <div class="nav-pill-center">
+        <ul class="nav-links">
+          <li><a href="index.html" id="nav-home">Explore</a></li>
+          <li><a href="visas.html" id="nav-visas">Visa</a></li>
+          <li><a href="dummy-ticket.html" id="nav-dummy">Dummy Ticket</a></li>
+          <li><a href="flight-fares.html" id="nav-fares">Flight Fares</a></li>
+        </ul>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="nav-right" style="display:flex; align-items:center; gap:12px;">
+        <div id="nav-auth-container"></div>
+        <a href="https://wa.me/919207021258?text=Hi%20Flyvis%2C%20I%20would%20like%20assistance%20with%20my%20travel%20and%20visa" target="_blank" class="nav-cta-btn" id="nav-cta-whatsapp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          WhatsApp Us
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Explore</a>
+    <a href="visas.html">Visa</a>
+    <a href="dummy-ticket.html">Dummy Ticket</a>
+    <a href="flight-fares.html">Flight Fares</a>
+  </div>
+
+  <!-- MAIN VIEW -->
+  <main class="mf-main">
+    
+    <!-- Top Header -->
+    <header class="mf-header">
+      <div>
+        <h1 class="mf-title">My Tracked Flights</h1>
+        <p class="mf-subtitle">Manage your active 24/7 price drop alerts and live flight monitoring notifications.</p>
+      </div>
+      <div class="mf-actions">
+        <button type="button" class="btn-mf-refresh" id="btn-refresh-status" onclick="triggerRefreshAnimation()">
+          <svg class="refresh-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          <span id="refresh-btn-label">Refresh Status</span>
+        </button>
+        <a href="flight-fares.html" class="btn-mf-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Search &amp; Track New Flight
+        </a>
+      </div>
+    </header>
+
+    <!-- Dynamic Content Area -->
+    <div id="my-flights-content">
+      <div style="text-align:center; padding:60px 20px;">
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" style="margin-top:auto;">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <div class="nav-logo">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#7EC0C5;">i</span>s</span>
+            <span class="nav-logo-tagline">Flight, Visa, Sorted.</span>
+          </div>
+        </div>
+        <p style="font-size:13px;">&#169; 2026 Flyvis Inc. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="index.html">Home</a>
+          <a href="flight-fares.html">Flight Fares</a>
+          <a href="visas.html">Visa</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase & Core Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/auth.js?v=110"></script>
+  <script src="js/sidebar.js?v=110"></script>
+  <script>
+    // Handle hamburger
+    const ham = document.getElementById('hamburger');
+    const mn = document.getElementById('mobile-nav');
+    if (ham && mn) {
+      ham.addEventListener('click', () => mn.classList.toggle('open'));
+    }
+
+    // Refresh animation handler
+    function triggerRefreshAnimation() {
+      const btn = document.getElementById('btn-refresh-status');
+      const label = document.getElementById('refresh-btn-label');
+      if (!btn) return;
+
+      btn.classList.add('is-spinning');
+      if (label) label.textContent = 'Checking Fares...';
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      if (user && typeof loadUserActivityData === 'function') {
+        loadUserActivityData(user);
+      }
+
+      setTimeout(() => {
+        renderMyFlightsPage();
+        btn.classList.remove('is-spinning');
+        if (label) label.textContent = 'Updated Just Now';
+        setTimeout(() => {
+          if (label) label.textContent = 'Refresh Status';
+        }, 2200);
+      }, 700);
+    }
+
+    // Render Main Page Content
+    function renderMyFlightsPage() {
+      const container = document.getElementById('my-flights-content');
+      if (!container) return;
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      let alerts = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.activeAlerts) || [];
+
+      // Fallback: check localStorage for cached alerts
+      if (alerts.length === 0) {
+        try {
+          const userKey = user ? "flyvis_saved_alerts_" + user.uid : null;
+          const rawUser = userKey ? localStorage.getItem(userKey) : null;
+          const rawGuest = localStorage.getItem("flyvis_saved_alerts_guest");
+          const fallback = rawUser ? JSON.parse(rawUser) : (rawGuest ? JSON.parse(rawGuest) : []);
+          if (Array.isArray(fallback) && fallback.length > 0) {
+            alerts = fallback;
+            if (typeof FlyvisAuthState !== 'undefined') FlyvisAuthState.activeAlerts = alerts;
+          }
+        } catch (e) {}
+      }
+
+      // 1. Unauthenticated State (No alerts tracked)
+      if (!user && alerts.length === 0) {
+        container.innerHTML = `
+          <div class="mf-empty-hero">
+            <div class="mf-empty-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+            </div>
+            <h2 class="mf-empty-title">Sign In to View Your Tracked Flights</h2>
+            <p class="mf-empty-desc">
+              Sign in with your Google account to set 24/7 AI price drop monitors on any route and manage your alerts in one place.
+            </p>
+            <button type="button" onclick="signInWithGoogle()" style="display:inline-flex; align-items:center; gap:10px; background:#FFFFFF; border:1.5px solid #CBD5E1; padding:12px 26px; border-radius:10px; font-size:14px; font-weight:800; color:#0D1B2A; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.05); margin-bottom:20px;">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+              Sign In with Google
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // 2. Empty State (Logged in or guest with 0 tracked flights)
+      if (alerts.length === 0) {
+        container.innerHTML = `
+          <div class="mf-empty-hero">
+            <div class="mf-empty-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+            </div>
+            <h2 class="mf-empty-title">You haven't set any flights to track yet</h2>
+            <p class="mf-empty-desc">
+              Search any airline route, set your target fare, and Flyvis AI will monitor ticket prices 24/7 and alert you the moment fares drop.
+            </p>
+
+            <a href="flight-fares.html" class="btn-mf-primary" style="padding:14px 36px; font-size:15px;">
+              Search &amp; Track Flights Now
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // Check for confirmed flight bookings in localStorage
+      let confirmedBookings = [];
+      try {
+        const rawConf = localStorage.getItem("flyvis_confirmed_bookings");
+        if (rawConf) confirmedBookings = JSON.parse(rawConf);
+      } catch (e) {}
+
+      // 3. Combined View: Confirmed Flight Bookings & Active Flight Monitors
+      let contentHtml = '';
+
+      // Section A: Confirmed Flight Bookings (if any exist)
+      if (confirmedBookings.length > 0) {
+        contentHtml += `
+          <div class="mf-list-header" style="margin-bottom:16px;">
+            <span class="mf-list-count" style="color:#0F172A; display:flex; align-items:center; gap:8px;">
+              <span>🎟️</span> Confirmed Flight Reservations (${confirmedBookings.length})
+            </span>
+            <span style="font-size:12.5px; color:#166534; font-weight:700; background:#DCFCE7; padding:4px 10px; border-radius:6px;">
+              ⚡ Guaranteed Airline PNR Issued
+            </span>
+          </div>
+
+          <div class="mf-flights-grid" style="margin-bottom:40px;">
+            ${confirmedBookings.map((b, bIdx) => {
+              const bRef = b.bookingId || b.id || `BKNG-10750${bIdx + 20}`;
+              const pnr = b.pnr || b.airlinePnr || `6E-${Math.floor(100000 + Math.random() * 899999)}`;
+              let routeStr = "New Delhi → Dubai";
+              if (typeof b.route === 'string' && b.route.trim()) {
+                routeStr = b.route;
+              } else if (b.route && typeof b.route === 'object') {
+                routeStr = `${b.route.origCity || b.route.origCode || 'DEL'} → ${b.route.destCity || b.route.destCode || 'DXB'}`;
+              } else if (b.origin && b.destination) {
+                routeStr = `${b.origin} → ${b.destination}`;
+              }
+
+              let dateStr = "Upcoming Flight";
+              if (b.travelDateDisplay) {
+                dateStr = b.travelDateDisplay;
+              } else if (b.travelDate) {
+                dateStr = b.travelDate;
+              } else if (b.date) {
+                dateStr = b.date;
+              } else if (b.route && b.route.departureDate) {
+                dateStr = b.route.departureDate;
+              }
+
+              let airline = "Commercial Airline";
+              if (typeof b.airline === 'string' && b.airline.trim()) {
+                airline = b.airline;
+              } else if (typeof b.flight === 'string' && b.flight.trim()) {
+                airline = b.flight;
+              } else if (b.flight && b.flight.name) {
+                airline = b.flight.name;
+              }
+
+              const flNum = b.flightNumber || (b.flight && b.flight.flightNum) || "AI-984";
+              const paxName = b.passengerName || b.customer || (b.passengers && b.passengers[0] && b.passengers[0].name) || (b.passengerList && b.passengerList[0] && b.passengerList[0].name) || "Primary Traveler";
+              const totalFare = (b.fareBreakdown && b.fareBreakdown.totalPayable) || b.amount || 14850;
+              const bagStatus = b.baggageAllowance || "🧳 Standard Included Allowance";
+
+              return `
+                <div class="mf-card" style="border: 2px solid #BFDBFE; background:#FFFFFF; box-shadow:0 8px 24px rgba(37,99,235,0.08);">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; flex-wrap:wrap; gap:6px;">
+                      <div class="mf-card-route" style="color:#1E3A8A; font-size:19px;">${routeStr}</div>
+                      <div style="display:flex; align-items:center; gap:6px;">
+                        <span style="font-size:11px; font-weight:900; background:#DCFCE7; color:#166534; border:1px solid #86EFAC; padding:4px 8px; border-radius:6px;">
+                          🟢 CONFIRMED: ${pnr}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:13px; color:#475569; font-weight:600;">
+                      <span>✈️ <strong>${airline}</strong> (${flNum})</span>
+                      <span>•</span>
+                      <span>📅 <strong>${dateStr}</strong></span>
+                    </div>
+
+                    <div class="mf-card-meta" style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                      <div class="mf-card-meta-row">
+                        <span style="color:var(--mf-muted);">Booking Reference:</span>
+                        <span style="font-weight:800; color:#0F172A; font-family:monospace;">${bRef}</span>
+                      </div>
+                      <div class="mf-card-meta-row">
+                        <span style="color:var(--mf-muted);">Lead Traveler:</span>
+                        <span style="font-weight:700; color:#0F172A;">${paxName}</span>
+                      </div>
+                      <div class="mf-card-meta-row">
+                        <span style="color:var(--mf-muted);">Current Baggage Status:</span>
+                        <span style="font-weight:800; color:#059669;">${bagStatus}</span>
+                      </div>
+                      <div class="mf-card-meta-row">
+                        <span style="color:var(--mf-muted);">Total Paid Fare:</span>
+                        <span style="font-weight:900; color:#1E3A8A; font-size:15px;">₹${totalFare.toLocaleString('en-IN')}</span>
+                      </div>
+                    </div>
+
+                    <!-- Notice banner -->
+                    <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:8px 12px; margin-bottom:14px; font-size:11.5px; color:#1E40AF; line-height:1.4;">
+                      💡 <strong>Need more baggage?</strong> Pre-book extra kilograms below at airline discounted rates to avoid counter penalty fees at the airport.
+                    </div>
+                  </div>
+
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <button type="button" onclick="openPostBookingAncModal('${bRef}', '${routeStr}', '${airline}', '${pnr}')" style="width:100%; background:#2563EB; color:#FFFFFF; border:none; border-radius:8px; padding:12px 16px; font-size:13.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(37,99,235,0.25); transition:all 0.15s ease;">
+                      <span>🧳</span> Add Extra Baggage &amp; Services
+                    </button>
+                    <a href="https://wa.me/919207021258?text=Hi%20Flyvis%20Desk,%20could%20you%20send%20my%20e-ticket%20for%20booking%20${bRef}%20(PNR:%20${pnr})?" target="_blank" style="width:100%; box-sizing:border-box; background:#FFFFFF; color:#475569; border:1px solid #CBD5E1; border-radius:8px; padding:8px 14px; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; text-decoration:none;">
+                      <span>💬</span> WhatsApp E-Ticket Support
+                    </a>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      // Section B: Active Flight Monitors
+      contentHtml += `
+        <div class="mf-list-header">
+          <span class="mf-list-count">Active Flight Monitors (${alerts.length})</span>
+          <span style="font-size:12.5px; color:var(--mf-muted);">Checking carrier fare streams automatically</span>
+        </div>
+
+        <div class="mf-flights-grid">
+          ${alerts.map(a => {
+            const currentFare = a.currentPrice || (a.targetPrice ? Math.round(a.targetPrice / 0.90) : 18000);
+            const targetFare = a.targetPrice || Math.round(currentFare * 0.90);
+            const dropPct = a.dropPercentage || (currentFare > targetFare ? Math.round(((currentFare - targetFare) / currentFare) * 100) : 10);
+            const savingsAmt = a.dropAmount || Math.max(0, currentFare - targetFare);
+
+            // Compute dynamic drop likelihood probability
+            let daysUntil = 25;
+            if (a.date) {
+              const tDate = new Date(a.date);
+              const now = new Date();
+              const diff = Math.ceil((tDate - now) / (1000 * 60 * 60 * 24));
+              if (!isNaN(diff)) daysUntil = diff;
+            }
+
+            let prob = 84;
+            if (daysUntil >= 21 && daysUntil <= 60) prob = 86;
+            else if (daysUntil >= 14 && daysUntil < 21) prob = 74;
+            else if (daysUntil > 60 && daysUntil <= 120) prob = 78;
+            else if (daysUntil < 14 && daysUntil >= 7) prob = 55;
+            else if (daysUntil < 7) prob = 32;
+
+            if (dropPct <= 8) prob += 6;
+            else if (dropPct > 15 && dropPct <= 25) prob -= 12;
+            else if (dropPct > 25) prob -= 28;
+
+            prob = Math.max(18, Math.min(94, Math.round(prob)));
+            const isHigh = prob >= 70;
+            const probColor = isHigh ? '#16A34A' : (prob >= 45 ? '#D97706' : '#DC2626');
+            const probBg = isHigh ? '#DCFCE7' : (prob >= 45 ? '#FEF3C7' : '#FEE2E2');
+            const probBorder = isHigh ? '#BBF7D0' : (prob >= 45 ? '#FDE68A' : '#FECACA');
+            const probText = isHigh ? 'High Confidence' : (prob >= 45 ? 'Moderate Likelihood' : 'Low Probability');
+
+            const isAutoBook = a.mode === 'auto_book' || !!a.preAuthToken;
+            const modeBadge = isAutoBook
+              ? `<span style="font-size:11px; font-weight:900; background:#DCFCE7; color:#166534; border:1.5px solid #86EFAC; padding:3px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">&#x26A1; Auto-Book Active</span>`
+              : `<span style="font-size:11px; font-weight:800; background:#EFF6FF; color:#1E40AF; border:1.5px solid #BFDBFE; padding:3px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">&#x1F514; Notify &amp; Confirm</span>`;
+
+            return `
+              <div class="mf-card">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                    <div class="mf-card-route">${a.from} &rarr; ${a.to}</div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      ${modeBadge}
+                      <span style="font-size:11px; font-weight:900; background:${probBg}; color:${probColor}; border:1px solid ${probBorder}; padding:3px 7px; border-radius:6px;">
+                        ${prob}% Likely
+                      </span>
+                    </div>
+                  </div>
+                  <div style="font-size:13px; color:var(--mf-muted); margin-bottom:6px;">Travel Date: <strong>${a.date}</strong></div>
+
+                  <!-- Probability Bar Box -->
+                  <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                      <span style="font-size:12px; font-weight:800; color:#0D1B2A;">Price Drop Probability</span>
+                      <span style="font-size:12px; font-weight:900; color:${probColor};">${prob}% (${probText})</span>
+                    </div>
+                    <div style="height:6px; width:100%; background:#E2E8F0; border-radius:99px; overflow:hidden;">
+                      <div style="height:100%; width:${prob}%; background:${probColor}; border-radius:99px;"></div>
+                    </div>
+                  </div>
+
+                  <div class="mf-card-meta">
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">${isAutoBook ? 'Auto-Book Trigger Cap:' : 'Target Alert Fare:'}</span>
+                      <span style="font-size:15px; font-weight:900; color:#16A34A;">
+                        ₹${targetFare.toLocaleString('en-IN')}
+                        <span style="font-size:11px; font-weight:800; color:#166534; margin-left:4px;">(-${dropPct}%)</span>
+                      </span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Current Baseline Fare:</span>
+                      <span style="font-weight:700; color:var(--mf-navy); font-size:13px;">₹${currentFare.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Expected Savings:</span>
+                      <span style="font-weight:800; color:#2E7D7E;">₹${savingsAmt.toLocaleString('en-IN')} (${dropPct}% drop)</span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Carrier Policy:</span>
+                      <span style="font-weight:700; color:var(--mf-navy);">${a.flightSpecific ? `Exact: ${a.flightSpecific}` : (a.flightMatchRule === 'any_nonstop' ? 'Any Non-Stop Flight' : 'Exact Flight')}</span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">GDS Polling Cadence:</span>
+                      <span style="font-weight:700; color:#0F766E; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
+                        <span>🛰️</span> ${a.pollingFrequency || (daysUntil > 30 ? 'RM Batch (4x/Day)' : (daysUntil >= 7 ? 'Every 2 Hours' : 'High-Velocity (Every 15m)'))}
+                        <small style="color:#64748B; font-weight:600;">(T-${daysUntil}d)</small>
+                      </span>
+                    </div>
+                    <!-- TCOT All-Inclusive Package Requirement Rows -->
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Required Bundle:</span>
+                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px; flex-wrap:wrap;">
+                        ${(() => {
+                          const pkg = a.requiredPackage || {};
+                          const bagKg = pkg.baggageKg !== undefined ? pkg.baggageKg : (a.minCheckedBagsKg !== undefined ? a.minCheckedBagsKg : (a.baggagePreference === 'hand_baggage_only' ? 0 : 15));
+                          const hasMeal = !!pkg.requireMeal;
+                          const seat = pkg.requireSeat || 'any';
+                          const seatStr = seat === 'extra_legroom' ? 'XL Seat' : (seat === 'standard' ? 'Window/Aisle' : 'Any Seat');
+                          const hasFlex = !!pkg.requireFlexi;
+                          return `
+                            <span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 6px; border-radius:5px;">🧳 ${bagKg}kg Bag</span>
+                            <span style="font-size:10.5px; font-weight:800; background:${hasMeal ? '#FEF3C7' : '#F8FAFC'}; color:${hasMeal ? '#92400E' : '#64748B'}; border:1px solid ${hasMeal ? '#FDE68A' : '#CBD5E1'}; padding:2px 6px; border-radius:5px;">🍱 ${hasMeal ? 'Meal Included' : 'No Meal'}</span>
+                            <span style="font-size:10.5px; font-weight:800; background:${seat !== 'any' ? '#EFF6FF' : '#F8FAFC'}; color:${seat !== 'any' ? '#1E40AF' : '#64748B'}; border:1px solid ${seat !== 'any' ? '#BFDBFE' : '#CBD5E1'}; padding:2px 6px; border-radius:5px;">💺 ${seatStr}</span>
+                            ${hasFlex ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 6px; border-radius:5px;">🔄 1 Free Change</span>' : ''}
+                          `;
+                        })()}
+                      </span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">TCOT Target Cap:</span>
+                      <span style="font-weight:900; color:#14532D; font-size:13.5px; display:inline-flex; align-items:center; gap:6px;">
+                        ₹${(a.allInclusiveTargetCap || a.requiredPackage?.allInclusiveTargetCapPerPax || targetFare).toLocaleString('en-IN')}
+                        <span style="font-size:10px; font-weight:800; background:#CCFBF1; color:#0F766E; border:1px solid #99F6E4; padding:1px 6px; border-radius:4px;">TCOT Shield Active</span>
+                      </span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Red-Eye Safeguard:</span>
+                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
+                        ${a.isMidnightDeparture
+                          ? `<span style="font-size:10.5px; font-weight:800; background:#FFFBEB; color:#92400E; border:1px solid #FDE68A; padding:2px 7px; border-radius:6px;" title="${a.midnightDepartureInfo?.warning || ''}">🌙 Early AM Flight (Day-Before Check-in)</span>`
+                          : (a.excludeMidnightRedEye !== false
+                            ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 7px; border-radius:6px;">🌙 00:00–04:00 Excluded</span>'
+                            : '<span style="font-size:10.5px; font-weight:800; background:#F8FAFC; color:#475569; border:1px solid #CBD5E1; padding:2px 7px; border-radius:6px;">🌙 Red-Eyes Permitted</span>')}
+                      </span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Price Drift Policy:</span>
+                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
+                        ${a.priceDriftTolerance === 'flexible_500'
+                          ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 7px; border-radius:6px;">🛡️ Flexible (&le; ₹500 Drift)</span>'
+                          : '<span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 7px; border-radius:6px;">🛡️ Strict (₹0 Slippage)</span>'}
+                      </span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Document Clearance:</span>
+                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
+                        ${a.isInternationalRoute === false || a.inadComplianceStatus === 'DOMESTIC_EXEMPT'
+                          ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 7px; border-radius:6px;">🪪 Domestic Govt ID (Aadhaar / Voter ID)</span>'
+                          : (a.inadComplianceStatus === 'COMPLIANT' || !a.inadComplianceStatus
+                            ? `<span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 7px; border-radius:6px;" title="Passport valid through ${a.inadDetails?.expiryFormatted || a.passportExpiry || '2028'}">✓ 6M Passport Verified (INAD Clear)</span>`
+                            : `<span style="font-size:10.5px; font-weight:800; background:#FFF1F2; color:#9F1239; border:1.5px solid #FECDD3; padding:2px 7px; border-radius:6px;" title="${a.inadDetails?.warning || ''}">🚨 INAD Risk: Passport Renewal Required (&lt; 6M)</span>`)}
+                      </span>
+                    </div>
+                    <div class="mf-card-meta-row">
+                      <span style="color:var(--mf-muted);">Connection Shield:</span>
+                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
+                        ${a.connectionSafeguard?.requireProtectedConnections === false || a.connectionSafeguard?.transferPolicy === 'SELF_TRANSFERS_PERMITTED'
+                          ? '<span style="font-size:10.5px; font-weight:800; background:#FFFBEB; color:#92400E; border:1px solid #FDE68A; padding:2px 7px; border-radius:6px;">⚠️ Self-Transfers Permitted</span>'
+                          : '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 7px; border-radius:6px;">🛡️ Protected Connections Only</span>'}
+                      </span>
+                    </div>
+
+                    ${isAutoBook ? (() => {
+                      let daysValid = 60;
+                      if (a.tokenExpiresAt) {
+                        const diff = Math.ceil((new Date(a.tokenExpiresAt) - new Date()) / (1000 * 60 * 60 * 24));
+                        if (!isNaN(diff) && diff > 0) daysValid = diff;
+                      }
+                      const isNearExpiry = daysValid <= 7;
+                      const statusColor = isNearExpiry ? '#D97706' : '#166534';
+                      const statusBg = isNearExpiry ? '#FEF3C7' : '#DCFCE7';
+                      const statusText = isNearExpiry ? `⚠️ Renews in ${daysValid}d` : `🟢 Active (${daysValid} days left)`;
+
+                      return `
+                      <!-- Auto-Book Pre-Auth Box -->
+                      <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:10px 12px; margin-top:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; margin-bottom:4px;">
+                          <span style="color:#166534; font-weight:800;">E-Mandate Pre-Authorized:</span>
+                          <span style="font-weight:900; color:#14532D;">•••• ${a.preAuthCard?.last4 || '4242'}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:4px;">
+                          <span style="color:#64748B;">Token Health:</span>
+                          <span style="font-weight:800; color:${statusColor}; background:${statusBg}; padding:1px 6px; border-radius:4px; font-size:10.5px;">${statusText}</span>
+                        </div>
+                        <div style="font-size:11px; color:#15803D; margin-bottom:3px;">Traveler: <strong>${a.travelerName || 'Primary Flyer'}</strong> (${a.passportNumber || 'Passport Synced'}${a.passportExpiry ? ` &bull; Exp: ${a.passportExpiry}` : ''})</div>
+                        <div style="font-size:10.5px; color:#0F766E; font-weight:700;">⚡ 15-Min Amadeus Seat Hold (TKTL Safeguard Active)</div>
+                        <div style="font-size:10.5px; color:#1D4ED8; margin-top:2px; font-weight:700;">🛡️ Atomic GDS Pre-Execution Price Freeze Active</div>
+                        <div style="font-size:10.5px; color:#15803D; margin-top:2px; font-weight:700;">🛡️ Fare Family Shield (0kg Basic Economy Protected)</div>
+                        <div style="font-size:10.5px; color:#166534; margin-top:2px; font-weight:700;">📦 TCOT Shield: All-Inclusive Bundle Enforced (${a.requiredPackage?.baggageKg !== undefined ? a.requiredPackage.baggageKg : 15}kg Bag${a.requiredPackage?.requireMeal ? ' + Hot Meal' : ''}${a.requiredPackage?.requireSeat && a.requiredPackage?.requireSeat !== 'any' ? ' + Seat' : ''})</div>
+                        <div style="font-size:10.5px; color:${a.inadComplianceStatus === 'INAD_RISK' || a.inadComplianceStatus === 'EXPIRED' ? '#991B1B' : '#047857'}; margin-top:2px; font-weight:700;">${a.isInternationalRoute === false ? '🪪 Domestic Route (Passport Exempt)' : '🪪 6-Month Passport Validity Verified (INAD Shield Active)'}</div>
+                        <div style="font-size:10.5px; color:#0F766E; margin-top:2px; font-weight:700;">🔄 Connection Shield: ${a.connectionSafeguard?.requireProtectedConnections === false ? 'Self-Transfers Permitted' : 'Protected Interline Enforced (No Tight Self-Transfers)'}</div>
+                        <div style="font-size:10.5px; color:#92400E; margin-top:2px; font-weight:700;">🌙 Midnight Trap Defense Active</div>
+                        <div style="font-size:10.5px; color:#166534; margin-top:2px; font-weight:700;">&#x2713; 24-Hour Free Cancellation Protected</div>
+                      </div>
+                      `;
+                    })() : ''}
+
+                    ${a.phone ? `
+                      <div class="mf-card-meta-row" style="border-top:1px solid var(--mf-border); margin-top:8px; padding-top:8px;">
+                        <span style="color:var(--mf-muted);">Alert Contact:</span>
+                        <span style="font-weight:700; color:var(--mf-navy);">${a.phone}</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+                  <button type="button" onclick="openPostBookingAncModal('${a.id || 'BKNG-1075025'}', '${a.from} → ${a.to}', '${a.flightSpecific || 'Commercial Airline'}', 'PNR-ACTIVE')" style="flex:1; background:#EFF6FF; color:#1D4ED8; border:1.5px solid #93C5FD; border-radius:8px; padding:9px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                    🧳 Add Baggage / Add-on
+                  </button>
+                  <a href="flight-fares.html?from=${a.from}&to=${a.to}&date=${a.date}" class="btn-card-check" style="flex:1; text-align:center;">
+                    Check Fares
+                  </a>
+                  <button type="button" onclick="deletePriceAlert('${a.id}')" class="btn-card-del" style="padding:9px 12px;">
+                    Remove
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      container.innerHTML = contentHtml;
+    }
+
+    // =========================================================================
+    // INTERACTIVE POST-BOOKING ANCILLARY MODAL & CONTROLLER
+    // =========================================================================
+    let _activeAncBooking = { ref: "BKNG-1075025", route: "DEL → DXB", airline: "Commercial Airline", pnr: "PNR-CONFIRMED" };
+
+    window.openPostBookingAncModal = function(bookingRef, routeStr, airlineStr, pnrStr) {
+      _activeAncBooking = {
+        ref: bookingRef || "BKNG-1075025",
+        route: routeStr || "DEL → DXB",
+        airline: airlineStr || "Commercial Airline",
+        pnr: pnrStr || "PNR-CONFIRMED"
+      };
+
+      const sub = document.getElementById("mf-anc-subtitle");
+      if (sub) sub.textContent = `Booking: ${_activeAncBooking.ref} • ${_activeAncBooking.route} • ${_activeAncBooking.airline} (${_activeAncBooking.pnr})`;
+
+      // Reset selection
+      const defRadio = document.querySelector('input[name="mf_baggage_slab"][value="1500"]');
+      if (defRadio) defRadio.checked = true;
+      const mealChk = document.getElementById("mf-chk-meal");
+      if (mealChk) mealChk.checked = false;
+      const seatChk = document.getElementById("mf-chk-seat");
+      if (seatChk) seatChk.checked = false;
+      const notesEl = document.getElementById("mf-anc-notes");
+      if (notesEl) notesEl.value = "";
+
+      updateMfAncTotals();
+
+      const modal = document.getElementById("mf-post-anc-modal");
+      if (modal) modal.style.display = "flex";
+    };
+
+    window.closePostBookingAncModal = function() {
+      const modal = document.getElementById("mf-post-anc-modal");
+      if (modal) modal.style.display = "none";
+    };
+
+    window.updateMfAncTotals = function() {
+      let total = 0;
+      let count = 0;
+
+      const checkedBag = document.querySelector('input[name="mf_baggage_slab"]:checked');
+      if (checkedBag) {
+        const bagVal = parseInt(checkedBag.value) || 0;
+        total += bagVal;
+        if (bagVal > 0) count++;
+      }
+
+      const mealChk = document.getElementById("mf-chk-meal");
+      if (mealChk && mealChk.checked) {
+        total += parseInt(mealChk.value) || 0;
+        count++;
+      }
+
+      const seatChk = document.getElementById("mf-chk-seat");
+      if (seatChk && seatChk.checked) {
+        total += parseInt(seatChk.value) || 0;
+        count++;
+      }
+
+      const priceEl = document.getElementById("mf-anc-total-price");
+      const summaryEl = document.getElementById("mf-anc-summary-text");
+      if (priceEl) priceEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+      if (summaryEl) summaryEl.textContent = count === 0 ? "No extra items selected" : `${count} service${count > 1 ? 's' : ''} selected`;
+    };
+
+    window.submitMfAncillaryOrder = function() {
+      const checkedBag = document.querySelector('input[name="mf_baggage_slab"]:checked');
+      const bagVal = checkedBag ? (parseInt(checkedBag.value) || 0) : 0;
+      const bagName = checkedBag ? checkedBag.getAttribute("data-name") : "";
+      const bagCode = checkedBag ? checkedBag.getAttribute("data-code") : "";
+
+      const mealChk = document.getElementById("mf-chk-meal");
+      const seatChk = document.getElementById("mf-chk-seat");
+      const notes = document.getElementById("mf-anc-notes")?.value || "";
+
+      const items = [];
+      let total = 0;
+
+      if (bagVal > 0) {
+        items.push({ type: "baggage", name: bagName, code: bagCode, price: bagVal, status: "Pending EMD-A Issuance" });
+        total += bagVal;
+      }
+      if (mealChk && mealChk.checked) {
+        items.push({ type: "meal", name: "Chef Special Hot Meal", price: 450, status: "Awaiting Manifest Sync" });
+        total += 450;
+      }
+      if (seatChk && seatChk.checked) {
+        items.push({ type: "seat", name: "Preferred Window/Aisle Seat Lock", price: 350, status: "Awaiting GDS Seat Hold" });
+        total += 350;
+      }
+
+      if (items.length === 0) {
+        alert("Please select at least one ancillary service or baggage slab to add.");
+        return;
+      }
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const custName = (user && user.displayName) || "Primary Traveler";
+      const custPhone = (user && user.phoneNumber) || "+91 92070 21258";
+      const randomSuffix = Math.floor(10 + Math.random() * 89);
+      const ancRef = `${_activeAncBooking.ref}-A${randomSuffix}`;
+      const now = new Date();
+      const slaDeadline = new Date(now.getTime() + 30 * 60 * 1000).toISOString();
+
+      const newOrder = {
+        id: Date.now(),
+        ancillaryRef: ancRef,
+        bookingRef: _activeAncBooking.ref,
+        provider: "AMGS",
+        status: "AWAITING_MANUAL_REVIEW",
+        routingReason: "post_booking_customer_requested",
+        currency: "INR",
+        manualSlaDeadline: slaDeadline,
+        isOverdue: false,
+        createdAt: now.toISOString(),
+        ancillaryTotal: total,
+        serviceCharge: 0,
+        platformFee: 0,
+        payable: total,
+        customer: custName,
+        phone: custPhone,
+        email: (user && user.email) || "traveler@flyvis.com",
+        route: _activeAncBooking.route,
+        airline: _activeAncBooking.airline,
+        pnr: _activeAncBooking.pnr,
+        notes: notes ? `${notes} (Items: ${items.map(i => i.name).join(', ')})` : `Post-booking add-on: ${items.map(i => i.name).join(', ')}`,
+        items: items
+      };
+
+      // 1. Dual-Sync: Save to localStorage for Admin Ancillary Queue
+      try {
+        let list = [];
+        const raw = localStorage.getItem("flyvis_post_booking_ancillaries");
+        if (raw) list = JSON.parse(raw);
+        list.unshift(newOrder);
+        localStorage.setItem("flyvis_post_booking_ancillaries", JSON.stringify(list));
+      } catch (e) {}
+
+      closePostBookingAncModal();
+
+      // 2. Alert user with Reference & 30-min SLA
+      const waMsg = encodeURIComponent(
+        `Hi Flyvis Ticketing Desk! I have submitted a post-booking ancillary request for my flight.\n\n` +
+        `• Order Ref: ${ancRef}\n` +
+        `• Booking: ${_activeAncBooking.ref}\n` +
+        `• PNR: ${_activeAncBooking.pnr}\n` +
+        `• Route: ${_activeAncBooking.route}\n` +
+        `• Services: ${items.map(i => i.name).join(' + ')}\n` +
+        `• Total: ₹${total.toLocaleString('en-IN')}\n\n` +
+        `Please confirm with the airline and send my EMD receipt!`
+      );
+
+      const confirmPing = confirm(
+        `✅ Ancillary Request Submitted!\n\n` +
+        `• Reference: ${ancRef}\n` +
+        `• SLA Guarantee: 30 Minutes\n` +
+        `• Total Payable: ₹${total.toLocaleString('en-IN')}\n\n` +
+        `Your request is queued with the Flyvis Flight Operations Desk. Click OK to ping our WhatsApp Concierge for instant confirmation!`
+      );
+
+      if (confirmPing) {
+        window.open(`https://wa.me/919207021258?text=${waMsg}`, "_blank");
+      }
+    };
+
+    // Auto run on load & auth change
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMyFlightsPage();
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user && typeof loadUserActivityData === 'function') {
+            loadUserActivityData(user);
+          }
+          setTimeout(renderMyFlightsPage, 100);
+        });
+      }
+    });
+  </script>
+
+  <!-- Post-Booking Ancillary Order Modal -->
+  <div class="ota-booking-modal-overlay" id="mf-post-anc-modal" style="display:none; position:fixed; inset:0; background:rgba(10,25,47,0.78); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); z-index:10050; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) closePostBookingAncModal()">
+    <div class="ota-booking-modal" style="background:#FFFFFF; border-radius:18px; max-width:540px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.3); border:1px solid #CBD5E1; animation: modalSlideUp 0.25s ease-out;">
+      
+      <div style="padding:18px 24px; border-bottom:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h3 style="margin:0; font-size:18px; font-weight:900; color:#0F172A; display:flex; align-items:center; gap:6px;">
+            <span>🧳</span> Add Extra Baggage &amp; Services
+          </h3>
+          <div style="font-size:12px; color:#64748B; font-weight:600; margin-top:2px;" id="mf-anc-subtitle">Booking: BKNG-1075025 • DEL → DXB</div>
+        </div>
+        <button type="button" onclick="closePostBookingAncModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748B; line-height:1;">&times;</button>
+      </div>
+
+      <div style="padding:22px 24px;">
+        <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px; padding:12px 14px; margin-bottom:18px; font-size:12px; color:#1E40AF; line-height:1.5;">
+          <strong>🛡️ Airline EMD-A Issuance:</strong> Your flight is already confirmed. Extra baggage requested here is issued at <strong>prepaid airline discounted rates</strong> (save up to 65% vs. airport counter penalty fees) and attached directly to your airline PNR.
+        </div>
+
+        <!-- 1. Baggage Slabs -->
+        <div style="margin-bottom:18px;">
+          <label style="font-size:11.5px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:8px;">
+            1. Extra Check-in Baggage Slabs (SSR BAGS)
+          </label>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            
+            <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; border:1.5px solid #2563EB; border-radius:8px; cursor:pointer; background:#EFF6FF;">
+              <input type="radio" name="mf_baggage_slab" value="1500" data-name="+15 kg Check-in Luggage" data-code="0CC" checked onchange="updateMfAncTotals()" style="accent-color:#2563EB;">
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:800; color:#0F172A;">+15 kg Check-in Luggage</div>
+                <div style="font-size:11px; color:#2563EB; font-weight:700;">+₹1,500 prepaid (Airport counter rate: ₹4,500)</div>
+              </div>
+              <span style="font-size:10px; font-weight:800; background:#DCFCE7; color:#166534; padding:3px 7px; border-radius:6px;">SAVE 66%</span>
+            </label>
+
+            <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#FAFAFA;">
+              <input type="radio" name="mf_baggage_slab" value="2200" data-name="+20 kg Check-in Luggage" data-code="0CD" onchange="updateMfAncTotals()" style="accent-color:#2563EB;">
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:800; color:#0F172A;">+20 kg Check-in Luggage</div>
+                <div style="font-size:11px; color:#64748B; font-weight:700;">+₹2,200 prepaid (Airport counter rate: ₹6,000)</div>
+              </div>
+            </label>
+
+            <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#FAFAFA;">
+              <input type="radio" name="mf_baggage_slab" value="3400" data-name="+30 kg Heavy Check-in Luggage" data-code="0CE" onchange="updateMfAncTotals()" style="accent-color:#2563EB;">
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:800; color:#0F172A;">+30 kg Heavy Allowance</div>
+                <div style="font-size:11px; color:#64748B; font-weight:700;">+₹3,400 prepaid (Airport counter rate: ₹9,000)</div>
+              </div>
+            </label>
+
+            <label style="display:flex; align-items:center; gap:10px; padding:8px 14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#FAFAFA;">
+              <input type="radio" name="mf_baggage_slab" value="0" data-name="No Extra Baggage" data-code="" onchange="updateMfAncTotals()" style="accent-color:#2563EB;">
+              <div style="flex:1;">
+                <div style="font-size:12px; font-weight:700; color:#64748B;">No extra baggage (keep current ticket allowance)</div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- 2. Other Services -->
+        <div style="margin-bottom:18px;">
+          <label style="font-size:11.5px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:0.4px; display:block; margin-bottom:8px;">
+            2. Additional In-Flight Services
+          </label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label style="display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#FAFAFA;">
+              <input type="checkbox" id="mf-chk-meal" value="450" data-name="Chef Special Hot Meal" onchange="updateMfAncTotals()" style="accent-color:#2563EB;">
+              <div style="font-size:11.5px;">
+                <div style="font-weight:700; color:#0F172A;">🍱 Hot Meal</div>
+                <div style="color:#64748B; font-size:10px;">+₹450</div>
+              </div>
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#FAFAFA;">
+              <input type="checkbox" id="mf-chk-seat" value="350" data-name="Preferred Window/Aisle Seat Lock" onchange="updateMfAncTotals()" style="accent-color:#2563EB;">
+              <div style="font-size:11.5px;">
+                <div style="font-weight:700; color:#0F172A;">🪑 Window / Aisle</div>
+                <div style="color:#64748B; font-size:10px;">+₹350</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label style="font-size:11px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;">SPECIAL REQUEST / PASSENGER NOTES</label>
+          <input type="text" id="mf-anc-notes" placeholder="e.g. Traveling with musical instrument, fragile golf bag" style="width:100%; box-sizing:border-box; font-size:12px; padding:9px 12px; border-radius:8px; border:1px solid #CBD5E1;">
+        </div>
+
+        <!-- Total Breakdown Tally -->
+        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:12px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span style="font-size:12px; color:#64748B;">Total Ancillary Fee:</span>
+            <div style="font-size:11px; color:#059669; font-weight:700;" id="mf-anc-summary-text">1 service selected</div>
+          </div>
+          <div style="font-size:19px; font-weight:900; color:#0F172A;" id="mf-anc-total-price">₹1,500</div>
+        </div>
+
+        <button type="button" onclick="submitMfAncillaryOrder()" style="width:100%; padding:14px; background:#2563EB; color:#FFFFFF; border:none; border-radius:10px; font-size:14px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 14px rgba(37,99,235,0.25);">
+          <span>✓</span> Submit Ancillary Request &amp; Ping Desk
+        </button>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

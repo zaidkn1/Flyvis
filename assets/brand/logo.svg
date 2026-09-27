@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="flyvisTealGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E3A46"/>
+      <stop offset="50%" stop-color="#2E7D7E"/>
+      <stop offset="100%" stop-color="#7EC0C5"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- ICON PART (X: 10 to 140) -->
+  <g transform="translate(10, 5) scale(0.72)">
+    <!-- Top black/navy bar & vertical hook -->
+    <path d="M 45 28 C 65 26, 110 26, 115 38 C 117 44, 98 48, 68 50 C 58 50, 48 64, 43 82 C 40 92, 38 108, 38 128 L 22 128 C 22 105, 28 72, 36 50 C 40 40, 42 32, 45 28 Z" fill="#0D1B2A"/>
+    
+    <!-- Dynamic teal wave swoosh -->
+    <path d="M 8 132 C 16 110, 32 92, 54 82 C 78 72, 102 62, 132 38 C 104 56, 74 68, 48 80 C 32 88, 20 112, 8 132 Z" fill="#2E7D7E"/>
+    <path d="M 28 128 C 36 108, 48 94, 66 86 C 88 78, 112 68, 134 40 C 112 60, 84 74, 58 84 C 44 90, 34 110, 28 128 Z" fill="#2E7D7E"/>
+    <path d="M 28 128 L 48 128 C 54 104, 70 90, 92 84 C 68 90, 52 106, 48 128 Z" fill="#2E7D7E"/>
+    
+    <!-- Airplane soaring at top right of F -->
+    <g transform="translate(132, 22) rotate(42) scale(1.1)">
+      <path d="M 12 2 C 13.2 2, 14 3, 14 5.5 L 14 12 L 23 17 L 23 19.5 L 14 16.5 L 14 22 L 17.5 24.8 L 17.5 26.8 L 12 25.2 L 6.5 26.8 L 6.5 24.8 L 10 22 L 10 16.5 L 1 19.5 L 1 17 L 10 12 L 10 5.5 C 10 3, 10.8 2, 12 2 Z" fill="#2E7D7E"/>
+    </g>
+  </g>
+
+  <!-- WORDMARK: Flyvis -->
+  <text x="140" y="76" font-family="'Poppins', 'Inter', sans-serif" font-size="52" font-weight="700" fill="#0D1B2A" letter-spacing="-0.5">Flyv<tspan fill="#0D1B2A">ı</tspan>s</text>
+  <!-- Custom Teal Dot on the 'i' exactly as in brand guide -->
+  <circle cx="251" cy="46" r="5.5" fill="#2E7D7E"/>
+
+  <!-- TAGLINE -->
+  <text x="142" y="98" font-family="'Poppins', 'Inter', sans-serif" font-size="14.5" font-weight="500" fill="#1E3A46" letter-spacing="0.2">Your Journey. <tspan fill="#2E7D7E" font-weight="600">Simplified.</tspan></text>
+</svg>

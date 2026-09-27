@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Visa Details — Flyvis</title>
+  <meta name="description" id="page-desc" content="Full visa requirements, fees, processing time and documents for your destination." />
+  <link rel="stylesheet" href="css/styles.css?v=21" />
+  <link rel="stylesheet" href="css/detail.css?v=21" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+  <style>
+    /* MODAL OVERLAY STYLES */
+    .ac-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(13,27,42,0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 3000;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .ac-modal-overlay.open { display: flex; }
+    .ac-modal-box {
+      background: #FFFFFF;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+      margin: auto;
+      overflow: hidden;
+    }
+    .ac-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 28px;
+      border-bottom: 1px solid #DCECEC;
+    }
+    .ac-modal-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ac-modal-flag {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #DCECEC;
+    }
+    .ac-modal-country-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8BA2AC;
+      margin-bottom: 2px;
+    }
+    .ac-modal-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0D1B2A;
+      text-decoration: underline;
+    }
+    .ac-modal-close {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #F4F7F7; border: 1px solid #DCECEC;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px; color: #56727D; line-height: 1;
+      transition: all 0.2s;
+    }
+    .ac-modal-close:hover { background: #DCECEC; color: #0D1B2A; }
+    .ac-modal-body { padding: 24px 28px 28px; }
+
+    /* Section headings inside modal */
+    .ac-sec-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px; font-weight: 700; color: #0D1B2A;
+      margin: 24px 0 14px;
+    }
+    .ac-sec-title:first-child { margin-top: 0; }
+    .ac-sec-icon {
+      width: 26px; height: 26px; border-radius: 50%;
+      color: white; display: flex; align-items: center;
+      justify-content: center; font-size: 12px; flex-shrink: 0;
+    }
+    .ac-sec-icon.blue { background: #3b82f6; }
+    .ac-sec-icon.green { background: #10b981; }
+    .ac-sec-icon.purple { background: #8b5cf6; }
+    .ac-sec-icon.teal { background: #2E7D7E; }
+
+    .ac-upload-box {
+      border: 1.5px solid #0D1B2A; border-radius: 999px;
+      padding: 12px 20px; text-align: center; cursor: pointer;
+      font-size: 14px; font-weight: 700; color: #0D1B2A;
+      background: #FFFFFF; margin-bottom: 14px;
+      transition: all 0.2s; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+    }
+    .ac-upload-box:hover { background: #F4F7F7; border-color: #2E7D7E; color: #2E7D7E; }
+    .ac-or-line {
+      text-align: center; font-size: 12px; font-weight: 700;
+      color: #8BA2AC; margin: 12px 0 16px; position: relative;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .ac-or-line::before, .ac-or-line::after {
+      content: ''; flex: 1; height: 1px; background: #DCECEC;
+    }
+
+    .ac-fields-2 {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px;
+    }
+    @media(max-width: 560px) { .ac-fields-2 { grid-template-columns: 1fr; } }
+    .ac-field { display: flex; flex-direction: column; }
+    .ac-field label {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.05em;
+      text-transform: uppercase; color: #0D1B2A; margin-bottom: 6px;
+    }
+    .ac-field label .req { color: #ef4444; }
+    .ac-input, .ac-select {
+      width: 100%; padding: 11px 14px; border: 1px solid #DCECEC;
+      border-radius: 10px; font-size: 14px; font-family: inherit;
+      color: #0D1B2A; background: #FFFFFF; box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    .ac-input:focus, .ac-select:focus {
+      outline: none; border-color: #2E7D7E;
+      box-shadow: 0 0 0 3px rgba(46,125,126,0.12);
+    }
+
+    .ac-pills {
+      display: inline-flex; background: #F4F7F7;
+      border: 1px solid #DCECEC; border-radius: 999px;
+      padding: 3px; gap: 2px; margin-bottom: 14px;
+    }
+    .ac-pill-btn {
+      padding: 6px 16px; border-radius: 999px; border: none;
+      background: transparent; font-size: 12.5px; font-weight: 600;
+      color: #56727D; cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .ac-pill-btn.active {
+      background: #FFFFFF; color: #0D1B2A; font-weight: 700;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    }
+
+    .ac-traveler-block { position: relative; }
+    .ac-traveler-divider {
+      border-top: 1.5px dashed #DCECEC;
+      margin: 20px 0; position: relative;
+    }
+    .ac-remove-traveler {
+      position: absolute; top: -10px; right: 0;
+      padding: 2px 10px; background: #fff; border: 1px solid #DCECEC;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+      color: #ef4444; cursor: pointer; font-family: inherit;
+    }
+
+    .ac-modal-footer {
+      display: flex; gap: 14px; padding: 20px 28px;
+      border-top: 1px solid #DCECEC; background: #FAFCFC;
+    }
+    @media(max-width: 500px) { .ac-modal-footer { flex-direction: column; } }
+    .ac-btn-add-traveler {
+      flex: 1; padding: 13px 18px; border-radius: 999px;
+      border: 1.5px solid #0D1B2A; background: #FFFFFF;
+      color: #0D1B2A; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .ac-btn-add-traveler:hover { background: #F4F7F7; }
+    .ac-btn-submit-ac {
+      flex: 1.5; padding: 13px 24px; border-radius: 999px;
+      border: none; background: #0D1B2A;
+      color: #FFFFFF; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      box-shadow: 0 8px 24px rgba(13,27,42,0.2); transition: all 0.2s;
+    }
+    .ac-btn-submit-ac:hover { background: #2E7D7E; transform: translateY(-1px); }
+
+    .ac-success-overlay {
+      position: fixed; inset: 0;
+      background: rgba(13,27,42,0.75);
+      backdrop-filter: blur(10px);
+      z-index: 4000; display: none;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .ac-success-overlay.open { display: flex; }
+    .ac-success-box {
+      background: #FFFFFF; border-radius: 24px; max-width: 440px;
+      width: 100%; padding: 36px; text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+        <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+        <div class="nav-logo-text">
+          <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+          <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" id="nav-home">Explore</a></li>
+        <li><a href="visas.html" id="nav-visas">All Visas</a></li>
+        <li><a href="dummy-ticket.html" id="nav-dummy">Dummy Ticket</a></li>
+        <li><a href="flight-fares.html" id="nav-fares">Flight Fares</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="visas.html" class="btn-secondary" id="nav-back-btn" style="font-size:13px;padding:8px 18px;">Back to Visas</a>
+        <a href="admin.html" class="btn-primary" id="nav-admin-btn" style="font-size:13px;padding:8px 18px;">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- NOT FOUND STATE -->
+  <div id="not-found" style="display:none;text-align:center;padding:120px 24px;">
+    <div style="font-size:56px;font-weight:900;color:var(--border);margin-bottom:16px;">404</div>
+    <h2 style="font-size:24px;font-weight:800;margin-bottom:8px;">Visa Not Found</h2>
+    <p style="color:var(--text-muted);margin-bottom:32px;">This visa listing does not exist or has been removed.</p>
+    <a href="visas.html" class="btn-primary">Browse All Visas</a>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="detail-content" style="display:none;">
+
+    <!-- ========================================================= -->
+    <!-- HERO SECTION (Dynamic: Arrival Card Hero OR Normal Visa Hero) -->
+    <!-- ========================================================= -->
+    <div class="atl-hero-container">
+      <div class="atl-hero-card" id="main-hero-card">
+        <div class="atl-hero-bg" id="main-hero-bg"></div>
+        <div class="atl-hero-overlay"></div>
+        <div class="atl-hero-content">
+          <div class="atl-hero-flag-row">
+            <img id="main-hero-flag" src="" alt="Flag" class="atl-hero-flag" onerror="this.style.display='none'" />
+          </div>
+          <h1 class="atl-hero-title" id="main-hero-title">Destination Visa</h1>
+          <div class="atl-hero-green" id="main-hero-green">in exactly a few days</div>
+          <div class="atl-hero-stats">
+            <div class="atl-hero-stat">
+              <span class="atl-hero-stat-label">VALID</span>
+              <span class="atl-hero-stat-val" id="main-stat-valid">90 DAYS</span>
+            </div>
+            <div class="atl-hero-stat">
+              <span class="atl-hero-stat-label">PURPOSE</span>
+              <span class="atl-hero-stat-val" id="main-stat-purpose">TOURISM</span>
+            </div>
+            <div class="atl-hero-stat">
+              <span class="atl-hero-stat-label">MAX STAY</span>
+              <span class="atl-hero-stat-val" id="main-stat-maxstay">30 DAYS</span>
+            </div>
+          </div>
+          <button class="atl-hero-btn" id="main-hero-cta" onclick="handleHeroCtaClick()">
+            Check Required Documents &rarr;
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Nav Strip -->
+      <div class="atl-nav-strip">
+        <a href="#section-overview" class="atl-nav-link active">Visa Info</a>
+        <a href="#section-requirements" class="atl-nav-link">Documents</a>
+        <a href="#section-how-to-apply" class="atl-nav-link">Visa Process</a>
+        <a href="#section-faq" class="atl-nav-link">FAQs</a>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ARRIVAL CARD DETAILS & REQUIRED (Image 3 - shown only if AC) -->
+    <!-- ========================================================= -->
+    <div class="ac-details-section" id="ac-details-section" style="display:none;">
+      
+      <!-- Top Overview Row -->
+      <div class="ac-info-grid">
+        <div>
+          <h2 class="ac-info-title" id="ac-overview-title">Digital Arrival Card</h2>
+          <p class="ac-info-desc" id="ac-overview-desc">
+            The arrival card is a mandatory online form every traveller submits before flying. Indian passport holders enter visa-free.
+          </p>
+          <div class="ac-mini-cards">
+            <div class="ac-mini-card">
+              <div class="ac-mini-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E7D7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+              </div>
+              <div class="ac-mini-card-label">Price</div>
+              <div class="ac-mini-card-val" id="ac-mini-price">Free</div>
+            </div>
+            <div class="ac-mini-card">
+              <div class="ac-mini-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E7D7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="ac-mini-card-label">Processing Time</div>
+              <div class="ac-mini-card-val" id="ac-mini-processing">Instant</div>
+            </div>
+            <div class="ac-mini-card">
+              <div class="ac-mini-card-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E7D7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              </div>
+              <div class="ac-mini-card-label">Max Stay</div>
+              <div class="ac-mini-card-val" id="ac-mini-maxstay">30 days</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metallic Free Banner -->
+        <div class="ac-metallic-card">
+          <div class="ac-metallic-plane">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+          </div>
+          <div class="ac-metallic-title">Completely FREE!</div>
+          <div class="ac-metallic-sub" id="ac-metallic-sub">NO VISA REQUIRED ONLY ARRIVAL CARD</div>
+        </div>
+      </div>
+
+      <!-- Required to Apply Section -->
+      <div class="ac-required-section">
+        <h3 class="ac-required-title">Required to apply</h3>
+        <div class="ac-req-cards">
+          <div class="ac-req-card">
+            <div class="ac-req-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><circle cx="12" cy="11" r="3"/><path d="M17 18a5 5 0 0 0-10 0"/></svg>
+            </div>
+            <div>
+              <div class="ac-req-name">Passport</div>
+              <div class="ac-req-sub">Personal details</div>
+            </div>
+          </div>
+          <div class="ac-req-card">
+            <div class="ac-req-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+            </div>
+            <div>
+              <div class="ac-req-name">Flight Details</div>
+              <div class="ac-req-sub">Departure &amp; Return Flight No.</div>
+            </div>
+          </div>
+          <div class="ac-req-card">
+            <div class="ac-req-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+            </div>
+            <div>
+              <div class="ac-req-name">Hotel Details</div>
+              <div class="ac-req-sub">Hotel Name &amp; City</div>
+            </div>
+          </div>
+        </div>
+        <button class="ac-req-btn" onclick="openArrivalCardModal()">
+          Get my arrival card for free &rarr;
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- NORMAL VISA BODY LAYOUT (Left Content + Right Sidebar)     -->
+    <!-- ========================================================= -->
+    <div class="detail-body">
+      <div class="detail-body-inner">
+        <div class="detail-main">
+          
+          <section class="detail-section" id="section-overview">
+            <h2 class="detail-section-title">Overview</h2>
+            <p id="overview-text" class="detail-prose">—</p>
+            <div id="notes-block" style="display:none;" class="detail-notes-block">
+              <div class="detail-notes-label">Important Notes</div>
+              <div id="notes-text" class="detail-notes-text"></div>
+            </div>
+          </section>
+
+          <section class="detail-section">
+            <h2 class="detail-section-title">Visa Details</h2>
+            <div class="detail-info-grid" id="detail-info-grid"></div>
+          </section>
+
+          <section class="detail-section" id="section-requirements">
+            <h2 class="detail-section-title">Documents Required</h2>
+            <p class="detail-prose" style="margin-bottom:20px;">Ensure you have the following documents ready before starting your application.</p>
+            <div class="detail-docs-list" id="detail-docs-list"></div>
+          </section>
+
+          <section class="detail-section" id="section-how-to-apply">
+            <h2 class="detail-section-title">How to Apply via Flyvis</h2>
+            <div class="detail-steps">
+              <div class="detail-step"><div class="detail-step-num">1</div><div class="detail-step-content"><div class="detail-step-title">Contact Us on WhatsApp</div><div class="detail-step-desc">Send us a message on WhatsApp with your destination and travel dates. Our visa specialists will respond within minutes.</div></div></div>
+              <div class="detail-step"><div class="detail-step-num">2</div><div class="detail-step-content"><div class="detail-step-title">Share Your Documents</div><div class="detail-step-desc">Upload your passport copy, photo, and any other required documents directly through WhatsApp. We handle the rest.</div></div></div>
+              <div class="detail-step"><div class="detail-step-num">3</div><div class="detail-step-content"><div class="detail-step-title">We Process Your Application</div><div class="detail-step-desc">Our team reviews your documents, completes your application, and submits it on your behalf to the relevant authority.</div></div></div>
+              <div class="detail-step"><div class="detail-step-num">4</div><div class="detail-step-content"><div class="detail-step-title">Receive Your Visa</div><div class="detail-step-desc">Your visa is delivered directly to your inbox or WhatsApp. Track every step with real-time updates from our team.</div></div></div>
+            </div>
+          </section>
+
+          <section class="detail-section" id="section-faq">
+            <h2 class="detail-section-title">Frequently Asked Questions</h2>
+            <div class="detail-faq" id="detail-faq"></div>
+          </section>
+
+        </div>
+
+        <!-- Sticky Sidebar -->
+        <aside class="detail-sidebar">
+          <div class="detail-sidebar-card" id="sidebar-card">
+            <div class="sidebar-card-header" id="sidebar-header">
+              <img id="sidebar-flag" src="" alt="Flag" class="sidebar-flag" />
+              <div>
+                <div id="sidebar-country" class="sidebar-country">Country</div>
+                <div id="sidebar-type-badge" class="sidebar-type-badge">Visa Type</div>
+              </div>
+            </div>
+            <div class="sidebar-fee-block">
+              <div class="sidebar-fee-label">Government Fee</div>
+              <div class="sidebar-fee-value" id="sidebar-fee">—</div>
+              <div class="sidebar-fee-note">Service charges may apply. Confirmed on WhatsApp.</div>
+            </div>
+            <a id="whatsapp-cta" href="#" target="_blank" rel="noopener noreferrer" class="whatsapp-cta-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20.4054 3.4875C18.1607 1.24375 15.1714 0 12.0179 0C5.46786 0 0.142857 5.325 0.142857 11.875C0.142857 13.9643 0.678571 16 1.6875 17.8036L0.0535714 24L6.39286 22.4018C8.13393 23.3214 10.0607 23.8036 12.0179 23.8036C18.5679 23.8036 23.8929 18.4786 23.8929 11.9286C23.8929 8.775 22.65 5.73125 20.4054 3.4875ZM12.0179 21.8036C10.2589 21.8036 8.53571 21.3393 7.02679 20.4643L6.67857 20.2679L2.925 21.2143L3.88929 17.5607L3.67143 17.1964C2.70714 15.6339 2.19643 13.7768 2.19643 11.875C2.19643 6.44643 6.58929 2.05357 12.0179 2.05357C14.6518 2.05357 17.1161 3.07857 18.9554 4.93214C20.7946 6.78571 21.8393 9.25 21.8393 11.9286C21.8393 17.3571 17.4464 21.8036 12.0179 21.8036ZM17.4286 14.3929C17.1339 14.2411 15.7143 13.5446 15.4464 13.4464C15.1786 13.3393 14.9821 13.2946 14.7857 13.5982C14.5893 13.9018 14.0446 14.5446 13.8839 14.7411C13.7232 14.9375 13.5536 14.9643 13.2589 14.8036C11.6875 14.0179 10.6696 13.3929 9.64286 11.6071C9.37143 11.1607 9.95 11.1964 10.4821 10.1161C10.5804 9.91964 10.5357 9.75893 10.4643 9.60714C10.3929 9.45536 9.81071 8.03571 9.56786 7.45357C9.33036 6.88393 9.08929 6.96429 8.91071 6.95536C8.75 6.94643 8.55357 6.94643 8.35714 6.94643C8.16071 6.94643 7.83929 7.01786 7.57143 7.3125C7.30357 7.61607 6.5625 8.3125 6.5625 9.73214C6.5625 11.1518 7.59821 12.5268 7.74107 12.7232C7.89286 12.9196 9.8 15.9464 12.8036 17.2054C14.7054 18.0089 15.4286 18.0714 16.3482 17.9375C16.9107 17.8571 18.0804 17.2411 18.3214 16.5625C18.5625 15.8839 18.5625 15.3036 18.4911 15.1696C18.4196 15.0268 18.2232 14.9554 17.9286 14.8036L17.4286 14.3929Z" fill="white"/></svg>
+              Book via WhatsApp
+            </a>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-info-list">
+              <div class="sidebar-info-row"><span class="sidebar-info-key">Processing Time</span><span class="sidebar-info-val" id="sidebar-processing">—</span></div>
+              <div class="sidebar-info-row"><span class="sidebar-info-key">Validity</span><span class="sidebar-info-val" id="sidebar-validity">—</span></div>
+              <div class="sidebar-info-row"><span class="sidebar-info-key">Visa Type</span><span class="sidebar-info-val" id="sidebar-type">—</span></div>
+            </div>
+            <div class="sidebar-trust">
+              <div class="sidebar-trust-item"><div class="sidebar-trust-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 0L8.96 4.84L14 5.28L10.36 8.46L11.48 13.44L7 10.64L2.52 13.44L3.64 8.46L0 5.28L5.04 4.84L7 0Z" fill="#2E7D7E"/></svg></div>Expert visa specialists on every application</div>
+              <div class="sidebar-trust-item"><div class="sidebar-trust-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 0L8.96 4.84L14 5.28L10.36 8.46L11.48 13.44L7 10.64L2.52 13.44L3.64 8.46L0 5.28L5.04 4.84L7 0Z" fill="#2E7D7E"/></svg></div>On-time delivery, guaranteed</div>
+              <div class="sidebar-trust-item"><div class="sidebar-trust-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 0L8.96 4.84L14 5.28L10.36 8.46L11.48 13.44L7 10.64L2.52 13.44L3.64 8.46L0 5.28L5.04 4.84L7 0Z" fill="#2E7D7E"/></svg></div>24/7 WhatsApp support</div>
+            </div>
+          </div>
+          <div class="sidebar-more-visas">
+            <div class="sidebar-more-title">Other Popular Destinations</div>
+            <div id="sidebar-more-list"></div>
+            <a href="visas.html" class="sidebar-more-link">View all destinations</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- ARRIVAL CARD MODAL FORM (Images 1 & 2)                     -->
+  <!-- ========================================================= -->
+  <div class="ac-modal-overlay" id="ac-modal-overlay" onclick="closeArrivalCardModalOnBg(event)">
+    <div class="ac-modal-box" id="ac-modal-box">
+
+      <!-- Modal Header -->
+      <div class="ac-modal-header">
+        <div class="ac-modal-header-left">
+          <img id="ac-modal-flag" src="" alt="Flag" class="ac-modal-flag" onerror="this.style.display='none'" />
+          <div>
+            <div class="ac-modal-country-label" id="ac-modal-country-label">THAILAND TDAC</div>
+            <div class="ac-modal-title-row">
+              <span>No waiting, get your arrival card instantly</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <a href="#section-faq" class="ac-form-faq-btn" onclick="closeArrivalCardModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            FAQ's
+          </a>
+          <button class="ac-modal-close" onclick="closeArrivalCardModal()" title="Close">&times;</button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="ac-modal-body" id="ac-modal-body">
+        <form id="ac-form" onsubmit="handleAcSubmit(event)">
+
+          <!-- Travelers Container -->
+          <div id="ac-travelers-container">
+            <div class="ac-traveler-block" id="ac-traveler-1">
+
+              <div class="ac-sec-title">
+                <div class="ac-sec-icon blue">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                Personal Information
+              </div>
+
+              <!-- Upload passport -->
+              <div class="ac-upload-box" onclick="document.getElementById('ac-passport-file').click()">
+                <input type="file" id="ac-passport-file" style="display:none;" accept="image/*,.pdf" onchange="document.getElementById('ac-upload-label').textContent = 'Attached: ' + this.files[0].name" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span id="ac-upload-label">Upload passport front to auto-fill</span>
+              </div>
+
+              <div class="ac-or-line"><span>OR</span></div>
+
+              <div class="ac-fields-2">
+                <div class="ac-field"><label>FIRST NAME <span class="req">*</span></label><input type="text" class="ac-input" name="firstName" placeholder="First Name" required /></div>
+                <div class="ac-field"><label>LAST NAME <span class="req">*</span></label><input type="text" class="ac-input" name="lastName" placeholder="Last Name" required /></div>
+                <div class="ac-field"><label>DATE OF BIRTH <span class="req">*</span></label><input type="date" class="ac-input" name="dob" required /></div>
+                <div class="ac-field"><label>GENDER</label>
+                  <select class="ac-select" name="gender"><option value="">Select gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select>
+                </div>
+                <div class="ac-field"><label>MARITAL STATUS</label>
+                  <select class="ac-select" name="maritalStatus"><option value="">Select marital status</option><option value="Single">Single</option><option value="Married">Married</option><option value="Divorced">Divorced</option></select>
+                </div>
+                <div class="ac-field"><label>PASSPORT NUMBER <span class="req">*</span></label><input type="text" class="ac-input" name="passportNumber" placeholder="Passport Number" required /></div>
+                <div class="ac-field"><label>PASSPORT VALID TILL <span class="req">*</span></label><input type="date" class="ac-input" name="passportExpiry" required /></div>
+                <div class="ac-field"><label>PASSPORT PLACE OF ISSUE <span class="req">*</span></label><input type="text" class="ac-input" name="passportPlace" placeholder="Passport place of issue" required /></div>
+                <div class="ac-field" style="grid-column: 1 / -1;"><label>OCCUPATION</label>
+                  <select class="ac-select" name="occupation"><option value="">Select occupation</option><option value="Employed">Employed</option><option value="Business">Business</option><option value="Student">Student</option><option value="Retired">Retired</option><option value="Other">Other</option></select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Arrival Flight -->
+          <div class="ac-sec-title">
+            <div class="ac-sec-icon green">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+            </div>
+            Arrival Flight Details
+          </div>
+          <div class="ac-pills">
+            <button type="button" class="ac-pill-btn active" onclick="setPill(this,'ac-arr-type','Direct')">Direct Flight</button>
+            <button type="button" class="ac-pill-btn" onclick="setPill(this,'ac-arr-type','Multi-Stop')">Multi-Stop</button>
+          </div>
+          <input type="hidden" id="ac-arr-type" value="Direct" />
+          <div class="ac-fields-2">
+            <div class="ac-field"><label>FLIGHT NUMBER <span class="req">*</span></label><input type="text" class="ac-input" name="arrFlightNo" placeholder="e.g. AI 1234" required /></div>
+            <div class="ac-field"><label>ARRIVAL DATE <span class="req">*</span></label><input type="date" class="ac-input" name="arrDate" required /></div>
+          </div>
+
+          <!-- Return Flight -->
+          <div class="ac-sec-title">
+            <div class="ac-sec-icon green">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+            </div>
+            Return Flight Details
+          </div>
+          <div class="ac-pills">
+            <button type="button" class="ac-pill-btn active" onclick="setPill(this,'ac-ret-type','Direct')">Direct Flight</button>
+            <button type="button" class="ac-pill-btn" onclick="setPill(this,'ac-ret-type','Multi-Stop')">Multi-Stop</button>
+          </div>
+          <input type="hidden" id="ac-ret-type" value="Direct" />
+          <div class="ac-fields-2">
+            <div class="ac-field"><label>FLIGHT NUMBER <span class="req">*</span></label><input type="text" class="ac-input" name="retFlightNo" placeholder="e.g. AI 1234" required /></div>
+            <div class="ac-field"><label>DEPARTURE DATE <span class="req">*</span></label><input type="date" class="ac-input" name="retDate" required /></div>
+          </div>
+
+          <!-- Hotel -->
+          <div class="ac-sec-title">
+            <div class="ac-sec-icon purple">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+            </div>
+            Hotel Details
+          </div>
+          <div class="ac-fields-2">
+            <div class="ac-field"><label>HOTEL NAME <span class="req">*</span></label><input type="text" class="ac-input" name="hotelName" placeholder="Hotel Name" required /></div>
+            <div class="ac-field"><label id="ac-hotel-location-lbl">LOCATION <span class="req">*</span></label><input type="text" class="ac-input" name="hotelLocation" placeholder="Select province or city" required /></div>
+          </div>
+
+          <!-- Contact -->
+          <div class="ac-sec-title">
+            <div class="ac-sec-icon teal">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            Contact Details
+          </div>
+          <p style="font-size:12.5px;color:#56727D;margin-top:-8px;margin-bottom:14px;">Required for sharing essential visa updates.</p>
+          <div class="ac-fields-2">
+            <div class="ac-field"><label>EMAIL <span class="req">*</span></label><input type="email" class="ac-input" name="contactEmail" placeholder="Enter email address" required /></div>
+            <div class="ac-field"><label>PHONE NUMBER <span class="req">*</span></label>
+              <div style="display:flex;gap:8px;">
+                <select class="ac-select" style="max-width:110px;" name="countryCode">
+                  <option value="+91">IN +91</option>
+                  <option value="+971">AE +971</option>
+                  <option value="+1">US +1</option>
+                  <option value="+44">GB +44</option>
+                  <option value="+65">SG +65</option>
+                  <option value="+60">MY +60</option>
+                  <option value="+66">TH +66</option>
+                </select>
+                <input type="tel" class="ac-input" name="contactPhone" placeholder="Phone number" required />
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="ac-modal-footer">
+        <button type="button" class="ac-btn-add-traveler" onclick="addAcTraveler()">+ Add Travelers</button>
+        <button type="button" class="ac-btn-submit-ac" id="ac-submit-btn" onclick="document.getElementById('ac-form').requestSubmit()">Submit application</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="ac-success-overlay" id="ac-success-overlay">
+    <div class="ac-success-box">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(46,125,126,0.15);color:#2E7D7E;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E7D7E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3 style="font-size:20px;font-weight:800;color:#0D1B2A;margin-bottom:8px;">Application Submitted!</h3>
+      <p style="font-size:13.5px;color:#56727D;line-height:1.6;margin-bottom:18px;">Your Digital Arrival Card application has been received. Our team will process and confirm via WhatsApp within 60 minutes.</p>
+      <div style="background:#F4F7F7;border:1px solid #DCECEC;border-radius:10px;padding:10px;font-size:13px;font-weight:700;color:#0D1B2A;margin-bottom:20px;" id="ac-ref-id">Ref: FV-AC-00000</div>
+      <button class="btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="document.getElementById('ac-success-overlay').classList.remove('open');">Done</button>
+    </div>
+  </div>
+
+  <!-- FLOATING WHATSAPP -->
+  <div class="floating-whatsapp" id="floating-whatsapp">
+    <a id="floating-wa-link" href="#" target="_blank" rel="noopener noreferrer" class="floating-wa-btn">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20.4054 3.4875C18.1607 1.24375 15.1714 0 12.0179 0C5.46786 0 0.142857 5.325 0.142857 11.875C0.142857 13.9643 0.678571 16 1.6875 17.8036L0.0535714 24L6.39286 22.4018C8.13393 23.3214 10.0607 23.8036 12.0179 23.8036C18.5679 23.8036 23.8929 18.4786 23.8929 11.9286C23.8929 8.775 22.65 5.73125 20.4054 3.4875ZM12.0179 21.8036C10.2589 21.8036 8.53571 21.3393 7.02679 20.4643L6.67857 20.2679L2.925 21.2143L3.88929 17.5607L3.67143 17.1964C2.70714 15.6339 2.19643 13.7768 2.19643 11.875C2.19643 6.44643 6.58929 2.05357 12.0179 2.05357C14.6518 2.05357 17.1161 3.07857 18.9554 4.93214C20.7946 6.78571 21.8393 9.25 21.8393 11.9286C21.8393 17.3571 17.4464 21.8036 12.0179 21.8036ZM17.4286 14.3929C17.1339 14.2411 15.7143 13.5446 15.4464 13.4464C15.1786 13.3393 14.9821 13.2946 14.7857 13.5982C14.5893 13.9018 14.0446 14.5446 13.8839 14.7411C13.7232 14.9375 13.5536 14.9643 13.2589 14.8036C11.6875 14.0179 10.6696 13.3929 9.64286 11.6071C9.37143 11.1607 9.95 11.1964 10.4821 10.1161C10.5804 9.91964 10.5357 9.75893 10.4643 9.60714C10.3929 9.45536 9.81071 8.03571 9.56786 7.45357C9.33036 6.88393 9.08929 6.96429 8.91071 6.95536C8.75 6.94643 8.55357 6.94643 8.35714 6.94643C8.16071 6.94643 7.83929 7.01786 7.57143 7.3125C7.30357 7.61607 6.5625 8.3125 6.5625 9.73214C6.5625 11.1518 7.59821 12.5268 7.74107 12.7232C7.89286 12.9196 9.8 15.9464 12.8036 17.2054C14.7054 18.0089 15.4286 18.0714 16.3482 17.9375C16.9107 17.8571 18.0804 17.2411 18.3214 16.5625C18.5625 15.8839 18.5625 15.3036 18.4911 15.1696C18.4196 15.0268 18.2232 14.9554 17.9286 14.8036L17.4286 14.3929Z" fill="white"/></svg>
+      Book via WhatsApp
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer" style="margin-top:80px;">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <div class="nav-logo">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#7EC0C5;">i</span>s</span>
+            <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+          </div>
+        </div>
+        <p style="font-size:13px;">&#169; 2026 Flyvis Inc. All rights reserved.</p>
+        <div class="footer-bottom-links"><a href="index.html">Home</a><a href="visas.html">All Visas</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="js/data.js?v=21"></script>
+  <script src="js/detail.js?v=21"></script>
+</body>
+</html>

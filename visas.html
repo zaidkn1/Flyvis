@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse All Visas — Flyvis</title>
+  <meta name="description" content="Browse and apply for visas to 120+ countries. Filter by visa type, processing time, and fee." />
+  <link rel="stylesheet" href="css/styles.css?v=230" />
+  <link rel="stylesheet" href="css/sidebar.css?v=100" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner nav-inner-corner">
+      <!-- Corner Logo with 3-Dash Trigger -->
+      <div class="nav-logo-wrapper">
+        <button type="button" class="btn-sidebar-trigger" onclick="toggleFlyvisSidebar()" aria-label="Open Menu" title="Open Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+            <span class="nav-logo-tagline">Flight, Visa, Sorted.</span>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Floating Center Navigation Pill -->
+      <div class="nav-pill-center">
+        <ul class="nav-links">
+          <li><a href="index.html" id="nav-home">Explore</a></li>
+          <li><a href="visas.html" class="active" id="nav-visas">Visa</a></li>
+          <li><a href="dummy-ticket.html" id="nav-dummy">Dummy Ticket</a></li>
+          <li><a href="flight-fares.html" id="nav-fares">Flight Fares</a></li>
+        </ul>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="nav-right" style="display:flex; align-items:center; gap:12px;">
+        <div id="nav-auth-container"></div>
+        <a href="https://wa.me/919207021258?text=Hi%20Flyvis%2C%20I%20would%20like%20assistance%20with%20my%20travel%20and%20visa" target="_blank" class="nav-cta-btn" id="nav-cta-whatsapp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          WhatsApp Us
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Explore</a>
+    <a href="visas.html">Visa</a>
+    <a href="dummy-ticket.html">Dummy Ticket</a>
+    <a href="flight-fares.html">Flight Fares</a>
+    <div id="mobile-nav-auth"></div>
+  </div>
+
+  <!-- BROWSE HERO -->
+  <section class="browse-hero">
+    <div class="browse-hero-inner">
+      <h1>Browse Visa Destinations</h1>
+      <p>Expert visa processing. Transparent fees. Guaranteed on time.</p>
+      <div class="browse-search-bar">
+        <input
+          type="text"
+          class="browse-search-input"
+          id="browse-search-input"
+          placeholder="Search for a country or visa type..."
+          autocomplete="off"
+          aria-label="Search visa destinations"
+        />
+        <button class="browse-search-btn" id="browse-search-btn" onclick="filterVisas()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Search
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <div class="browse-filters">
+    <div class="browse-filters-inner">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-chip active" id="filter-all" data-filter="all" onclick="setFilter(this, 'all')">All Types</button>
+      <button class="filter-chip" id="filter-evisa" data-filter="e-Visa" onclick="setFilter(this, 'e-Visa')">e-Visa</button>
+      <button class="filter-chip" id="filter-sticker" data-filter="Sticker Visa" onclick="setFilter(this, 'Sticker Visa')">Sticker Visa</button>
+      <button class="filter-chip" id="filter-arrival" data-filter="Visa on Arrival" onclick="setFilter(this, 'Visa on Arrival')">Visa on Arrival</button>
+      <button class="filter-chip" id="filter-eta" data-filter="ETA" onclick="setFilter(this, 'ETA')">ETA</button>
+    </div>
+  </div>
+
+  <!-- BROWSE CONTENT -->
+  <div class="browse-content">
+    <p class="browse-results-count" id="results-count">
+      Showing <span id="results-num">0</span> destinations
+    </p>
+    <div class="browse-grid" id="browse-grid">
+      <div class="loading-spinner" style="grid-column:1/-1;"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer" style="margin-top:60px;">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <div class="nav-logo">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#7EC0C5;">i</span>s</span>
+            <span class="nav-logo-tagline">Flight, Visa, Sorted.</span>
+          </div>
+        </div>
+        <p style="font-size:13px;">&#169; 2026 Flyvis Inc. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="index.html">Home</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- USER ACTIVITY & DASHBOARD MODAL -->
+  <div class="ota-booking-modal-overlay" id="flyvis-user-dashboard-modal" onclick="if(event.target===this) closeUserDashboard()">
+    <div class="ota-booking-modal" style="max-width:540px;">
+      <div class="ota-modal-head">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <h3 style="margin:0;">My Account &amp; Past Actions</h3>
+        </div>
+        <button type="button" onclick="closeUserDashboard()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--fv-muted);">&times;</button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div style="display:flex; border-bottom:1px solid #E2E8F0; background:#F8FAFC; padding:0 8px; overflow-x:auto;">
+        <button type="button" class="ud-tab-btn active" data-tab="flights" onclick="renderDashboardContent('flights')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#0D1B2A; cursor:pointer; border-bottom:2px solid #2E7D7E; white-space:nowrap;">
+          My Flights
+        </button>
+        <button type="button" class="ud-tab-btn" data-tab="visas" onclick="renderDashboardContent('visas')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#64748B; cursor:pointer; white-space:nowrap;">
+          My Visas
+        </button>
+        <button type="button" class="ud-tab-btn" data-tab="dummy" onclick="renderDashboardContent('dummy')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#64748B; cursor:pointer; white-space:nowrap;">
+          My Dummy Tickets
+        </button>
+        <button type="button" class="ud-tab-btn" data-tab="wallet" onclick="renderDashboardContent('wallet')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#64748B; cursor:pointer; white-space:nowrap;">
+          My Wallet
+        </button>
+      </div>
+
+      <div class="ota-modal-body" id="user-dashboard-body">
+        <!-- Injected dynamically by js/auth.js -->
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+  <script src="js/seed_data.js?v=207"></script>
+  <script src="js/data.js?v=207"></script>
+  <script src="js/auth.js?v=100"></script>
+  <script src="js/sidebar.js?v=100"></script>
+  <script src="js/visas.js?v=207"></script>
+</body>
+</html>

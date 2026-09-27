@@ -1,0 +1,74 @@
+# ==============================================================================
+# SECRETS, CREDENTIALS & TOKENS (NEVER COMMIT)
+# ==============================================================================
+.env
+*.env
+**/.env
+**/*.env
+flight_ml_collector/.env
+admin_users.json
+cloudflared
+serviceAccountKey.json
+*.pem
+*.key
+
+# ==============================================================================
+# TRANSACTIONAL DATA & CUSTOMER PII
+# ==============================================================================
+data/
+active_price_alerts.json
+atlys_visa_details_en_IN.*
+Flyvis_vs_Nomadiq_Algorithm_Comparison.pptx
+
+# ==============================================================================
+# DATABASES & LARGE BINARY DATASETS (>100MB Git limit)
+# ==============================================================================
+*.sqlite
+*.sqlite3
+*.db
+flight_ml_collector/live_quotes.sqlite
+flight_ml_collector/datasets/*.csv
+!flight_ml_collector/datasets/sample_*.csv
+
+# ==============================================================================
+# LOGS & TEMPORARY RUNTIME FILES
+# ==============================================================================
+*.log
+**/*.log
+live_collector.log
+flight_ml_collector/live_collector.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+firebase-debug.log*
+firebase-debug.*.log*
+
+# ==============================================================================
+# PYTHON & SYSTEM ARTIFACTS
+# ==============================================================================
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.DS_Store
+**/.DS_Store
+.idea/
+.vscode/
+
+# ==============================================================================
+# FIREBASE & NODE ARTIFACTS
+# ==============================================================================
+.firebase/
+.firebaserc
+node_modules/
+**/node_modules/
+dist/
+build/
+.nyc_output/
+.coverage
+coverage/

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flight Bookings — Flyvis Admin Enterprise</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="css/styles.css?v=234" />
+  <link rel="stylesheet" href="css/admin.css?v=234" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="js/data.js?v=231"></script>
+  <script>
+    (function() {
+      try {
+        var a = localStorage.getItem("fareos_current_admin") || localStorage.getItem("flyvis_current_admin");
+        if (!a) {
+          window.location.href = "admin-login.html?redirect=" + encodeURIComponent(window.location.href);
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body style="background:#F4F6F8;">
+
+  <div class="admin-wrapper">
+
+    <!-- Flyvis Admin Left Navigation Sidebar -->
+    <!-- Flyvis Admin Left Navigation Sidebar -->
+    <aside class="admin-sidebar" id="admin-sidebar" style="width:210px; background:#0F172A; border-right:1px solid #1E293B; display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:200;">
+      <!-- Brand Header -->
+      <div style="padding:14px 16px 12px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #1E293B;">
+        <div style="width:28px; height:28px; border-radius:7px; background:linear-gradient(135deg, #2563EB, #06B6D4); display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; box-shadow:0 2px 8px rgba(37,99,235,0.3);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.2-1.9.9l-.3.7 5.7 3.3-3.2 3.2-2.3-.6c-.5-.1-1 .1-1.2.5l-.2.4 2.8 1.8 1.8 2.8c.3.5.8.6 1.2.5l.4-.2-.6-2.3 3.2-3.2 3.3 5.7.7-.3c.7-.3 1.1-1.1.9-1.9Z"/>
+          </svg>
+        </div>
+        <div style="line-height:1.15; min-width:0;">
+          <span style="font-size:15px; font-weight:800; color:#FFFFFF; letter-spacing:0.3px;">Flyvis</span>
+          <div style="font-size:9.5px; color:#94A3B8; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">FareOS Console</div>
+        </div>
+        <span style="font-size:9.5px; background:#1E293B; color:#38BDF8; padding:2px 6px; border-radius:4px; margin-left:auto; font-weight:800; border:1px solid #334155;">v2.0</span>
+      </div>
+
+      <!-- Quick Search in Sidebar -->
+      <div style="padding:10px 12px 6px;">
+        <div style="position:relative; width:100%;">
+          <input type="text" id="sidebar-menu-search" placeholder="Search menu... (⌘K)" style="width:100%; box-sizing:border-box; background:#1E293B; border:1px solid #334155; border-radius:6px; padding:6px 8px 6px 26px; color:#F1F5F9; font-size:11px; outline:none;" oninput="filterSidebarMenu(this.value)" />
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" style="position:absolute; left:8px; top:50%; transform:translateY(-50%);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+      </div>
+
+      <!-- Navigation Tree -->
+      <nav style="padding:4px 0; flex:1; overflow-y:auto;" id="sidebar-nav-tree">
+        <div class="fareos-nav-section-title">MAIN &amp; OPERATIONS</div>
+        <a href="admin.html" class="fareos-nav-item admin-nav-item" id="nav-dashboard">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            <span class="fareos-nav-label">Dashboard</span>
+          </div>
+        </a>
+        <a href="admin-flight-bookings.html" class="fareos-nav-item admin-nav-item active" id="nav-flight-bookings-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.2-1.9.9l-.3.7 5.7 3.3-3.2 3.2-2.3-.6c-.5-.1-1 .1-1.2.5l-.2.4 2.8 1.8 1.8 2.8c.3.5.8.6 1.2.5l.4-.2-.6-2.3 3.2-3.2 3.3 5.7.7-.3c.7-.3 1.1-1.1.9-1.9Z"/>
+            </svg>
+            <span class="fareos-nav-label">Flight Bookings</span>
+          </div>
+          <span class="fareos-nav-badge" id="sidebar-flight-count" style="background:#2563EB; color:#FFF;">78</span>
+        </a>
+        <a href="admin-booking-calendar.html" class="fareos-nav-item admin-nav-item" id="nav-booking-calendar">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span class="fareos-nav-label">Booking Calendar</span>
+          </div>
+        </a>
+        <a href="admin-ancillary-queue.html" class="fareos-nav-item admin-nav-item" id="nav-ancillary-queue-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12"/>
+            </svg>
+            <span class="fareos-nav-label">Ancillary Queue</span>
+          </div>
+          <span class="fareos-nav-badge" id="sidebar-anc-count" style="background:#EF4444; color:#FFF;">2</span>
+        </a>
+        <a href="admin-payment-history.html" class="fareos-nav-item admin-nav-item" id="nav-payment-history-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            <span class="fareos-nav-label">Payment History</span>
+          </div>
+          <span class="fareos-nav-badge" style="background:#10B981; color:#FFF;">12</span>
+        </a>
+
+        <div class="fareos-nav-section-title">FARE MANAGEMENT</div>
+        <a href="admin-markup-master.html" class="fareos-nav-item admin-nav-item" id="nav-markup-master">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 6v2m0 8v2"/>
+            </svg>
+            <span class="fareos-nav-label">Markups</span>
+          </div>
+          <span class="fareos-nav-badge" style="background:#2563EB; color:#FFF;">9</span>
+        </a>
+
+        <div class="fareos-nav-section-title">ACCOUNTING &amp; REPORTS</div>
+        <a href="admin-revenue-dashboard.html" class="fareos-nav-item admin-nav-item" id="nav-revenue-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            <span class="fareos-nav-label">Revenue Dashboard</span>
+          </div>
+          <span class="fareos-nav-badge" style="background:#059669; color:#FFF;">Q3</span>
+        </a>
+        <a href="admin-accounting-logs.html" class="fareos-nav-item admin-nav-item" id="nav-accounting-logs-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span class="fareos-nav-label">Accounting Logs</span>
+          </div>
+          <span class="fareos-nav-badge" style="background:#6366F1; color:#FFF;">793</span>
+        </a>
+        <a href="admin-payment-history.html" class="fareos-nav-item admin-nav-item">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+            </svg>
+            <span class="fareos-nav-label">Sales Report</span>
+          </div>
+          <span class="fareos-nav-chevron">›</span>
+        </a>
+
+        <div class="fareos-nav-section-title">API &amp; FLIGHT DESK</div>
+        <a href="admin-flights.html" class="fareos-nav-item admin-nav-item" id="nav-flight-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
+            </svg>
+            <span class="fareos-nav-label">Flight Desk &amp; Alerts</span>
+          </div>
+          <span class="fareos-nav-badge" style="background:#D97706; color:#FFF;">24/7</span>
+        </a>
+        <a href="admin-email-templates.html" class="fareos-nav-item admin-nav-item" id="nav-email-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <span class="fareos-nav-label">Email Configuration</span>
+          </div>
+          <span class="fareos-nav-chevron">›</span>
+        </a>
+        <a href="admin-flights.html#scraper" class="fareos-nav-item admin-nav-item">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>
+            </svg>
+            <span class="fareos-nav-label">Supplier Mapping</span>
+          </div>
+          <span class="fareos-nav-chevron">›</span>
+        </a>
+
+        <div class="fareos-nav-section-title">VISA OPERATIONS</div>
+        <a href="admin-visas.html" class="fareos-nav-item admin-nav-item" id="nav-visa-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span class="fareos-nav-label">Visa Operations Hub</span>
+          </div>
+          <span class="fareos-nav-badge" id="sidebar-visa-count" style="background:#0284C7; color:#FFF;">166+</span>
+        </a>
+        <a href="admin.html#add-visa" class="fareos-nav-item admin-nav-item" id="nav-add-visa">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            <span class="fareos-nav-label">Add New Visa</span>
+          </div>
+        </a>
+        <a href="admin.html#manage-visas" class="fareos-nav-item admin-nav-item" id="nav-manage-visas">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span class="fareos-nav-label">Manage Visas</span>
+          </div>
+        </a>
+
+        <div class="fareos-nav-section-title">ORGANIZATION</div>
+        <a href="admin-team.html" class="fareos-nav-item admin-nav-item" id="nav-team-portal">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span class="fareos-nav-label">Admin Team &amp; Roles</span>
+          </div>
+          <span class="fareos-nav-chevron">›</span>
+        </a>
+        <a href="index.html" class="fareos-nav-item admin-nav-item" target="_blank">
+          <div class="fareos-nav-left">
+            <svg class="fareos-nav-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <span class="fareos-nav-label">View Customer Website</span>
+          </div>
+          <span class="fareos-nav-chevron">↗</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div style="padding:12px 16px; border-top:1px solid #1E293B; display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#64748B;">
+        <span style="cursor:pointer; display:flex; align-items:center; gap:5px; transition:color 0.15s;" onmouseover="this.style.color='#CBD5E1'" onmouseout="this.style.color='#64748B'" onclick="toggleSidebar()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Collapse
+        </span>
+        <span style="font-weight:700; letter-spacing:0.3px; color:#475569;">FareOS v2.0</span>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <div class="admin-main" style="margin-left:210px; width:calc(100% - 210px); background:#F8FAFC; min-height:100vh;">
+
+      <!-- Top Header Navigation Bar -->
+      <header style="background:#FFFFFF; border-bottom:1px solid #E2E8F0; padding:12px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100;">
+        <div style="display:flex; align-items:center; gap:20px; flex:1;">
+          <a href="admin.html" style="text-decoration:none; color:#64748B; font-size:12.5px; font-weight:700; display:flex; align-items:center; gap:4px;">
+            &larr; BACK
+          </a>
+
+          <!-- Universal Search Input -->
+          <div style="position:relative; width:100%; max-width:440px;">
+            <div style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94A3B8;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </div>
+            <input type="text" id="universal-search" class="admin-form-input" placeholder="Booking ID, PNR, or Passenger... ( / )" style="padding-left:36px; padding-right:32px; font-size:13px; height:38px; border-radius:8px; border-color:#CBD5E1;" oninput="handleTableSearch(this.value)" />
+            <span style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:11px; color:#94A3B8; background:#F1F5F9; padding:2px 6px; border-radius:4px; font-weight:700;">/</span>
+          </div>
+        </div>
+
+        <!-- Top Right Actions -->
+        <div style="display:flex; align-items:center; gap:14px;">
+          <button style="background:none; border:none; color:#64748B; cursor:pointer; padding:6px; border-radius:6px;" title="Documentation" onclick="alert("FareOS Admin Documentation: Dual local JSON / Firestore sync enabled.")">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </button>
+          <button style="background:none; border:none; color:#64748B; cursor:pointer; padding:6px; border-radius:6px; position:relative;" title="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span style="position:absolute; top:4px; right:4px; width:7px; height:7px; background:#EF4444; border-radius:50%;"></span>
+          </button>
+          
+                              <!-- Admin User Chip & Persona Switcher -->
+          <div style="position:relative;">
+            <div style="display:flex; align-items:center; gap:8px; background:#F1F5F9; padding:4px 10px 4px 6px; border-radius:20px; border:1px solid #E2E8F0; cursor:pointer;" onclick="toggleUserMenu()" title="Click to switch active admin persona">
+              <div style="width:28px; height:28px; border-radius:50%; background:#2563EB; color:#FFF; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center;" id="header-user-avatar">
+                S
+              </div>
+              <div style="line-height:1.2;">
+                <div style="font-size:12px; font-weight:800; color:#0F172A;" id="header-user-name">Susen</div>
+                <div style="font-size:10px; color:#64748B; font-weight:600;" id="header-user-role">Super Admin</div>
+              </div>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#64748B;"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+
+            <!-- Admin Persona Dropdown Menu -->
+            <div id="admin-persona-dropdown" style="display:none; position:absolute; top:42px; right:0; background:#FFFFFF; border:1px solid #CBD5E1; border-radius:10px; box-shadow:0 12px 28px rgba(0,0,0,0.15); width:230px; z-index:9999; padding:6px; animation:fadeIn 0.15s ease;">
+              <div style="font-size:10.5px; font-weight:800; color:#64748B; padding:6px 10px; text-transform:uppercase; letter-spacing:0.4px;">Switch Active Admin</div>
+              <div class="fareos-dropdown-item active" id="persona-susen" onclick="switchCurrentAdmin('Susen', 'Super Admin', 'S')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Susen (Super Admin)
+              </div>
+              <div class="fareos-dropdown-item" id="persona-zaid" onclick="switchCurrentAdmin('Zaid Khaleel', 'Lead Admin', 'Z')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Zaid Khaleel (Lead Admin)
+              </div>
+              <div class="fareos-dropdown-item" id="persona-desk" onclick="switchCurrentAdmin('Flight Desk Admin', 'Ticketing Desk', 'F')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Flight Desk Admin (Ticketing)
+              </div>
+              <div class="fareos-dropdown-item" id="persona-support" onclick="switchCurrentAdmin('Support Desk', 'Operations Desk', 'S')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Support Desk (Operations)
+              </div>
+              <div style="border-top:1px solid #E2E8F0; margin:6px 0;"></div>
+              <a href="admin-login.html" class="fareos-dropdown-item" style="text-decoration:none; color:#2563EB; font-weight:600; display:flex; align-items:center; gap:8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Sign In Another Admin
+              </a>
+              <div class="fareos-dropdown-item" onclick="logoutAdmin()" style="color:#DC2626; font-weight:700; display:flex; align-items:center; gap:8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign Out
+              </div>
+            </div>
+          </div>
+          <button style="background:none; border:none; color:#64748B; cursor:pointer; padding:6px;" title="Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Flight Bookings Content -->
+      <main style="padding:14px 16px;">
+
+        <!-- BOOKINGS LIST VIEW -->
+        <div id="bookings-list-view">
+
+        <!-- 5 KPI Summary Cards Row -->
+                <!-- Settings Action & KPI Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="font-size:12px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.5px;">Flight Operations Analytics</div>
+          <button class="fareos-btn-tool" onclick="openBookingConfigModal()" title="Booking list configuration" style="padding:4px 8px; font-size:12px; display:inline-flex; align-items:center; gap:5px; background:#FFFFFF; border:1px solid #CBD5E1; color:#334155; cursor:pointer; border-radius:6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Analytics Settings</span>
+          </button>
+        </div>
+
+        <!-- Dual Mode Navigation: Confirmed Bookings vs Active Price Trackers -->
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:8px 14px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:12px; font-weight:800; background:#EFF6FF; color:#2563EB; padding:4px 10px; border-radius:6px; border:1px solid #BFDBFE;">
+              ✈️ Flight Booking Records
+            </span>
+            <a href="admin-flights.html" style="font-size:12px; font-weight:700; color:#64748B; text-decoration:none; padding:4px 10px; border-radius:6px; transition:all 0.15s ease; display:inline-flex; align-items:center; gap:6px;" onmouseover="this.style.background='#F1F5F9'; this.style.color='#0F172A';" onmouseout="this.style.background='none'; this.style.color='#64748B';">
+              <span>🔔 Active Price Trackers</span>
+              <span style="font-size:11px; color:#94A3B8;">&rarr;</span>
+            </a>
+          </div>
+          <div style="font-size:11.5px; color:#64748B;">
+            Review quote readiness in <a href="admin-flights.html#scraper" style="color:#2563EB; font-weight:700; text-decoration:none;">Flight Desk</a>
+          </div>
+        </div>
+
+        <div style="background:#FFF7ED; border:1px solid #FED7AA; border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:12px; color:#9A3412; line-height:1.45;">
+          <strong>Ticket verification:</strong> A booking record or PNR is not proof that a ticket was issued. Confirm the supplier order and ticket number for every traveler before treating a record as ticketed. Existing demo records may show legacy status labels.
+        </div>
+
+        <div class="fareos-kpi-grid">
+          <!-- Total Bookings -->
+          <div class="fareos-kpi-card blue" id="card-tile-total" onclick="handleTileClick('all')" title="Click to view all bookings">
+            <div class="fareos-kpi-info">
+              <span class="fareos-kpi-title">
+                Total Bookings
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+              <span class="fareos-kpi-val" id="kpi-total-bookings">16</span>
+            </div>
+            <div class="fareos-kpi-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.2-1.9.9l-.3.7 5.7 3.3-3.2 3.2-2.3-.6c-.5-.1-1 .1-1.2.5l-.2.4 2.8 1.8 1.8 2.8c.3.5.8.6 1.2.5l.4-.2-.6-2.3 3.2-3.2 3.3 5.7.7-.3c.7-.3 1.1-1.1.9-1.9Z"/></svg>
+            </div>
+          </div>
+
+          <!-- Confirmed -->
+          <div class="fareos-kpi-card green" id="card-tile-confirmed" onclick="handleTileClick('Confirmed')" title="Click to filter by Confirmed">
+            <div class="fareos-kpi-info">
+              <span class="fareos-kpi-title">
+                Confirmed
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+              <span class="fareos-kpi-val" id="kpi-confirmed-bookings">2</span>
+            </div>
+            <div class="fareos-kpi-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+
+          <!-- Pending -->
+          <div class="fareos-kpi-card purple" id="card-tile-pending" onclick="handleTileClick('Pending')" title="Click to filter by Pending">
+            <div class="fareos-kpi-info">
+              <span class="fareos-kpi-title">
+                Pending
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+              <span class="fareos-kpi-val" id="kpi-pending-bookings">4</span>
+            </div>
+            <div class="fareos-kpi-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+          </div>
+
+          <!-- Cancelled -->
+          <div class="fareos-kpi-card slate" id="card-tile-cancelled" onclick="handleTileClick('Cancelled')" title="Click to filter by Cancelled">
+            <div class="fareos-kpi-info">
+              <span class="fareos-kpi-title">
+                Cancelled
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+              <span class="fareos-kpi-val" id="kpi-cancelled-bookings">0</span>
+            </div>
+            <div class="fareos-kpi-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+          </div>
+
+          <!-- Other -->
+          <div class="fareos-kpi-card neutral" id="card-tile-other" onclick="handleTileClick('Other')" title="Click to filter by Other (In-Process / Initiated)">
+            <div class="fareos-kpi-info">
+              <span class="fareos-kpi-title" style="color:#64748B;">
+                Other
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+              <span class="fareos-kpi-val" id="kpi-other-bookings" style="color:#0F172A;">10</span>
+            </div>
+            <div class="fareos-kpi-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Actions Toolbar -->
+        <div class="fareos-toolbar">
+          <div class="fareos-toolbar-left">
+            <!-- Date Filter Dropdown (Matching Screenshot media_1789320968264.png) -->
+            <div class="quick-date-dropdown-container">
+              <button class="fareos-btn-tool active-pill" id="btn-quick-date" onclick="toggleQuickDateMenu(event)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span id="selected-date-label">Today</span>
+                <svg class="quick-date-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="quick-date-menu" class="quick-date-menu">
+                <div class="quick-date-header">QUICK DATE</div>
+                <div class="quick-date-item active" data-range="today" onclick="setDateFilter('today', 'Today')">
+                  <span>Today</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+                <div class="quick-date-item" data-range="yesterday" onclick="setDateFilter('yesterday', 'Yesterday')">
+                  <span>Yesterday</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+                <div class="quick-date-item" data-range="7d" onclick="setDateFilter('7d', 'Last 7 Days')">
+                  <span>Last 7 Days</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+                <div class="quick-date-item" data-range="30d" onclick="setDateFilter('30d', 'Last 30 Days')">
+                  <span>Last 30 Days</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+                <div class="quick-date-item" data-range="custom" onclick="openCustomDateRangePicker(event)">
+                  <span>Custom date range</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Transactions Dropdown -->
+            <div class="quick-date-dropdown-container">
+              <button class="fareos-btn-tool" id="btn-recent-txn" onclick="toggleTxnMenu(event)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span id="selected-txn-label">Recent Transactions</span>
+                <svg class="quick-date-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="txn-filter-menu" class="quick-date-menu" style="min-width:215px;">
+                <div class="quick-date-header">TRANSACTIONS</div>
+                <div class="quick-date-item active" data-txn="all" onclick="setTxnFilter('all', 'Recent Transactions')">
+                  <span>Recent Transactions</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+                <div class="quick-date-item" data-txn="web" onclick="setTxnFilter('web', 'Online Web Bookings')">
+                  <span>Online Web Bookings</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+                <div class="quick-date-item" data-txn="agent" onclick="setTxnFilter('agent', 'B2B Agent Bookings')">
+                  <span>B2B Agent Bookings</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+                <div class="quick-date-item" data-txn="unviewed" onclick="setTxnFilter('unviewed', 'Unviewed Bookings Only')">
+                  <span>Unviewed Bookings Only</span>
+                  <span class="quick-date-dot"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter Options Toggle -->
+            <button class="fareos-btn-tool" id="btn-toggle-filters" onclick="toggleFilterDrawer()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <span>Filter Options</span>
+            </button>
+          </div>
+
+          <div class="fareos-toolbar-right">
+            <span style="font-size:12px; font-weight:700; color:#64748B;" id="table-record-count">23 / 23 BOOKINGS</span>
+            
+            <button class="fareos-btn-tool" onclick="refreshBookingsData()" title="Reload live data">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+
+            <button type="button" class="fareos-btn-tool" onclick="exportFlightBookingsCSV()" title="Download flight bookings as CSV / Excel" style="height:34px; padding:0 12px; font-size:12px; display:inline-flex; align-items:center; gap:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Export CSV</span>
+            </button>
+
+            <button type="button" class="sheets-btn-trigger" onclick="openSheetsSyncModal()" title="Configure live push to Google Sheets or Excel" style="padding:6px 12px; font-size:12px; height:34px; display:inline-flex; align-items:center; gap:6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span>📊 Live Sheets Sync</span>
+            </button>
+
+            <button class="btn-primary" style="font-size:12.5px; padding:8px 14px; border-radius:6px; display:inline-flex; align-items:center; gap:6px;" onclick="openNewBookingModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              + New Booking
+            </button>
+          </div>
+        </div>
+
+        <!-- Advanced Filter Options Bar (Collapsible) -->
+        <div id="advanced-filter-drawer" style="display:none; background:#FFFFFF; border:1px solid #E2E8F0; border-radius:8px; padding:16px; margin-bottom:16px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px;">
+            <div>
+              <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Status</label>
+              <select id="filter-status" class="admin-form-select" style="height:34px; font-size:12.5px; margin-top:4px;" onchange="applyAllFilters()">
+                <option value="all">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Processing">Processing</option>
+                <option value="Initiated">Initiated</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Payment</label>
+              <select id="filter-payment" class="admin-form-select" style="height:34px; font-size:12.5px; margin-top:4px;" onchange="applyAllFilters()">
+                <option value="all">All Payments</option>
+                <option value="Paid">Paid</option>
+                <option value="Payment Pending">Payment Pending</option>
+                <option value="Failed">Failed</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Assigned Owner</label>
+              <select id="filter-owner" class="admin-form-select" style="height:34px; font-size:12.5px; margin-top:4px;" onchange="applyAllFilters()">
+                <option value="all">All Owners</option>
+                <option value="Super Admin">Super Admin</option>
+                <option value="Zaid Khaleel">Zaid Khaleel</option>
+                <option value="Flight Desk Admin">Flight Desk Admin</option>
+                <option value="Susen">Susen</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:11px; font-weight:700; color:#64748B; text-transform:uppercase;">Air Type</label>
+              <select id="filter-airtype" class="admin-form-select" style="height:34px; font-size:12.5px; margin-top:4px;" onchange="applyAllFilters()">
+                <option value="all">All Air Types</option>
+                <option value="International">International</option>
+                <option value="Domestic">Domestic</option>
+              </select>
+            </div>
+
+            <div style="display:flex; align-items:flex-end;">
+              <button class="fareos-btn-tool" style="height:34px; width:100%; justify-content:center;" onclick="resetAllFilters()">
+                Reset Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 15-Column Responsive Data Table -->
+        <div class="fareos-table-wrap">
+          <table class="fareos-table" id="flight-bookings-table">
+            <thead>
+              <tr>
+                <th style="width:7.5%;">SUPPLIER</th>
+                <th style="width:8.5%;">BOOKING ID</th>
+                <th style="width:7.5%;">BOOKING DATE</th>
+                <th style="width:7.5%;">PAYMENT</th>
+                <th style="width:7%;">STATUS</th>
+                <th style="width:8%;">OWNER</th>
+                <th style="width:10%;">SUMMARY</th>
+                <th style="width:6.5%;">TRAVEL DATE</th>
+                <th style="width:6.5%;">DEADLINE</th>
+                <th style="width:9%;">PASSENGER</th>
+                <th style="width:6%;">AMOUNT</th>
+                <th style="width:5.5%;">AIR TYPE</th>
+                <th style="width:7.5%;">CUSTOMER</th>
+                <th style="width:7%;">PHONE</th>
+                <th style="width:5%;">TYPE</th>
+                <th style="width:3.5%; text-align:center;">ACT</th>
+              </tr>
+            </thead>
+            <tbody id="bookings-table-body">
+              <!-- Rendered dynamically by js/admin_flight_bookings.js -->
+            </tbody>
+          </table>
+        </div>
+        </div> <!-- End #bookings-list-view -->
+
+        <!-- DEDICATED BOOKING DETAIL VIEW (Matching FareOS reference screenshots) -->
+        <div id="booking-detail-view" style="display:none;">
+          <!-- Dynamically populated by js/admin_flight_bookings.js -->
+        </div>
+
+      </main>
+    </div>
+
+  </div>
+
+  <!-- Slide-Over Booking Details Drawer -->
+  <div class="fareos-drawer-overlay" id="booking-drawer-overlay" onclick="if(event.target===this) closeBookingDrawer()">
+    <div class="fareos-drawer">
+      <div class="fareos-drawer-head">
+        <div>
+          <div style="font-size:11px; font-weight:800; color:#2563EB; letter-spacing:0.5px; text-transform:uppercase;">RESERVATION INSPECTION</div>
+          <h2 style="margin:2px 0 0; font-size:18px; font-weight:900; color:#0F172A;" id="drawer-booking-id">BKNG-8309502</h2>
+        </div>
+        <button style="background:none; border:none; font-size:22px; cursor:pointer; color:#64748B;" onclick="closeBookingDrawer()">&times;</button>
+      </div>
+
+      <div class="fareos-drawer-body" id="drawer-content-body">
+        <!-- Injected by JS -->
+      </div>
+
+      <div class="fareos-drawer-footer">
+        <button class="fareos-btn-tool" onclick="closeBookingDrawer()">Close</button>
+        <button class="btn-primary" id="drawer-wa-btn" style="display:inline-flex; align-items:center; gap:6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          Chat Passenger
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reassign Owner Modal -->
+  <div class="admin-modal-overlay" id="reassign-owner-modal" style="display:none;" onclick="if(event.target===this) closeReassignModal()">
+    <div class="admin-modal-card" style="max-width:440px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Reassign Booking Owner</h3>
+        <button class="admin-modal-close" onclick="closeReassignModal()">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <p style="font-size:13px; color:#64748B; margin-top:0;">Select which admin should be responsible for managing this flight reservation, ticketing, and customer follow-up.</p>
+        <input type="hidden" id="reassign-target-booking-id" />
+        <div class="admin-form-group">
+          <label class="admin-form-label">Select Handling Admin</label>
+          <select id="reassign-owner-select" class="admin-form-select">
+            <option value="Super Admin">Super Admin (Executive)</option>
+            <option value="Zaid Khaleel">Zaid Khaleel (Lead Admin)</option>
+            <option value="Flight Desk Admin">Flight Desk Admin (Ticketing)</option>
+            <option value="Susen">Susen (Operations)</option>
+            <option value="Support Desk">Support Desk (General)</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="fareos-btn-tool" onclick="closeReassignModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitOwnerReassignment()">Save Owner</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Booking Entry Modal -->
+  <div class="admin-modal-overlay" id="manual-booking-modal" style="display:none;" onclick="if(event.target===this) closeNewBookingModal()">
+    <div class="admin-modal-card" style="max-width:580px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Create Manual / Offline Flight Booking</h3>
+        <button class="admin-modal-close" onclick="closeNewBookingModal()">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="new-booking-form" onsubmit="handleCreateManualBooking(event)">
+          <div class="form-grid-2">
+            <div class="admin-form-group">
+              <label class="admin-form-label">Passenger Name</label>
+              <input type="text" id="nb-pax-name" class="admin-form-input" placeholder="e.g. RAHUL SHARMA" required />
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Contact Phone / WhatsApp</label>
+              <input type="text" id="nb-phone" class="admin-form-input" placeholder="e.g. 919876543210" required />
+            </div>
+          </div>
+          <div class="form-grid-3">
+            <div class="admin-form-group">
+              <label class="admin-form-label">Origin (Code)</label>
+              <input type="text" id="nb-orig" class="admin-form-input" placeholder="DEL" maxlength="3" required />
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Destination (Code)</label>
+              <input type="text" id="nb-dest" class="admin-form-input" placeholder="DXB" maxlength="3" required />
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Travel Date</label>
+              <input type="date" id="nb-date" class="admin-form-input" required />
+            </div>
+          </div>
+          <div class="form-grid-3">
+            <div class="admin-form-group">
+              <label class="admin-form-label">Airline</label>
+              <input type="text" id="nb-airline" class="admin-form-input" placeholder="Emirates / IndiGo" required />
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Gross Fare (₹)</label>
+              <input type="number" id="nb-amount" class="admin-form-input" placeholder="18500" required />
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Handling Owner</label>
+              <select id="nb-owner" class="admin-form-select">
+                <option value="Super Admin">Super Admin</option>
+                <option value="Zaid Khaleel">Zaid Khaleel</option>
+                <option value="Flight Desk Admin">Flight Desk Admin</option>
+                <option value="Susen">Susen</option>
+              </select>
+            </div>
+          </div>
+          <div class="admin-modal-footer" style="padding:16px 0 0; margin-top:14px; background:none; border-top:1px solid #E2E8F0;">
+            <button type="button" class="fareos-btn-tool" onclick="closeNewBookingModal()">Cancel</button>
+            <button type="submit" class="btn-primary">Create Booking</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Lock Booking Prompt Modal (matching media_1789157846765 / 771) -->
+  <div class="admin-modal-overlay" id="booking-lock-prompt-modal" style="display:none;" onclick="if(event.target===this) dismissLockPrompt()">
+    <div class="fareos-lock-prompt-card">
+      <div class="fareos-lock-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h3 style="margin:0 0 8px; font-size:17px; font-weight:800; color:#0F172A;">Lock this booking?</h3>
+      <p style="margin:0 0 8px; font-size:12.5px; color:#475569; line-height:1.45;">
+        Nobody is working on it. Lock it so only you can make manual updates, and so anyone who opens it after you can see you have it.
+      </p>
+      <p style="margin:0 0 20px; font-size:12px; color:#64748B; line-height:1.4;">
+        You can read it without locking — Manual Update just stays unavailable.
+      </p>
+      <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px;">
+        <button type="button" class="fareos-btn-tool" onclick="handleLockPromptChoice('view')" style="padding:7px 14px; font-size:12.5px;">
+          👁 Just viewing
+        </button>
+        <button type="button" class="btn-primary" onclick="handleLockPromptChoice('lock')" style="padding:7px 16px; font-size:12.5px; border-radius:6px; display:inline-flex; align-items:center; gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Lock it
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Force Take Over (Overclaim) Modal -->
+  <div class="admin-modal-overlay" id="booking-overclaim-modal" style="display:none;" onclick="if(event.target===this) closeOverclaimModal()">
+    <div class="admin-modal-card" style="max-width:440px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title" style="color:#C2410C; display:flex; align-items:center; gap:8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Force Take Over Booking
+        </h3>
+        <button class="admin-modal-close" onclick="closeOverclaimModal()">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <p style="font-size:13px; color:#334155; margin-top:0; line-height:1.5;">
+          This booking is currently locked by <strong id="overclaim-current-owner" style="color:#0F172A;">Admin</strong>.
+        </p>
+        <div style="background:#FFFBEB; border:1px solid #FDE68A; border-radius:8px; padding:12px; font-size:12px; color:#92400E; margin-bottom:14px;">
+          ⚠️ Overclaiming will transfer the active lock to you. The previous handling admin will see that you have taken over control.
+        </div>
+        <p style="font-size:12px; color:#64748B;">Are you sure you want to take over full control of this reservation?</p>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="fareos-btn-tool" onclick="closeOverclaimModal()">Cancel</button>
+        <button class="fareos-btn-takeover" onclick="confirmForceTakeOver()">⚡ Confirm Take Over</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Reservation Update Modal -->
+  <div class="admin-modal-overlay" id="booking-manual-update-modal" style="display:none;" onclick="if(event.target===this) closeManualUpdateModal()">
+    <div class="admin-modal-card" style="max-width:540px;">
+      <div class="admin-modal-header">
+        <h3 class="admin-modal-title">Manual Reservation Update</h3>
+        <button class="admin-modal-close" onclick="closeManualUpdateModal()">&times;</button>
+      </div>
+      <div class="admin-modal-body">
+        <form id="manual-update-form" onsubmit="handleManualUpdateSubmit(event)">
+          <input type="hidden" id="mu-booking-id" />
+          <div class="form-grid-2">
+            <div class="admin-form-group">
+              <label class="admin-form-label">Booking Status</label>
+              <select id="mu-status" class="admin-form-select">
+                <option value="Confirmed">Confirmed (Issued)</option>
+                <option value="Pending">Pending (Under Review)</option>
+                <option value="Processing">Processing</option>
+                <option value="Initiated">Initiated</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Payment Status</label>
+              <select id="mu-payment-status" class="admin-form-select">
+                <option value="Paid">Paid</option>
+                <option value="Payment Pending">Payment Pending</option>
+                <option value="Failed">Failed</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="admin-form-group">
+              <label class="admin-form-label">GDS / Airline PNR</label>
+              <input type="text" id="mu-pnr" class="admin-form-input" placeholder="e.g. 6IR5GE" />
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label">Assigned Handling Admin</label>
+              <select id="mu-owner" class="admin-form-select">
+                <option value="Super Admin">Super Admin</option>
+                <option value="Susen">Susen</option>
+                <option value="Zaid Khaleel">Zaid Khaleel</option>
+                <option value="Flight Desk Admin">Flight Desk Admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label">Ticketing Detail Log</label>
+            <input type="text" id="mu-status-detail" class="admin-form-input" placeholder="Booking: CONFIRMED | Ticketing: ISSUED" />
+          </div>
+          <div class="admin-modal-footer" style="padding:14px 0 0; background:none; border-top:1px solid #E2E8F0;">
+            <button type="button" class="fareos-btn-tool" onclick="closeManualUpdateModal()">Cancel</button>
+            <button type="submit" class="btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .fareos-dropdown-item {
+      padding: 8px 12px;
+      font-size: 12.5px;
+      color: #334155;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    .fareos-dropdown-item:hover {
+      background: #F1F5F9;
+      color: #0F172A;
+    }
+    .fareos-dropdown-item.active {
+      background: #EFF6FF;
+      color: #2563EB;
+      font-weight: 700;
+    }
+  </style>
+
+  <script src="js/admin_flight_bookings.js?v=234"></script>
+  <script src="js/google_sheets_sync.js?v=237"></script>
+  <!-- Booking list configuration Modal (matching reference screenshot) -->
+  <div class="admin-modal-overlay" id="booking-config-modal" style="display:none;" onclick="if(event.target===this) closeBookingConfigModal()">
+    <div class="fareos-config-modal-card">
+      <div class="admin-modal-header" style="padding:16px 20px;">
+        <h3 class="admin-modal-title" style="font-size:16px;">Booking list configuration</h3>
+        <button class="admin-modal-close" onclick="closeBookingConfigModal()">&times;</button>
+      </div>
+      <div class="admin-modal-body" style="padding:20px;">
+
+        <!-- Section 1: Booking list analytics -->
+        <div class="fareos-config-section">
+          <div class="fareos-config-header-row">
+            <div>
+              <h4 class="fareos-config-title">Booking list analytics</h4>
+              <p class="fareos-config-desc">Define the tiles above the flight booking list: their labels, the help text ops sees on hover, and which statuses each one counts. A booking is counted by the first tile it matches, so the tiles always add up to the Total tile.</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="fareos-btn-tool" onclick="refreshAnalyticsConfig()" style="font-size:11.5px; padding:5px 10px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Refresh
+              </button>
+              <button class="btn-primary" onclick="openNewTilePrompt()" style="font-size:11.5px; padding:5px 12px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">
+                + New tile
+              </button>
+            </div>
+          </div>
+
+          <table class="fareos-config-table">
+            <thead>
+              <tr>
+                <th style="width:70px;">ORDER</th>
+                <th>TILE</th>
+                <th style="width:130px;">CLIENT STATUSES</th>
+                <th style="width:70px;">ACTIVE</th>
+                <th style="width:60px; text-align:right;"></th>
+              </tr>
+            </thead>
+            <tbody id="config-tiles-tbody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section 2: Deadline timeline -->
+        <div class="fareos-config-section">
+          <div class="fareos-config-header-row">
+            <div>
+              <h4 class="fareos-config-title">Deadline timeline</h4>
+              <p class="fareos-config-desc">Each booking row shows a progress bar for how much of its window has elapsed, measured from when the booking was created. Windows are scoped to a tile group — a booking in a group with no window simply has no deadline.</p>
+            </div>
+          </div>
+
+          <!-- Existing timeline window rows -->
+          <div id="config-timeline-rules-wrap" style="margin-bottom:16px;">
+            <!-- Injected by js -->
+          </div>
+
+          <!-- New / Edit Timeline Window Form -->
+          <form id="timeline-window-form" onsubmit="handleSaveTimelineWindow(event)" style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:14px;">
+            <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
+              <div>
+                <label style="font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase;">APPLIES TO</label>
+                <select id="tw-applies-to" class="admin-form-select" style="height:32px; font-size:12px; margin-top:3px;" required>
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Initiated">Initiated</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="All">All Active</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase;">WINDOW (HOURS)</label>
+                <input type="number" id="tw-window-hours" class="admin-form-input" value="24" min="1" max="168" style="height:32px; font-size:12px; margin-top:3px;" required />
+              </div>
+              <div>
+                <label style="font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase;">AMBER AT (%)</label>
+                <input type="number" id="tw-amber-pct" class="admin-form-input" value="50" min="1" max="99" style="height:32px; font-size:12px; margin-top:3px;" required />
+              </div>
+              <div>
+                <label style="font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase;">RED AT (%)</label>
+                <input type="number" id="tw-red-pct" class="admin-form-input" value="80" min="1" max="100" style="height:32px; font-size:12px; margin-top:3px;" required />
+              </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <label style="font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase;">STOPS WHEN THE STATUS BECOMES</label>
+              <select id="tw-stops-when" class="admin-form-select" style="height:32px; font-size:12px; margin-top:3px;" required>
+                <option value="Confirmed">Confirmed (Issued / Ticketed)</option>
+                <option value="Processing">Processing</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <div style="font-size:10.5px; color:#64748B; margin-top:4px;">The clock runs from booking creation and stops the moment the booking reaches one of these. At least one is required — without it the deadline would never stop.</div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #E2E8F0; padding-top:10px;">
+              <span style="font-size:11px; color:#64748B;">Saving replaces the existing window for this scope.</span>
+              <button type="submit" class="btn-primary" style="font-size:12px; padding:6px 14px; border-radius:6px;">
+                Save window
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Date Range Modal -->
+  <div class="modal-overlay" id="custom-date-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px);" onclick="if(event.target===this)closeCustomDateModal()">
+    <div class="modal-container" style="background:#FFFFFF; max-width:400px; width:92%; border-radius:14px; overflow:hidden; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2), 0 10px 10px -5px rgba(0,0,0,0.04); border:1px solid #E2E8F0;">
+      <div class="modal-header" style="background:#F8FAFC; border-bottom:1px solid #E2E8F0; padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:14px; font-weight:800; color:#0F172A; margin:0; display:flex; align-items:center; gap:8px;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Custom Date Range
+        </h3>
+        <button class="modal-close" onclick="closeCustomDateModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748B; padding:0 4px; line-height:1;">&times;</button>
+      </div>
+      <div style="padding:18px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;">
+          <div>
+            <label style="font-size:10.5px; font-weight:800; color:#64748B; text-transform:uppercase; display:block; margin-bottom:6px; letter-spacing:0.3px;">Start Date</label>
+            <input type="date" id="custom-date-start" class="admin-form-input" style="width:100%; height:36px; font-size:12.5px; border-radius:8px; border:1px solid #CBD5E1; padding:0 8px; box-sizing:border-box;" />
+          </div>
+          <div>
+            <label style="font-size:10.5px; font-weight:800; color:#64748B; text-transform:uppercase; display:block; margin-bottom:6px; letter-spacing:0.3px;">End Date</label>
+            <input type="date" id="custom-date-end" class="admin-form-input" style="width:100%; height:36px; font-size:12.5px; border-radius:8px; border:1px solid #CBD5E1; padding:0 8px; box-sizing:border-box;" />
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" onclick="closeCustomDateModal()" style="font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:8px; border:1px solid #CBD5E1; background:#fff; color:#475569; cursor:pointer;">Cancel</button>
+          <button type="button" onclick="applyCustomDateRange()" style="font-size:12.5px; font-weight:700; padding:7px 18px; border-radius:8px; background:#2563EB; color:#fff; border:none; cursor:pointer;">Apply Range</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin_unified_bar.js"></script>
+</body>
+</html>

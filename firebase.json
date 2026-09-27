@@ -1,0 +1,67 @@
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log"]
+    }
+  ],
+  "hosting": {
+    "site": "fly-s-8baec",
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/seatmap",
+        "function": "seatmap"
+      },
+      {
+        "source": "/accounting/logs",
+        "destination": "/admin-accounting-logs.html"
+      },
+      {
+        "source": "/reports/revenue",
+        "destination": "/admin-revenue-dashboard.html"
+      },
+      {
+        "source": "/operations/ancillaries",
+        "destination": "/admin-ancillary-queue.html"
+      },
+      {
+        "source": "/queues/ancillaries",
+        "destination": "/admin-ancillary-queue.html"
+      },
+      {
+        "source": "/email-supplier",
+        "destination": "/admin-email-templates.html"
+      },
+      {
+        "source": "/settings/email-templates",
+        "destination": "/admin-email-templates.html"
+      },
+      {
+        "source": "/fare-management/markups",
+        "destination": "/admin-markup-master.html"
+      },
+      {
+        "source": "/markup-master",
+        "destination": "/admin-markup-master.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|html|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Commercial Flight Search &amp; Price Intelligence — Flyvis</title>
+  <meta name="description" content="Search real-time airline fares with live Google Flights scraping, credit card reward perks, and 24/7 AI price tracking." />
+  <link rel="stylesheet" href="css/styles.css?v=230" />
+  <link rel="stylesheet" href="css/flight_wizard.css?v=1002" />
+  <link rel="stylesheet" href="css/sidebar.css?v=101" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+  <style>
+    /* Autocomplete dropdown positioning */
+    .airport-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
+      z-index: 50;
+      max-height: 250px;
+      overflow-y: auto;
+      display: none;
+    }
+    .airport-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .airport-item:hover {
+      background: #F8FAFC;
+    }
+    .airport-item-code {
+      font-size: 12px;
+      font-weight: 800;
+      background: #EAF6F6;
+      color: #2E7D7E;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .airport-item-city {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0D1B2A;
+    }
+    .airport-item-name {
+      font-size: 11px;
+      color: #64748B;
+    }
+
+    /* === FULLSCREEN FLIGHT MODALS WITH FROSTED BACKDROP BLUR (BOOKING & PRICE ALERT) === */
+    #ota-booking-modal.ota-booking-modal-overlay,
+    #ota-price-alert-modal.ota-booking-modal-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      background: rgba(10, 25, 47, 0.78) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
+      z-index: 10050 !important;
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 12px !important;
+      box-sizing: border-box !important;
+    }
+
+    #ota-booking-modal .ota-booking-modal,
+    #ota-price-alert-modal .ota-booking-modal {
+      width: 98vw !important;
+      max-width: 1540px !important;
+      height: 97vh !important;
+      max-height: 97vh !important;
+      background: #F8FAFC !important;
+      border-radius: 20px !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      box-shadow: 0 35px 85px -15px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(15, 23, 42, 0.1) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      animation: modalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    #ota-booking-modal .ota-modal-head,
+    #ota-price-alert-modal .ota-modal-head {
+      padding: 14px 28px !important;
+      background: #FFFFFF !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      flex-shrink: 0 !important;
+    }
+
+    #ota-booking-modal .ota-modal-head h3,
+    #ota-price-alert-modal .ota-modal-head h3 {
+      font-size: 20px !important;
+      font-weight: 900 !important;
+      color: #0F172A !important;
+      margin: 0 !important;
+    }
+
+    #ota-booking-modal .ota-modal-body,
+    #ota-price-alert-modal .ota-modal-body {
+      padding: 22px 28px !important;
+      flex: 1 !important;
+      overflow-y: auto !important;
+      background: #F8FAFC !important;
+    }
+
+    #ota-booking-modal .ota-booking-grid,
+    #ota-price-alert-modal .ota-alert-grid {
+      display: grid !important;
+      grid-template-columns: 1.55fr 1fr !important;
+      gap: 24px !important;
+      align-items: start !important;
+    }
+
+    #ota-booking-modal .ota-booking-main-col,
+    #ota-price-alert-modal .ota-alert-main-col {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 16px !important;
+      min-width: 0 !important;
+    }
+
+    #ota-booking-modal .ota-booking-sidebar-col,
+    #ota-price-alert-modal .ota-alert-sidebar-col {
+      position: sticky !important;
+      top: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 16px !important;
+      min-width: 0 !important;
+    }
+
+    @media (max-width: 1024px) {
+      #ota-booking-modal .ota-booking-grid,
+      #ota-price-alert-modal .ota-alert-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+      }
+      #ota-booking-modal .ota-booking-sidebar-col,
+      #ota-price-alert-modal .ota-alert-sidebar-col {
+        position: static !important;
+      }
+      #ota-booking-modal.ota-booking-modal-overlay,
+      #ota-price-alert-modal.ota-booking-modal-overlay {
+        padding: 6px !important;
+      }
+      #ota-booking-modal .ota-booking-modal,
+      #ota-price-alert-modal .ota-booking-modal {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+      }
+      #ota-booking-modal .ota-modal-head,
+      #ota-price-alert-modal .ota-modal-head {
+        padding: 12px 16px !important;
+      }
+      #ota-booking-modal .ota-modal-body,
+      #ota-price-alert-modal .ota-modal-body {
+        padding: 14px 16px !important;
+      }
+    }
+
+    /* === CRITICAL FLYVIS CUSTOM POPUP & DROPDOWN STYLES (INLINE FOR ZERO-CACHE ISSUES) === */
+    .fv-custom-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .fv-dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .fv-dropdown-trigger:hover, .fv-dropdown-trigger.open {
+      background: #F1F5F9;
+      color: #0D1B2A;
+    }
+    .fv-dropdown-trigger .chevron-icon {
+      transition: transform 0.2s ease;
+      stroke: #64748B;
+    }
+    .fv-dropdown-trigger.open .chevron-icon {
+      transform: rotate(180deg);
+      stroke: #2E7D7E;
+    }
+    .fv-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: #FFFFFF;
+      border-radius: 12px;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 14px 36px -4px rgba(13, 27, 42, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.04);
+      min-width: 190px;
+      padding: 6px;
+      z-index: 1050;
+      display: none;
+    }
+    .fv-dropdown-menu.align-right {
+      left: auto;
+      right: 0;
+    }
+    .fv-dropdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .fv-dropdown-item:hover {
+      background: #F8FAFC;
+      color: #0D1B2A;
+    }
+    .fv-dropdown-item.selected {
+      background: #EAF6F6;
+      color: #1E5E5F;
+    }
+    .fv-dropdown-item .check-icon {
+      color: #2E7D7E;
+      opacity: 0;
+    }
+    .fv-dropdown-item.selected .check-icon {
+      opacity: 1;
+    }
+
+    /* Sort Trigger */
+    .fv-sort-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0D1B2A;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.2s ease;
+    }
+    .fv-sort-trigger:hover, .fv-sort-trigger.open {
+      border-color: #2E7D7E;
+      background: #FAFCFC;
+    }
+
+    /* Passenger Stepper Card */
+    .fv-passenger-popover {
+      width: 270px;
+      padding: 14px;
+    }
+    .fv-stepper-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+    .fv-stepper-row:not(:last-child) {
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .fv-stepper-label-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0D1B2A;
+    }
+    .fv-stepper-label-sub {
+      font-size: 11px;
+      color: #64748B;
+    }
+    .fv-stepper-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .fv-step-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1.5px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #0D1B2A;
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .fv-step-btn:hover:not(:disabled) {
+      border-color: #2E7D7E;
+      background: #EAF6F6;
+      color: #2E7D7E;
+    }
+    .fv-step-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .fv-step-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0D1B2A;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    /* Calendar Popover */
+    .fv-calendar-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 340px;
+      background: #FFFFFF;
+      border-radius: 16px;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 18px 45px -6px rgba(13, 27, 42, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.04);
+      padding: 18px;
+      z-index: 1100;
+      display: none;
+    }
+    .fv-cal-presets-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 2px;
+      margin-bottom: 12px;
+      border-bottom: none;
+    }
+    .fv-cal-presets-strip::-webkit-scrollbar {
+      display: none;
+    }
+    .fv-cal-preset-pill {
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: #F1F5F9;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .fv-cal-preset-pill:hover {
+      background: #EAF6F6;
+      color: #2E7D7E;
+    }
+    .fv-cal-month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .fv-cal-month-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #0D1B2A;
+    }
+    .fv-cal-nav-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #334155;
+      transition: all 0.15s ease;
+    }
+    .fv-cal-nav-btn:hover {
+      background: #F1F5F9;
+      color: #0D1B2A;
+    }
+    .fv-cal-weekdays-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748B;
+      margin-bottom: 8px;
+    }
+    .fv-cal-days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .fv-cal-day-cell {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0D1B2A;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .fv-cal-day-cell:hover:not(.disabled):not(.selected) {
+      background: #F1F5F9;
+      color: #2E7D7E;
+    }
+    .fv-cal-day-cell.disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+    .fv-cal-day-cell.selected {
+      background: #2E7D7E !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 12px rgba(46, 125, 126, 0.35);
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body class="flight-engine-wrapper">
+
+  <!-- 1. NAVIGATION BAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner nav-inner-corner">
+      <!-- Corner Logo with 3-Dash Trigger -->
+      <div class="nav-logo-wrapper">
+        <button type="button" class="btn-sidebar-trigger" onclick="toggleFlyvisSidebar()" aria-label="Open Menu" title="Open Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+            <span class="nav-logo-tagline">Flight, Visa, Sorted.</span>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Floating Center Navigation Pill -->
+      <div class="nav-pill-center">
+        <ul class="nav-links">
+          <li><a href="index.html" id="nav-home">Explore</a></li>
+          <li><a href="visas.html" id="nav-visas">Visa</a></li>
+          <li><a href="dummy-ticket.html" id="nav-dummy">Dummy Ticket</a></li>
+          <li><a href="flight-fares.html" class="active" id="nav-fares">Flight Fares</a></li>
+        </ul>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="nav-right" style="display:flex; align-items:center; gap:12px;">
+        <div id="nav-auth-container"></div>
+        <a href="https://wa.me/919207021258?text=Hi%20Flyvis%2C%20I%20would%20like%20assistance%20with%20my%20travel%20and%20visa" target="_blank" class="nav-cta-btn" id="nav-cta-whatsapp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          WhatsApp Us
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Explore</a>
+    <a href="visas.html">Visa</a>
+    <a href="dummy-ticket.html">Dummy Ticket</a>
+    <a href="flight-fares.html">Flight Fares</a>
+    <a href="index.html#testimonials">Reviews</a>
+    <div id="mobile-nav-auth"></div>
+  </div>
+
+  <!-- 2. TOP FLOATING OTA SEARCH CONSOLE (SKYSCANNER / GOOGLE FLIGHTS STYLE) -->
+  <header class="ota-search-hero">
+    <div class="ota-search-inner">
+      
+      <div class="ota-hero-header">
+        <div class="ota-title-group">
+          <h1>Compare Flights &amp; Maximize Credit Card Perks</h1>
+          <p>Real-time Google Flights live stream with AI price prediction &amp; 18+ bank card savings.</p>
+        </div>
+
+        <div class="ota-trip-controls">
+          <!-- Custom Trip Type Selector -->
+          <div class="fv-custom-dropdown" id="dropdown-wrap-trip-type">
+            <button type="button" class="fv-dropdown-trigger" id="btn-trip-type" onclick="toggleFvDropdown('trip-type', event)">
+              <span id="label-trip-type">One-way</span>
+              <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="fv-dropdown-menu" id="menu-trip-type" style="display:none;">
+              <div class="fv-dropdown-item selected" data-val="oneway" onclick="selectFvTripType('oneway', 'One-way')">
+                <span>One-way</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div class="fv-dropdown-item" data-val="roundtrip" onclick="selectFvTripType('roundtrip', 'Round-trip')">
+                <span>Round-trip</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <span style="color:#CBD5E1;">•</span>
+
+          <!-- Custom Cabin Class Selector -->
+          <div class="fv-custom-dropdown" id="dropdown-wrap-cabin">
+            <button type="button" class="fv-dropdown-trigger" id="btn-cabin" onclick="toggleFvDropdown('cabin', event)">
+              <span id="label-cabin">Economy</span>
+              <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="fv-dropdown-menu" id="menu-cabin" style="display:none;">
+              <div class="fv-dropdown-item selected" data-val="economy" onclick="selectFvCabin('economy', 'Economy')">
+                <span>Economy</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div class="fv-dropdown-item" data-val="premium_economy" onclick="selectFvCabin('premium_economy', 'Premium Economy')">
+                <span>Premium Economy</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div class="fv-dropdown-item" data-val="business" onclick="selectFvCabin('business', 'Business Class')">
+                <span>Business Class</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <span style="color:#CBD5E1;">•</span>
+
+          <!-- Custom Passenger Counter Stepper -->
+          <div class="fv-custom-dropdown" id="dropdown-wrap-travelers">
+            <button type="button" class="fv-dropdown-trigger" id="btn-travelers" onclick="toggleFvDropdown('travelers', event)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span id="label-travelers">1 Passenger</span>
+              <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="fv-dropdown-menu fv-passenger-popover" id="menu-travelers" style="display:none;" onclick="event.stopPropagation()">
+              <div class="fv-stepper-row">
+                <div>
+                  <div class="fv-stepper-label-title">Adults</div>
+                  <div class="fv-stepper-label-sub">Age 12+ years</div>
+                </div>
+                <div class="fv-stepper-controls">
+                  <button type="button" class="fv-step-btn" id="btn-step-minus-adults" onclick="stepPassenger('adults', -1)">−</button>
+                  <span class="fv-step-val" id="count-adults">1</span>
+                  <button type="button" class="fv-step-btn" onclick="stepPassenger('adults', 1)">+</button>
+                </div>
+              </div>
+              <div class="fv-stepper-row">
+                <div>
+                  <div class="fv-stepper-label-title">Children</div>
+                  <div class="fv-stepper-label-sub">Age 2–11 years</div>
+                </div>
+                <div class="fv-stepper-controls">
+                  <button type="button" class="fv-step-btn" id="btn-step-minus-children" onclick="stepPassenger('children', -1)">−</button>
+                  <span class="fv-step-val" id="count-children">0</span>
+                  <button type="button" class="fv-step-btn" onclick="stepPassenger('children', 1)">+</button>
+                </div>
+              </div>
+              <div class="fv-stepper-row">
+                <div>
+                  <div class="fv-stepper-label-title">Infants</div>
+                  <div class="fv-stepper-label-sub">Under 2 years</div>
+                </div>
+                <div class="fv-stepper-controls">
+                  <button type="button" class="fv-step-btn" id="btn-step-minus-infants" onclick="stepPassenger('infants', -1)">−</button>
+                  <span class="fv-step-val" id="count-infants">0</span>
+                  <button type="button" class="fv-step-btn" onclick="stepPassenger('infants', 1)">+</button>
+                </div>
+              </div>
+              <div style="text-align:right; margin-top:12px; padding-top:8px; border-top:1px solid #F1F5F9;">
+                <button type="button" class="btn-ota-track" style="padding:5px 14px; font-size:12px;" onclick="closeAllFvDropdowns()">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Search Inputs -->
+      <div class="ota-search-bar">
+        
+        <!-- Origin -->
+        <div class="ota-input-box search-field-box">
+          <span class="ota-input-lbl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+            Where From?
+          </span>
+          <input type="text" id="ota-orig-input" class="ota-input-field" value="New Delhi (DEL)" autocomplete="off" oninput="handleAirportSearch(this.value, 'orig')" onfocus="this.select(); handleAirportSearch('', 'orig')" onkeydown="if(event.key==='Enter'){ document.getElementById('orig-airport-dropdown').style.display='none'; executeOtaFlightSearch(); }" onblur="setTimeout(() => { executeOtaFlightSearch(); }, 300)" />
+          <input type="hidden" id="ota-orig-code" value="DEL" />
+          <div class="airport-dropdown-menu" id="orig-airport-dropdown"></div>
+        </div>
+
+        <!-- Swap Route Button -->
+        <button type="button" class="ota-swap-btn" onclick="swapOtaRoute()" title="Swap Departure &amp; Arrival">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16"/></svg>
+        </button>
+
+        <!-- Destination -->
+        <div class="ota-input-box search-field-box">
+          <span class="ota-input-lbl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+            Where To?
+          </span>
+          <input type="text" id="ota-dest-input" class="ota-input-field" value="Dubai (DXB)" autocomplete="off" oninput="handleAirportSearch(this.value, 'dest')" onfocus="this.select(); handleAirportSearch('', 'dest')" onkeydown="if(event.key==='Enter'){ document.getElementById('dest-airport-dropdown').style.display='none'; executeOtaFlightSearch(); }" onblur="setTimeout(() => { executeOtaFlightSearch(); }, 300)" />
+          <input type="hidden" id="ota-dest-code" value="DXB" />
+          <div class="airport-dropdown-menu" id="dest-airport-dropdown"></div>
+        </div>
+
+        <!-- Departure Date (Interactive Custom Calendar Trigger) -->
+        <div class="ota-input-box" id="ota-dep-box" onclick="openFvCalendar('departure', event)">
+          <span class="ota-input-lbl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Departure
+          </span>
+          <div id="ota-dep-display" class="ota-input-field" style="line-height:1.3; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Thu, 17 Sep 2026</div>
+          <input type="hidden" id="ota-departure-date" value="2026-09-17" />
+        </div>
+
+        <!-- Return Date (Optional) -->
+        <div class="ota-input-box" id="ota-return-box" style="opacity: 0.5;" onclick="openFvCalendar('return', event)">
+          <span class="ota-input-lbl">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Return
+          </span>
+          <div id="ota-ret-display" class="ota-input-field" style="line-height:1.3; font-size:14px; color:var(--fv-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">+ Add Return</div>
+          <input type="hidden" id="ota-return-date" value="" />
+        </div>
+
+        <!-- Custom Floating Travel Calendar Popover -->
+        <div class="fv-calendar-popover" id="flyvis-calendar-popover" style="display:none;" onclick="event.stopPropagation()">
+          <div class="fv-cal-presets-strip">
+            <div class="fv-cal-preset-pill" onclick="selectCalendarPreset(0)">Today</div>
+            <div class="fv-cal-preset-pill" onclick="selectCalendarPreset(1)">Tomorrow</div>
+            <div class="fv-cal-preset-pill" onclick="selectCalendarPreset('weekend')">Weekend</div>
+            <div class="fv-cal-preset-pill" onclick="selectCalendarPreset(7)">+7 Days</div>
+            <div class="fv-cal-preset-pill" onclick="selectCalendarPreset(14)">+14 Days</div>
+          </div>
+          
+          <div class="fv-cal-month-nav">
+            <button type="button" class="fv-cal-nav-btn" onclick="changeCalendarMonth(-1)">&lsaquo;</button>
+            <div class="fv-cal-month-title" id="cal-month-title">September 2026</div>
+            <button type="button" class="fv-cal-nav-btn" onclick="changeCalendarMonth(1)">&rsaquo;</button>
+          </div>
+
+          <div class="fv-cal-weekdays-grid">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+          </div>
+
+          <div class="fv-cal-days-grid" id="cal-days-grid">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Search CTA -->
+        <button type="button" class="btn-ota-search" onclick="executeOtaFlightSearch()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>Search Flights</span>
+        </button>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 3. 7-DAY DYNAMIC PRICE STRIP (GOOGLE FLIGHTS STYLE) -->
+  <div class="ota-date-carousel-wrap">
+    <div class="ota-date-strip" id="ota-7day-date-strip">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- 4. CORE FLIGHT MATRIX (DUAL COLUMN: FILTERS + RESULTS STREAM) -->
+  <main class="ota-matrix-container">
+    
+    <!-- LEFT: Precision Filter Sidebar -->
+    <aside class="ota-filter-sidebar">
+      
+      <div class="ota-filter-header">
+        <span class="ota-filter-title">Filters</span>
+        <button type="button" class="btn-filter-reset" onclick="resetAllFilters()">Reset All</button>
+      </div>
+
+      <!-- Price Range Filter -->
+      <div class="ota-filter-section">
+        <div class="ota-section-title">
+          <span>Max Price</span>
+          <span style="font-size:12px; color:var(--fv-primary); font-weight:800;" id="filter-max-price-val">₹1,20,000</span>
+        </div>
+        <input type="range" id="filter-price-slider" min="3000" max="120000" step="500" value="120000" style="width:100%; accent-color:#2E7D7E; cursor:pointer;" oninput="handlePriceRangeSlider(this.value)" />
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--fv-muted); font-weight:700; margin-top:4px;">
+          <span id="filter-min-price-lbl">₹3,000</span>
+          <span id="filter-max-price-lbl">₹1,20,000</span>
+        </div>
+      </div>
+
+      <!-- Stops Filter -->
+      <div class="ota-filter-section">
+        <div class="ota-section-title">Stops</div>
+        <label class="ota-checkbox-label">
+          <span><input type="checkbox" id="flt-stop-nonstop" checked onchange="applyFilters()"> Non-stop</span>
+          <span class="ota-filter-fare" id="fare-label-nonstop">--</span>
+        </label>
+        <label class="ota-checkbox-label">
+          <span><input type="checkbox" id="flt-stop-1stop" checked onchange="applyFilters()"> 1 Stop</span>
+          <span class="ota-filter-fare" id="fare-label-1stop">--</span>
+        </label>
+        <label class="ota-checkbox-label">
+          <span><input type="checkbox" id="flt-stop-2plus" checked onchange="applyFilters()"> 2+ Stops</span>
+          <span class="ota-filter-fare" id="fare-label-2plus">--</span>
+        </label>
+      </div>
+
+      <!-- Departure Times Window -->
+      <div class="ota-filter-section">
+        <div class="ota-section-title">Departure Window</div>
+        <div class="ota-time-pills-grid">
+          <div class="ota-time-pill selected" data-time="any" onclick="setTimeWindowFilter('any')">
+            <div class="ota-time-pill-title">Any Time</div>
+            <div class="ota-time-pill-hrs">All Day</div>
+          </div>
+          <div class="ota-time-pill" data-time="morning" onclick="setTimeWindowFilter('morning')">
+            <div class="ota-time-pill-title">Morning</div>
+            <div class="ota-time-pill-hrs">6 AM – 12 PM</div>
+          </div>
+          <div class="ota-time-pill" data-time="afternoon" onclick="setTimeWindowFilter('afternoon')">
+            <div class="ota-time-pill-title">Afternoon</div>
+            <div class="ota-time-pill-hrs">12 PM – 6 PM</div>
+          </div>
+          <div class="ota-time-pill" data-time="evening" onclick="setTimeWindowFilter('evening')">
+            <div class="ota-time-pill-title">Evening/Night</div>
+            <div class="ota-time-pill-hrs">6 PM – 6 AM</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operating Airlines Filter -->
+      <div class="ota-filter-section">
+        <div class="ota-section-title">Airlines</div>
+        <div id="ota-airlines-filter-list">
+          <!-- Populated by JS based on live search results -->
+        </div>
+      </div>
+
+      <!-- Baggage Policy Filter -->
+      <div class="ota-filter-section">
+        <div class="ota-section-title">Baggage Preference</div>
+        <label class="ota-checkbox-label">
+          <span><input type="radio" name="ota-baggage" value="cabin" onchange="setBaggagePreference('cabin')"> Cabin Baggage (7 kg)</span>
+        </label>
+        <label class="ota-checkbox-label">
+          <span><input type="radio" name="ota-baggage" value="standard" checked onchange="setBaggagePreference('standard')"> Check-in Baggage (15–20 kg)</span>
+        </label>
+      </div>
+
+      <!-- Credit Cards Benefit Optimizer (18+ Cards) -->
+      <div class="ota-filter-section">
+        <div class="ota-section-title">
+          <span>Your Credit Cards</span>
+          <span style="font-size:11px; color:#2E7D7E; font-weight:700;" id="sidebar-card-count">0 Applied</span>
+        </div>
+        <input type="text" id="sidebar-card-search" placeholder="Search 18+ cards..." oninput="renderSidebarCardsList(this.value)" style="width:100%; padding:6px 10px; border:1px solid var(--fv-border); border-radius:6px; font-size:12px; margin-bottom:8px; outline:none;" />
+        <div id="ota-cards-sidebar-list" style="max-height:220px; overflow-y:auto; padding-right:4px;">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT: Results Stream -->
+    <section class="ota-results-stream">
+      
+      <!-- AI Price Drop Prediction Banner (Hopper Style) -->
+      <div class="ota-ai-banner" id="ota-ai-price-banner">
+        <div>
+          <div class="ota-ai-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            AI Price Recommendation
+          </div>
+          <div class="ota-ai-advice-title" id="ai-advice-headline">Buy Now — Prices at Lowest Seasonal Baseline</div>
+          <div class="ota-ai-advice-desc" id="ai-advice-subline">Our machine learning models project a 91% probability of fares rising closer to departure.</div>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button type="button" class="btn-ota-track" onclick="openPriceAlertModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span>Track Fare on WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Count & Sorting Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;">
+        <span style="font-size:14px; font-weight:800; color:var(--fv-navy);" id="ota-results-counter">Searching flights...</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:12px; color:var(--fv-muted); font-weight:600;">Sort by:</span>
+          <div class="fv-custom-dropdown" id="dropdown-wrap-sort">
+            <button type="button" class="fv-sort-trigger" id="btn-sort" onclick="toggleFvDropdown('sort', event)">
+              <span id="label-sort">Cheapest First</span>
+              <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="fv-dropdown-menu align-right" id="menu-sort" style="display:none; min-width:210px;">
+              <div class="fv-dropdown-item selected" data-val="cheapest" onclick="selectFvSort('cheapest', 'Cheapest First')">
+                <span>💰 Cheapest First</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div class="fv-dropdown-item" data-val="fastest" onclick="selectFvSort('fastest', 'Fastest Duration')">
+                <span>⚡ Fastest Duration</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div class="fv-dropdown-item" data-val="earliest" onclick="selectFvSort('earliest', 'Earliest Departure')">
+                <span>🌅 Earliest Departure</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <div class="fv-dropdown-item" data-val="card_savings" onclick="selectFvSort('card_savings', 'Highest Card Savings')">
+                <span>💳 Highest Card Savings</span>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="ota-sort-by" value="cheapest" />
+        </div>
+      </div>
+
+      <!-- Live Flight Results Cards List -->
+      <div id="ota-flight-results-list" style="display:flex; flex-direction:column; gap:12px;">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 5. SLIDE-OVER BOARDING PASS BOOKING MODAL -->
+  <div class="ota-booking-modal-overlay" id="ota-booking-modal" onclick="if(event.target===this) closeBookingModal()">
+    <div class="ota-booking-modal">
+      
+      <div class="ota-modal-head">
+        <div>
+          <h3>Confirmed Flight Reservation</h3>
+          <div style="font-size:12px; color:var(--fv-muted); font-weight:600;" id="modal-route-subtitle">New Delhi (DEL) → Dubai (DXB)</div>
+        </div>
+        <button type="button" onclick="closeBookingModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--fv-muted);">&times;</button>
+      </div>
+
+      <div class="ota-modal-body">
+        
+        <div class="ota-booking-grid">
+
+          <!-- LEFT MAIN COLUMN: Flight Ticket, Traveler Identification, Baggage & Aircraft Seat Map -->
+          <div class="ota-booking-main-col">
+            
+            <!-- Boarding Pass Widget -->
+            <div id="modal-boarding-pass-wrap">
+              <!-- Injected by JS -->
+            </div>
+
+            <!-- Passenger & Traveler Details Section -->
+            <div id="modal-traveler-section" style="border:1.5px solid #E2E8F0; border-radius:14px; background:#FFFFFF; overflow:hidden;">
+              
+              <!-- Vault Status Top Header -->
+              <div style="background:#F8FAFC; border-bottom:1px solid #E2E8F0; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:16px;">👤</span>
+                  <div>
+                    <div style="font-size:13px; font-weight:800; color:#0F172A;">Traveler Details &amp; Identification</div>
+                    <div style="font-size:11px; color:#64748B;">Enter details as per government-issued passport / ID</div>
+                  </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button type="button" id="btn-toggle-vault-fill" onclick="toggleTravelerVaultFill()" style="font-size:11px; font-weight:700; color:#2E7D7E; background:#F0FDFA; border:1px solid #99F6E4; padding:5px 10px; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                    <span>⚡</span>
+                    <span id="vault-fill-btn-text">Auto-Fill from Vault</span>
+                  </button>
+                  <button type="button" onclick="addNewCoTravelerModalCard()" style="font-size:11px; font-weight:700; color:#2563EB; background:#EFF6FF; border:1px solid #BFDBFE; padding:5px 10px; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                    <span>+</span> Add Traveler
+                  </button>
+                </div>
+              </div>
+
+              <!-- Vault Sync Notice (if active) -->
+              <div id="modal-vault-sync-banner" style="display:none; padding:8px 16px; background:#F0FDFA; border-bottom:1px solid #CCFBF1; font-size:11.5px; color:#0F766E; display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="color:#059669; font-weight:800;">✓ Vault Synced:</span>
+                  <span id="modal-vault-sync-desc">Passport on file</span>
+                </div>
+                <a href="my-wallet.html" target="_blank" style="color:#0F766E; font-weight:700; text-decoration:underline;">View Vault</a>
+              </div>
+
+              <!-- Container for Dynamic Passenger Cards -->
+              <div id="modal-passengers-container" style="padding:14px; display:flex; flex-direction:column; gap:14px;">
+                <!-- Rendered by JS: Passenger 1 (Lead), Passenger 2, etc. -->
+              </div>
+
+              <!-- Contact Details (WhatsApp & Email for Ticket Delivery) -->
+              <div style="padding:12px 14px; background:#F8FAFC; border-top:1px solid #E2E8F0;">
+                <div style="font-size:11.5px; font-weight:800; color:#475569; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                  <span>📱</span> Ticket Delivery &amp; Concierge Contact
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <div>
+                    <label style="font-size:10.5px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;">WHATSAPP / MOBILE NO. *</label>
+                    <input type="tel" id="modal-contact-phone" class="fv-input" style="width:100%; box-sizing:border-box; padding:7px 10px; font-size:12px; border-radius:6px; border:1px solid #CBD5E1; background:#FFF;" placeholder="+91 98765 43210" />
+                  </div>
+                  <div>
+                    <label style="font-size:10.5px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;">EMAIL ADDRESS *</label>
+                    <input type="email" id="modal-contact-email" class="fv-input" style="width:100%; box-sizing:border-box; padding:7px 10px; font-size:12px; border-radius:6px; border:1px solid #CBD5E1; background:#FFF;" placeholder="you@domain.com" />
+                  </div>
+                </div>
+
+                <!-- Save to Vault Option -->
+                <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-size:11.5px; color:#334155; cursor:pointer;">
+                  <input type="checkbox" id="modal-chk-save-vault" checked style="accent-color:#2E7D7E;" />
+                  <span>Save / update these details in my personal <strong>Travel Vault</strong> for future 1-click bookings</span>
+                </label>
+              </div>
+
+            </div>
+
+            <!-- Ancillaries & Add-on Services Selector -->
+            <div style="border:1.5px solid #E2E8F0; border-radius:14px; padding:16px; background:#FFFFFF;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="font-size:13.5px; font-weight:800; color:var(--fv-navy); display:flex; align-items:center; gap:6px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12"/></svg> Trip Add-ons &amp; Baggage Options
+                </div>
+                <span style="font-size:11px; font-weight:700; color:#2563EB; background:#EFF6FF; padding:3px 9px; border-radius:10px;" id="modal-anc-selected-badge">0 Added</span>
+              </div>
+
+              <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px;">
+                <!-- Baggage -->
+                <label style="display:flex; align-items:flex-start; gap:8px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC; transition:all 0.15s ease;" id="lbl-anc-baggage">
+                  <input type="checkbox" id="chk-anc-baggage" value="baggage_15kg" data-name="Extra Check-in Baggage (15kg)" data-price="2200" onchange="handleAncillaryToggle(this)" style="margin-top:2px;" />
+                  <div style="font-size:11px; line-height:1.2;">
+                    <div style="font-weight:700; color:#0F172A;">Extra Baggage (+15kg)</div>
+                    <div style="color:#64748B; font-size:10px;">Check-in luggage • +₹2,200</div>
+                  </div>
+                </label>
+
+                <!-- Meal -->
+                <label style="display:flex; align-items:flex-start; gap:8px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC; transition:all 0.15s ease;" id="lbl-anc-meal">
+                  <input type="checkbox" id="chk-anc-meal" value="meal_hot" data-name="Hot In-Flight Meal & Drink" data-price="450" onchange="handleAncillaryToggle(this)" style="margin-top:2px;" />
+                  <div style="font-size:11px; line-height:1.2;">
+                    <div style="font-weight:700; color:#0F172A;">In-Flight Hot Meal</div>
+                    <div style="color:#64748B; font-size:10px;">Chef choice savory • +₹450</div>
+                  </div>
+                </label>
+
+                <!-- Seat — seat map opens automatically below when modal loads -->
+                <label style="display:flex; align-items:flex-start; gap:8px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC; transition:all 0.15s ease;" id="lbl-anc-seat">
+                  <input type="checkbox" id="chk-anc-seat" value="seat_preferred" data-name="Seat Selection" data-price="350" onchange="handleAncillaryToggle(this)" style="margin-top:2px;" />
+                  <div style="font-size:11px; line-height:1.2;">
+                    <div style="font-weight:700; color:#0F172A;">Choose Your Seat</div>
+                    <div class="lbl-seat-desc" style="color:#64748B; font-size:10px;" id="seat-map-summary-label">Select any green seat from the map below</div>
+                  </div>
+                </label>
+
+                <!-- Wheelchair / Special -->
+                <label style="display:flex; align-items:flex-start; gap:8px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC; transition:all 0.15s ease;" id="lbl-anc-wheelchair">
+                  <input type="checkbox" id="chk-anc-wheelchair" value="wheelchair_assist" data-name="Wheelchair Assistance (WCHS)" data-price="0" onchange="handleAncillaryToggle(this)" style="margin-top:2px;" />
+                  <div style="font-size:11px; line-height:1.2;">
+                    <div style="font-weight:700; color:#0F172A;">Wheelchair Assistance</div>
+                    <div style="color:#16A34A; font-weight:700; font-size:10px;">Special Request • FREE</div>
+                  </div>
+                </label>
+              </div>
+
+              <!-- ═══ Interactive Seat Map Panel ═══ -->
+              <div id="seat-map-panel" style="margin-top:14px; display:none; border-top:1px dashed #CBD5E1; padding-top:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <span style="font-size:12.5px; font-weight:800; color:#0F172A; display:flex; align-items:center; gap:5px;">
+                    🪑 Aircraft Seat Map
+                    <span id="seat-map-flight-label" style="font-size:11px; font-weight:600; color:#64748B;"></span>
+                  </span>
+                  <span style="font-size:10px; color:#16A34A; font-weight:700; background:#DCFCE7; padding:2px 8px; border-radius:4px;">Auto Web Check-in Guaranteed</span>
+                </div>
+
+                <!-- Legend -->
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px; font-size:10.5px; font-weight:600; color:#475569;">
+                  <span style="display:flex; align-items:center; gap:4px;"><span style="width:14px; height:14px; background:#22C55E; border-radius:3px; display:inline-block;"></span> Available</span>
+                  <span style="display:flex; align-items:center; gap:4px;"><span style="width:14px; height:14px; background:#E2E8F0; border-radius:3px; display:inline-block;"></span> Occupied</span>
+                  <span style="display:flex; align-items:center; gap:4px;"><span style="width:14px; height:14px; background:#FBBF24; border-radius:3px; display:inline-block;"></span> Selected</span>
+                  <span style="display:flex; align-items:center; gap:4px;"><span style="width:14px; height:14px; background:#60A5FA; border-radius:3px; display:inline-block;"></span> Exit/Legroom</span>
+                  <span style="display:flex; align-items:center; gap:4px;"><span style="width:14px; height:14px; background:#A78BFA; border-radius:3px; display:inline-block;"></span> Bulkhead</span>
+                </div>
+
+                <!-- Loading state -->
+                <div id="seat-map-loading" style="text-align:center; padding:24px; color:#94A3B8; font-size:12px; display:none;">
+                  <div style="font-size:20px; margin-bottom:6px;">🛩️</div>
+                  Loading real-time seat inventory...
+                </div>
+
+                <!-- Seat grid renders here -->
+                <div id="seat-map-grid" style="overflow-x:auto; overflow-y:auto; max-height:360px; border:1px solid #E2E8F0; border-radius:8px; padding:12px; background:#FAFAFA;">
+                  <!-- Populated by renderSeatGrid() -->
+                </div>
+
+                <!-- Selected seat info bar -->
+                <div id="seat-map-selection-bar" style="margin-top:10px; padding:10px 14px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; display:none;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                      <span style="font-size:12px; font-weight:800; color:#1E40AF;">Selected: </span>
+                      <span id="seat-selected-label" style="font-size:12px; font-weight:700; color:#0F172A;"></span>
+                    </div>
+                    <div style="font-size:12px; font-weight:700; color:#059669;" id="seat-selected-price"></div>
+                  </div>
+                  <input type="hidden" id="modal-seat-specific" value="">
+                  <input type="hidden" id="modal-seat-zone" value="any">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT SIDEBAR COLUMN: Reward Points, Fare Breakdown, WhatsApp CTA & Guarantee -->
+          <div class="ota-booking-sidebar-col">
+            
+            <!-- Reward Points Burn Slider -->
+            <div class="ota-points-burn-box" style="margin-top:0; border-radius:14px; background:#FFFFFF; border:1.5px solid #E2E8F0;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-size:13.5px; font-weight:800; color:var(--fv-navy);">Burn Bank Reward Points</div>
+                  <div style="font-size:11px; color:var(--fv-muted);" id="modal-points-rate-desc">Redeem HDFC / Axis / Amex points for direct cash deduction.</div>
+                </div>
+                <span style="font-size:14px; font-weight:900; color:var(--fv-green);" id="modal-points-cash-val">- ₹0</span>
+              </div>
+              <input type="range" min="0" max="15000" step="500" value="0" class="ota-points-slider" id="modal-points-slider" oninput="handlePointsSliderChange(this.value)" />
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--fv-muted); font-weight:600;">
+                <span>0 Pts</span>
+                <span id="modal-points-slider-val">0 Points Selected</span>
+                <span>15,000 Pts</span>
+              </div>
+            </div>
+
+            <!-- Fare Summary Breakdown -->
+            <div style="padding:18px; background:#FFFFFF; border-radius:14px; border:1.5px solid #E2E8F0; box-shadow:0 4px 16px rgba(0,0,0,0.03);">
+              <div style="font-size:13px; font-weight:800; color:#0F172A; text-transform:uppercase; margin-bottom:12px; letter-spacing:0.04em;">
+                💳 Price Breakdown
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                <span style="color:var(--fv-muted);">Airline Base Fare</span>
+                <span style="font-weight:700;" id="modal-base-fare">₹17,661</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:var(--fv-green);">
+                <span>Credit Card Instant Advantage</span>
+                <span style="font-weight:700;" id="modal-card-discount">- ₹0</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:var(--fv-primary);">
+                <span>Points Burn Deduction</span>
+                <span style="font-weight:700;" id="modal-points-discount">- ₹0</span>
+              </div>
+              <div id="modal-anc-row" style="display:none; justify-content:space-between; font-size:13px; margin-bottom:8px; color:#8B5CF6;">
+                <span>Selected Ancillaries</span>
+                <span style="font-weight:700;" id="modal-anc-total">+ ₹0</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+                <span style="color:var(--fv-muted);">WhatsApp Concierge &amp; Seat Lock</span>
+                <span style="font-weight:700;">₹350</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:19px; font-weight:900; color:var(--fv-navy); padding-top:12px; border-top:1.5px solid var(--fv-border); margin-top:10px;">
+                <span>Net Payable Fare</span>
+                <span id="modal-final-total" style="color:var(--fv-primary-dark);">₹18,011</span>
+              </div>
+            </div>
+
+            <!-- 1-Click WhatsApp Booking CTA -->
+            <button type="button" class="btn-ota-whatsapp-book" onclick="executeWhatsAppBookingFromModal()" style="border-radius:12px; box-shadow:0 8px 20px rgba(37,211,102,0.35); font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              <span>Complete Booking on WhatsApp</span>
+            </button>
+
+            <!-- Trust & Guarantee Safeguards Banner -->
+            <div style="padding:14px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px; font-size:11.5px; color:#166534; line-height:1.55;">
+              <div style="font-weight:800; display:flex; align-items:center; gap:6px; margin-bottom:4px; font-size:12px;">
+                <span>🛡️</span> Guaranteed PNR &amp; Fare Lock
+              </div>
+              <div>⚡ 15-Minute Instant Seat Hold via Amadeus GDS. Free cancellation within grace period &amp; WhatsApp live confirmation link delivered immediately.</div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Post-Booking Ancillary Order Modal (Routes directly to Ancillary Manual Queue) -->
+  <div class="ota-booking-modal-overlay" id="ota-post-booking-ancillary-modal" style="display:none;" onclick="if(event.target===this) closePostBookingAncModal()">
+    <div class="ota-booking-modal" style="max-width:520px;">
+      <div class="ota-modal-head">
+        <div>
+          <h3 style="margin:0;">Request Post-Booking Add-on</h3>
+          <div style="font-size:12px; color:var(--fv-muted); font-weight:600;" id="post-anc-booking-subtitle">Booking: BKNG-7138781 • DEL → COK</div>
+        </div>
+        <button type="button" onclick="closePostBookingAncModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--fv-muted);">&times;</button>
+      </div>
+
+      <div class="ota-modal-body" style="padding:20px;">
+        <p style="font-size:12.5px; color:#64748B; margin:0 0 16px;">
+          Select the services you wish to add to your confirmed flight. Since this flight is already ticketed, your request will be routed to the <strong>Flyvis Flight Operations Desk</strong> for manual airline GDS confirmation.
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+          <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC;">
+            <input type="checkbox" name="post_anc_item" value="baggage_20kg" data-name="Extra Check-in Baggage (20kg)" data-provider="AMGS" checked />
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#0F172A;">Extra Check-in Baggage (20kg)</div>
+              <div style="font-size:11px; color:#64748B;">Requires airline EMD issuance • Amadeus GDS</div>
+            </div>
+          </label>
+
+          <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC;">
+            <input type="checkbox" name="post_anc_item" value="meal_special" data-name="Special Dietary Meal (Jain/Diabetic/Halal)" data-provider="AMGS" />
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#0F172A;">Special Dietary In-Flight Meal</div>
+              <div style="font-size:11px; color:#64748B;">Attached to passenger manifest</div>
+            </div>
+          </label>
+
+          <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC;">
+            <input type="checkbox" name="post_anc_item" value="seat_assigned" data-name="Seat Assignment / Extra Legroom" data-provider="AMGS" />
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#0F172A;">Seat Assignment / Extra Legroom</div>
+              <div style="font-size:11px; color:#64748B;">Window, Aisle, or Emergency Exit Row lock via GDS</div>
+            </div>
+          </label>
+
+          <label style="display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; cursor:pointer; background:#F8FAFC;">
+            <input type="checkbox" name="post_anc_item" value="assistance_wheelchair" data-name="Wheelchair Ramp Assistance" data-provider="AMGS" />
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:700; color:#0F172A;">Wheelchair Assistance (WCHS)</div>
+              <div style="font-size:11px; color:#16A34A; font-weight:700;">Special Service Request (SSR) • Free</div>
+            </div>
+          </label>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label style="font-size:11.5px; font-weight:700; color:#475569; display:block; margin-bottom:6px;">Special Instructions / Passenger Notes</label>
+          <textarea id="post-anc-notes" rows="2" class="admin-form-textarea" placeholder="e.g. Please confirm 1 piece up to 20kg for terminal check-in." style="width:100%; box-sizing:border-box; font-size:12px; border-radius:8px; border:1px solid #CBD5E1; padding:8px 10px; font-family:inherit;"></textarea>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="submitPostBookingAncillaryRequest()" style="width:100%; padding:12px; font-size:13px; font-weight:800; border-radius:8px; background:#2563EB; color:#FFF; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <span>Submit Request to Operations Desk &rarr;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 24/7 PRICE DROP & AUTO-BOOK MODAL (FULLSCREEN FROSTED BLUR) -->
+  <div class="ota-booking-modal-overlay" id="ota-price-alert-modal" onclick="if(event.target===this) closePriceAlertModal()">
+    <div class="ota-booking-modal">
+      <div class="ota-modal-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <h3>Flight Price Protection &amp; Auto-Book</h3>
+            <span id="alert-route-pill" style="font-size:12px; font-weight:800; background:#E2E8F0; color:#1E293B; padding:3px 10px; border-radius:12px;">DEL &rarr; DXB</span>
+            <span style="font-size:11px; font-weight:800; background:#DCFCE7; color:#166534; padding:3px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">
+              <span style="width:6px; height:6px; background:#16A34A; border-radius:50%; display:inline-block;"></span> 24/7 GDS Fare Watch
+            </span>
+          </div>
+          <div style="font-size:13px; color:var(--fv-muted); margin-top:4px;">Autonomous airline yield &amp; revenue management tracking powered by live Amadeus GDS fare streams.</div>
+        </div>
+        <button type="button" onclick="closePriceAlertModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--fv-muted); line-height:1; padding:4px 8px; border-radius:6px;">&times;</button>
+      </div>
+
+      <div class="ota-modal-body">
+        <div class="ota-alert-grid">
+
+          <!-- LEFT MAIN COLUMN: Strategy, Target Price & Drop Forecast, Ancillary Package, Safeguards -->
+          <div class="ota-alert-main-col">
+
+            <!-- 1. Mode Switcher Tabs Card -->
+            <div style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px;">
+              <div style="font-size:13.5px; font-weight:800; color:var(--fv-navy); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                <span>⚡</span> 1. Select Tracking &amp; Execution Strategy
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div id="tracker-tab-autobook" onclick="setTrackerMode('auto_book')" style="cursor:pointer; border:2px solid #2E7D7E; background:#F0FDF4; border-radius:12px; padding:14px; transition:all 0.2s;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                    <span style="font-size:13.5px; font-weight:900; color:#166534; display:flex; align-items:center; gap:6px;">
+                      <span>⚡</span> Auto-Book
+                    </span>
+                    <span style="font-size:10px; font-weight:900; background:#16A34A; color:#FFFFFF; padding:2px 7px; border-radius:10px; text-transform:uppercase;">Zero-Delay</span>
+                  </div>
+                  <div style="font-size:12px; color:#15803D; line-height:1.4;">Instant automated GDS booking the second fare drops to your target. ₹0 charged today. Card authorized with strict price cap.</div>
+                </div>
+
+                <div id="tracker-tab-notify" onclick="setTrackerMode('notify_confirm')" style="cursor:pointer; border:1.5px solid #CBD5E1; background:#FFFFFF; border-radius:12px; padding:14px; transition:all 0.2s;">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                    <span style="font-size:13.5px; font-weight:800; color:#475569; display:flex; align-items:center; gap:6px;">
+                      <span>🔔</span> Notify &amp; Confirm
+                    </span>
+                    <span style="font-size:10px; font-weight:700; background:#F1F5F9; color:#64748B; padding:2px 6px; border-radius:10px;">User Review</span>
+                  </div>
+                  <div style="font-size:12px; color:#64748B; line-height:1.4;">Flyvis pings your WhatsApp with a 15-minute 1-click booking link when target is hit. No card upfront. Subject to seat availability.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Target Fare & Drop Probability Forecast Card -->
+            <div style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px;">
+              <div style="font-size:13.5px; font-weight:800; color:var(--fv-navy); margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
+                <span style="display:flex; align-items:center; gap:6px;">
+                  <span>🎯</span> 2. Target Fare &amp; AI Predictive Forecast
+                </span>
+                <span id="alert-savings-badge" style="font-size:12px; font-weight:800; color:#16A34A; background:#DCFCE7; padding:2px 8px; border-radius:6px;">Target Savings: ₹1,500 (10%)</span>
+              </div>
+
+              <!-- Target Price Input -->
+              <div style="margin-bottom:14px;">
+                <label style="font-size:12px; font-weight:800; color:var(--fv-navy); display:block; margin-bottom:6px;">Target Trigger Fare per Traveler (₹)</label>
+                <div style="position:relative;">
+                  <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:16px; font-weight:800; color:#64748B;">₹</span>
+                  <input type="number" id="alert-target-price" class="ota-input-field" oninput="updateModalDropProbability()" style="width:100%; border:1.5px solid var(--fv-border); padding:10px 14px 10px 32px; border-radius:8px; background:#F8FAFC; font-size:16px; font-weight:900; box-sizing:border-box; color:#0D1B2A;" value="15000" />
+                </div>
+                <div style="font-size:11.5px; color:#64748B; margin-top:4px;">Set the maximum base airfare you are willing to pay. We suggest setting 10–20% below current live fares.</div>
+              </div>
+
+              <!-- AI Drop Probability Forecast Box -->
+              <div id="alert-probability-box" style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:10px; padding:12px 14px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:12.5px; font-weight:800; color:#166534; display:flex; align-items:center; gap:6px;">
+                    <span>🤖</span> AI Drop Probability
+                  </span>
+                  <span id="alert-prob-badge" style="font-size:12.5px; font-weight:900; color:#15803D;">86% Likely</span>
+                </div>
+                <div style="height:6px; width:100%; background:#DCFCE7; border-radius:99px; overflow:hidden;">
+                  <div id="alert-prob-bar" style="height:100%; width:86%; background:#16A34A; border-radius:99px; transition:width 0.3s ease;"></div>
+                </div>
+                <div id="alert-prob-subtext" style="font-size:11.5px; color:#166534; margin-top:6px; font-weight:600;">High confidence: 30-day airline revenue management window detected.</div>
+              </div>
+
+              <!-- Multi-Pax Total Budget & GDS Multi-Traveler Enforcement Banner -->
+              <div id="alert-multipax-banner" style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:10px; padding:12px 14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <span style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.3px;">Authorized Aggregate Budget (<span id="alert-total-pax-label">1 Traveler</span>)</span>
+                    <div style="font-size:18px; font-weight:900; color:#0D1B2A; margin-top:2px;" id="alert-total-budget-val">₹15,000</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <span style="font-size:10.5px; font-weight:800; color:#059669; background:#DCFCE7; border:1px solid #BBF7D0; padding:3px 8px; border-radius:10px;">✓ Multi-Pax GDS Gate</span>
+                    <div style="font-size:11px; color:#64748B; margin-top:3px;">Single-RBD Protected</div>
+                  </div>
+                </div>
+                <div style="font-size:11.5px; color:#64748B; margin-top:8px; border-top:1px dashed #E2E8F0; padding-top:8px; line-height:1.4;">
+                  🛡️ <strong>Fare Bucket Cliff Defense:</strong> Amadeus checks available inventory for all travelers simultaneously so a single promotional seat doesn't accidentally bump your entire party into a higher fare class.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 3. Required Travel Package & Ancillaries (TCOT All-Inclusive Shield) -->
+            <div id="alert-package-tcot-box" style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <div style="font-size:13.5px; font-weight:800; color:var(--fv-navy); display:flex; align-items:center; gap:6px;">
+                  <span>🧳</span> 3. Required Travel Package &amp; Ancillaries
+                </div>
+                <span id="alert-tcot-shield-badge" style="font-size:10.5px; font-weight:800; color:#0F766E; background:#CCFBF1; border:1px solid #99F6E4; padding:3px 8px; border-radius:6px;">TCOT Shield Active</span>
+              </div>
+              <div style="font-size:12px; color:#64748B; margin-bottom:14px; line-height:1.4;">
+                Configure your required travel package. The tracker and auto-book engine will <strong>only</strong> trigger when an airline offer fulfills all selected requirements within your all-inclusive budget.
+              </div>
+
+              <!-- 1. Baggage Package -->
+              <div style="margin-bottom:12px;">
+                <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">1. Checked Baggage Requirement</label>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
+                  <label style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 8px; background:#FFF; border:1px solid #CBD5E1; border-radius:8px; font-size:11.5px; cursor:pointer;" id="lbl-pkg-bag-0">
+                    <input type="radio" name="alert-pkg-baggage" value="0" onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E; margin-bottom:4px;" />
+                    <strong style="color:#0F172A; font-size:12px;">0kg Lite</strong>
+                    <span style="font-size:10px; color:#64748B;">Cabin 7kg Only</span>
+                  </label>
+                  <label style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 8px; background:#F0FDF4; border:1.5px solid #2E7D7E; border-radius:8px; font-size:11.5px; cursor:pointer;" id="lbl-pkg-bag-15">
+                    <input type="radio" name="alert-pkg-baggage" value="15" checked onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E; margin-bottom:4px;" />
+                    <strong style="color:#14532D; font-size:12px;">15kg Standard</strong>
+                    <span id="alert-pkg-bag-15-price" style="font-size:10px; color:#15803D; font-weight:700;">Standard Bag</span>
+                  </label>
+                  <label style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 8px; background:#FFF; border:1px solid #CBD5E1; border-radius:8px; font-size:11.5px; cursor:pointer;" id="lbl-pkg-bag-25">
+                    <input type="radio" name="alert-pkg-baggage" value="25" onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E; margin-bottom:4px;" />
+                    <strong style="color:#0F172A; font-size:12px;">25kg Heavy</strong>
+                    <span id="alert-pkg-bag-25-price" style="font-size:10px; color:#64748B;">Extra Baggage</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 2. Meal & Flexibility Grid -->
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <!-- In-Flight Meal -->
+                <div style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:10px 12px;">
+                  <label style="font-size:12px; font-weight:700; color:#334155; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                    <span>🍱 In-Flight Hot Meal</span>
+                    <input type="checkbox" id="alert-pkg-chk-meal" onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E;" />
+                  </label>
+                  <div id="alert-pkg-meal-sub" style="font-size:10.5px; color:#64748B; margin-top:3px;">
+                    <span id="alert-pkg-meal-price-tag">Free on FSC / +₹450 on LCC</span>
+                  </div>
+                </div>
+
+                <!-- Ticket Flexibility -->
+                <div style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:10px 12px;">
+                  <label style="font-size:12px; font-weight:700; color:#334155; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
+                    <span>🔄 1 Free Date Change</span>
+                    <input type="checkbox" id="alert-pkg-chk-flexi" onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E;" />
+                  </label>
+                  <div id="alert-pkg-flex-sub" style="font-size:10.5px; color:#64748B; margin-top:3px;">
+                    <span id="alert-pkg-flex-price-tag">+₹800 Flexi Reschedule</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Seat Assignment -->
+              <div style="margin-bottom:12px;">
+                <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">3. Seat Selection Requirement</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1.2fr; gap:8px;">
+                  <label style="display:flex; align-items:center; gap:6px; padding:8px 10px; background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; font-size:11.5px; cursor:pointer;">
+                    <input type="radio" name="alert-pkg-seat" value="any" checked onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E;" />
+                    <div>
+                      <span style="display:block; font-weight:700; color:#0F172A; font-size:11px;">Any Seat</span>
+                      <span style="font-size:9.5px; color:#64748B;">Free Check-in</span>
+                    </div>
+                  </label>
+                  <label style="display:flex; align-items:center; gap:6px; padding:8px 10px; background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; font-size:11.5px; cursor:pointer;">
+                    <input type="radio" name="alert-pkg-seat" value="standard" onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E;" />
+                    <div>
+                      <span style="display:block; font-weight:700; color:#0F172A; font-size:11px;">Window / Aisle</span>
+                      <span id="alert-pkg-seat-std-tag" style="font-size:9.5px; color:#64748B;">Free FSC / +₹250</span>
+                    </div>
+                  </label>
+                  <label style="display:flex; align-items:center; gap:6px; padding:8px 10px; background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; font-size:11.5px; cursor:pointer;">
+                    <input type="radio" name="alert-pkg-seat" value="extra_legroom" onchange="updateModalTcotCalculation()" style="accent-color:#2E7D7E;" />
+                    <div>
+                      <span style="display:block; font-weight:700; color:#0F172A; font-size:11px;">Extra Legroom (XL)</span>
+                      <span id="alert-pkg-seat-xl-tag" style="font-size:9.5px; color:#64748B;">+₹650 to +₹1,600</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Real-Time TCOT Target Impact Banner -->
+              <div id="alert-tcot-summary-bar" style="background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div>
+                  <span style="font-size:11px; font-weight:800; color:#166534; text-transform:uppercase; letter-spacing:0.3px; display:block;">All-Inclusive Target Cap</span>
+                  <span id="alert-tcot-explain" style="font-size:11.5px; color:#15803D;">Includes Base Airfare + Selected Package Add-Ons</span>
+                </div>
+                <div style="text-align:right;">
+                  <span id="alert-tcot-total-val" style="font-size:17px; font-weight:900; color:#14532D;">₹15,000</span>
+                  <span id="alert-tcot-breakdown-sub" style="display:block; font-size:10.5px; color:#166534; font-weight:600;">(Base airfare + ₹0 bundle)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Autonomous Booking Safeguards & Policies -->
+            <div style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px;">
+              <div style="font-size:13.5px; font-weight:800; color:var(--fv-navy); margin-bottom:14px; display:flex; align-items:center; gap:6px;">
+                <span>🛡️</span> 4. Autonomous Booking Safeguards &amp; Policies
+              </div>
+
+              <!-- Flight Match Rule -->
+              <div style="margin-bottom:14px;">
+                <label style="font-size:12px; font-weight:800; color:var(--fv-navy); display:block; margin-bottom:6px;">Flight Match Policy</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                  <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:#334155; background:#F8FAFC; border:1px solid #E2E8F0; padding:10px 12px; border-radius:8px; cursor:pointer;">
+                    <input type="radio" name="alert-flight-match" value="exact" checked style="accent-color:#2E7D7E;" onchange="handleFlightMatchChange(this.value)" />
+                    <div>
+                      <strong style="color:#0F172A;">Exact Flight Only</strong>
+                      <div style="font-size:10.5px; color:#64748B; font-weight:normal;">Only book this specific airline &amp; flight number</div>
+                    </div>
+                  </label>
+                  <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:#334155; background:#F8FAFC; border:1px solid #E2E8F0; padding:10px 12px; border-radius:8px; cursor:pointer;">
+                    <input type="radio" name="alert-flight-match" value="any_nonstop" style="accent-color:#2E7D7E;" onchange="handleFlightMatchChange(this.value)" />
+                    <div>
+                      <strong style="color:#0F172A;">Any Non-Stop Flight</strong>
+                      <div style="font-size:10.5px; color:#64748B; font-weight:normal;">Broaden search to any direct flight on this route</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Red-Eye / Midnight Departure Protection Toggle -->
+              <div id="alert-midnight-filter-box" style="margin-bottom:14px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:12px 14px;">
+                <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin:0;" id="lbl-exclude-midnight-toggle">
+                  <input type="checkbox" id="alert-chk-exclude-midnight" checked style="accent-color:#2E7D7E; margin-top:2px;" />
+                  <div>
+                    <div style="font-size:12px; font-weight:800; color:#0F172A; display:flex; align-items:center; gap:6px;">
+                      <span>🌙</span> Exclude Midnight Departures (00:00 – 04:00 AM)
+                      <span style="font-size:10px; font-weight:800; background:#DCFCE7; color:#166534; padding:1px 6px; border-radius:4px;">RECOMMENDED</span>
+                    </div>
+                    <div style="font-size:11.5px; color:#64748B; margin-top:3px; line-height:1.35;">
+                      Protects against accidental "day-before" no-shows by excluding early morning flights that require arriving at the airport the previous evening.
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Dynamic Exact Flight Midnight Warning Banner -->
+                <div id="alert-exact-midnight-warning" style="display:none; margin-top:8px; padding:8px 12px; background:#FFFBEB; border:1px solid #FCD34D; border-radius:6px; font-size:11.5px; color:#92400E; line-height:1.4;">
+                  <strong>⚠️ Early Morning Departure Notice:</strong>
+                  <div id="alert-exact-midnight-msg" style="margin-top:3px;"></div>
+                </div>
+              </div>
+
+              <!-- Connection & Self-Transfer Safeguard -->
+              <div id="alert-connection-safeguard-box" style="margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <label style="font-size:12px; font-weight:800; color:var(--fv-navy);">Connection &amp; Transfer Safeguard</label>
+                  <span style="font-size:10.5px; font-weight:800; color:#0F766E; background:#CCFBF1; padding:2px 7px; border-radius:4px;">IATA MCT Shield</span>
+                </div>
+                <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#1E293B; background:#F0FDFA; border:1px solid #99F6E4; padding:10px 12px; border-radius:8px; cursor:pointer;">
+                  <input type="checkbox" id="alert-chk-exclude-self-transfer" checked style="accent-color:#0D9488; margin-top:2px;" />
+                  <div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <strong>Require Protected Interline Connections</strong>
+                      <span style="font-size:10px; font-weight:800; background:#0D9488; color:#FFF; padding:1px 5px; border-radius:4px;">RECOMMENDED</span>
+                    </div>
+                    <div style="font-size:11.5px; color:#0F766E; margin-top:3px; line-height:1.4;">
+                      Excludes risky separate-ticket self-transfers with tight layovers (&lt; 3.5h). Guarantees onward connections are covered by airline rebooking treaties (IATA Res 766) and luggage is through-checked.
+                    </div>
+                  </div>
+                </label>
+                <div id="alert-connection-warning" style="display:none; margin-top:8px; padding:8px 12px; background:#FFF1F2; border:1.5px solid #FECDD3; border-radius:6px; font-size:11.5px; color:#9F1239; line-height:1.4;">
+                  <!-- Injected dynamically when tracked flight is self-transfer -->
+                </div>
+              </div>
+
+              <!-- Price Drift & Slippage Tolerance -->
+              <div id="alert-drift-tolerance-box" style="margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <label style="font-size:12px; font-weight:800; color:var(--fv-navy);">Fare Slippage &amp; Drift Protection</label>
+                  <span style="font-size:10.5px; font-weight:800; color:#1D4ED8; background:#DBEAFE; padding:2px 7px; border-radius:4px;">Atomic Re-Quote</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#1E293B; background:#F0FDF4; border:1px solid #BBF7D0; padding:10px 12px; border-radius:8px; cursor:pointer;">
+                    <input type="radio" name="alert-drift-tolerance" value="strict_0" checked style="accent-color:#2E7D7E; margin-top:2px;" />
+                    <div>
+                      <div style="display:flex; align-items:center; gap:6px;">
+                        <strong>Strict (₹0 Price Slippage)</strong>
+                        <span style="font-size:10px; font-weight:800; background:#16A34A; color:#FFF; padding:1px 5px; border-radius:4px;">RECOMMENDED</span>
+                      </div>
+                      <div style="font-size:11.5px; color:#15803D; margin-top:2px;">Card is NEVER charged if airline fares jump by even ₹1 during the 15-minute checkout window. Automatic abort protects your budget.</div>
+                    </div>
+                  </label>
+                  <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#1E293B; background:#F8FAFC; border:1px solid #CBD5E1; padding:10px 12px; border-radius:8px; cursor:pointer;">
+                    <input type="radio" name="alert-drift-tolerance" value="flexible_500" style="accent-color:#2E7D7E; margin-top:2px;" />
+                    <div>
+                      <div style="display:flex; align-items:center; gap:6px;">
+                        <strong>Flexible (Allow up to ₹500 Drift)</strong>
+                        <span style="font-size:10px; font-weight:800; background:#2E7D7E; color:#FFF; padding:1px 5px; border-radius:4px;">PREVENT SEAT LOSS</span>
+                      </div>
+                      <div style="font-size:11.5px; color:#64748B; margin-top:2px;">If the last promotional seat is selling out, permits booking if fare drifted upward by &le; ₹500 so you don't lose the flight.</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Multi-Traveler PNR Booking Strategy -->
+              <div id="alert-pnr-strategy-box">
+                <label style="font-size:12px; font-weight:800; color:var(--fv-navy); display:block; margin-bottom:6px;">Multi-Traveler Booking Strategy</label>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#1E293B; background:#F8FAFC; border:1px solid #CBD5E1; padding:10px 12px; border-radius:8px; cursor:pointer;">
+                    <input type="radio" name="alert-pnr-strategy" value="single_pnr" checked style="accent-color:#2E7D7E; margin-top:2px;" />
+                    <div>
+                      <strong>Single PNR Only (Strict / Recommended)</strong>
+                      <div style="font-size:11.5px; color:#64748B; margin-top:2px;">Keep everyone on 1 booking. Guaranteed same fare class &amp; rebooked together during flight delays.</div>
+                    </div>
+                  </label>
+                  <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:#1E293B; background:#F0FDFA; border:1px solid #99F6E4; padding:10px 12px; border-radius:8px; cursor:pointer;">
+                    <input type="radio" name="alert-pnr-strategy" value="split_pnr" style="accent-color:#2E7D7E; margin-top:2px;" />
+                    <div>
+                      <div style="display:flex; align-items:center; gap:6px;">
+                        <strong>Split-PNR Allowed ⚡</strong>
+                        <span style="font-size:10px; font-weight:800; background:#0D9488; color:#FFF; padding:1px 5px; border-radius:4px;">MAX SAVINGS</span>
+                      </div>
+                      <div style="font-size:11.5px; color:#0F766E; margin-top:2px;">If 1 cheap promo seat opens up, split into separate PNRs to save money as long as total stays under budget. Linked via GDS OSI TCP.</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- RIGHT SIDEBAR COLUMN: Summary, Passenger APIS, Pre-Auth Payment, Contact, Action Button -->
+          <div class="ota-alert-sidebar-col">
+
+            <!-- Protection Commitment Hero Card -->
+            <div style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px;">
+              <div style="font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:8px;">Protection Commitment</div>
+              <div style="background:linear-gradient(135deg, #0F172A 0%, #1E293B 100%); border-radius:12px; padding:16px; color:#FFFFFF; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                  <span style="font-size:12px; color:#94A3B8; font-weight:600;">Max Trigger Cap</span>
+                  <span id="alert-sidebar-tcot-val" style="font-size:24px; font-weight:900; color:#34D399;">₹15,000</span>
+                </div>
+                <div id="alert-sidebar-tcot-sub" style="font-size:11px; color:#94A3B8; margin-top:4px;">All-inclusive per traveler (Airfare + Taxes + Selected Package)</div>
+              </div>
+
+              <!-- Max Price Guarantee Callout -->
+              <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:8px; padding:10px 12px; display:flex; gap:10px; align-items:flex-start;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div style="font-size:11.5px; color:#1E40AF; line-height:1.4;">
+                  <strong>Guaranteed Max Price Cap:</strong> You will never be charged a single rupee above your aggregate budget. If the airline dips lower (e.g. ₹13,200), you automatically pay the lower amount!
+                </div>
+              </div>
+            </div>
+
+            <!-- Passenger & APIS Details Card -->
+            <div style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="font-size:13px; font-weight:800; color:#0D1B2A; display:flex; align-items:center; gap:6px;">
+                  <span>👤</span> Passenger &amp; APIS Details
+                </div>
+                <span id="alert-vault-indicator" style="font-size:10.5px; font-weight:800; color:#2E7D7E; background:#E6F4F1; padding:3px 8px; border-radius:6px;">Flyvis Vault Connected</span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div>
+                  <label style="font-size:10.5px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;">TRAVELER FULL NAME</label>
+                  <input type="text" id="alert-traveler-name" class="ota-input-field" placeholder="First & Last Name" style="width:100%; border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; font-size:12.5px; box-sizing:border-box;" />
+                </div>
+                <div>
+                  <label style="font-size:10.5px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;" id="alert-lbl-doc-num">PASSPORT / NATIONAL ID</label>
+                  <input type="text" id="alert-traveler-passport" class="ota-input-field" placeholder="Passport Number" style="width:100%; border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; font-size:12.5px; box-sizing:border-box;" />
+                </div>
+              </div>
+
+              <!-- Passport Expiry & INAD Pre-Check -->
+              <div id="alert-passport-exp-wrap">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="alert-passport-grid-row">
+                  <div id="alert-passport-exp-col">
+                    <label style="font-size:10.5px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;">PASSPORT EXPIRY DATE</label>
+                    <input type="date" id="alert-traveler-passport-exp" class="ota-input-field" onchange="checkAlertPassportInad()" style="width:100%; border:1px solid #CBD5E1; padding:7px 9px; border-radius:6px; font-size:12px; box-sizing:border-box;" value="2028-12-31" />
+                  </div>
+                  <div style="display:flex; flex-direction:column; justify-content:flex-end;">
+                    <span style="font-size:10px; font-weight:800; color:#475569; text-transform:uppercase; margin-bottom:4px;">DOC CLEARANCE</span>
+                    <span id="alert-inad-badge" style="font-size:11px; font-weight:800; color:#166534; background:#DCFCE7; border:1px solid #BBF7D0; padding:6px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">
+                      <span>✓</span> 6M Validity Verified
+                    </span>
+                  </div>
+                </div>
+                <div id="alert-inad-warning" style="display:none; margin-top:8px; padding:8px 12px; background:#FFF1F2; border:1.5px solid #FECDD3; border-radius:6px; font-size:11.5px; color:#9F1239; line-height:1.4;">
+                  <!-- Injected dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- AUTO-BOOK SPECIFIC CONTROLS (Toggled by setTrackerMode) -->
+            <div id="alert-autobook-fields" style="display:block;">
+
+              <!-- Pre-Authorized Payment Method -->
+              <div style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <div style="font-size:13px; font-weight:800; color:#0D1B2A; display:flex; align-items:center; gap:6px;">
+                    <span>💳</span> Pre-Authorized Payment Method
+                  </div>
+                  <span style="font-size:10.5px; font-weight:800; color:#16A34A; background:#DCFCE7; padding:2px 8px; border-radius:6px;">₹0 Charged Today</span>
+                </div>
+                <div style="font-size:11.5px; color:#64748B; margin-bottom:12px; line-height:1.35;">
+                  Card tokenization hold. Your card is authorized for the target cap but charged <strong>only</strong> if the airline drops the fare.
+                </div>
+                <div style="margin-bottom:8px;">
+                  <input type="text" id="alert-card-name" class="ota-input-field" placeholder="Cardholder Name" style="width:100%; border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; font-size:12.5px; box-sizing:border-box; margin-bottom:8px;" value="Zaid Khaleel" />
+                  <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:8px;">
+                    <input type="text" id="alert-card-number" class="ota-input-field" placeholder="Card Number (•••• 4242)" maxlength="19" style="border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; font-size:12px; box-sizing:border-box;" value="•••• •••• •••• 4242" />
+                    <input type="text" id="alert-card-exp" class="ota-input-field" placeholder="MM/YY" maxlength="5" style="border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; font-size:12px; box-sizing:border-box;" value="12/28" />
+                    <input type="password" id="alert-card-cvv" class="ota-input-field" placeholder="CVV" maxlength="4" style="border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; font-size:12px; box-sizing:border-box;" value="•••" />
+                  </div>
+                </div>
+                <!-- Token Validity & 3DS Fallback Safeguard Note -->
+                <div style="margin-top:10px; border-top:1px dashed #CBD5E1; padding-top:10px; display:flex; flex-direction:column; gap:6px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px;">
+                    <span style="color:#0F766E; font-weight:800; display:flex; align-items:center; gap:4px;">
+                      <span>🔒</span> RBI-Compliant E-Mandate
+                    </span>
+                    <span style="font-weight:700; color:#047857; background:#D1FAE5; padding:2px 7px; border-radius:4px;">Valid for 60 Days</span>
+                  </div>
+                  <div style="font-size:11px; color:#64748B; line-height:1.4;">
+                    ⚡ <strong>15-Min GDS Seat Hold (Amadeus TKTL):</strong> Locks the airline seat inventory on the GDS before charging your card. If the airline price drifts beyond your limit or bank OTP expires, the seat hold is released automatically with zero penalty or card charge.
+                  </div>
+                </div>
+              </div>
+
+              <!-- 24-Hour Free Cancellation Guarantee Badge -->
+              <div style="display:flex; align-items:center; gap:10px; background:#F0FDF4; border:1.5px solid #BBF7D0; border-radius:10px; padding:12px 14px; margin-bottom:16px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.2" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div style="font-size:12px; color:#166534; line-height:1.4;">
+                  <strong>Zero Risk Guarantee:</strong> 24-Hour Free Cancellation. If auto-booked and your plans change, cancel with 1-click for a 100% full refund within 24 hours.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- NOTIFY & CONFIRM SPECIFIC CALLOUT (Toggled by setTrackerMode) -->
+            <div id="alert-notify-fields" style="display:none; background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:12px; padding:14px; margin-bottom:16px;">
+              <div style="font-size:12.5px; color:#92400E; font-weight:800; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                <span>🔔</span> Urgent Flash Alert Mode:
+              </div>
+              <div style="font-size:12px; color:#B45309; line-height:1.45;">
+                The moment Amadeus detects the fare drop, Flyvis will ping your WhatsApp with a <strong>15-minute 1-click booking link</strong>. No card is charged without your explicit click!
+              </div>
+            </div>
+
+            <!-- Flash Alert & Booking Contacts -->
+            <div style="background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:14px; padding:18px; margin-bottom:16px;">
+              <div style="font-size:13px; font-weight:800; color:#0D1B2A; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                <span>📱</span> Flash Alert &amp; Booking Contacts
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                  <label style="font-size:10.5px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;">WHATSAPP NUMBER</label>
+                  <input type="tel" id="alert-phone-number" class="ota-input-field" style="width:100%; border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; background:#F8FAFC; font-size:12px; box-sizing:border-box;" placeholder="+91 92070 21258" />
+                </div>
+                <div>
+                  <label style="font-size:10.5px; font-weight:700; color:#64748B; display:block; margin-bottom:4px;">EMAIL ADDRESS</label>
+                  <input type="email" id="alert-email-address" class="ota-input-field" style="width:100%; border:1px solid #CBD5E1; padding:8px 10px; border-radius:6px; background:#F8FAFC; font-size:12px; box-sizing:border-box;" placeholder="zaidkn99@gmail.com" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Button & Security Footer -->
+            <div>
+              <button type="button" id="alert-submit-btn" class="btn-ota-whatsapp-book" style="margin-top:0; width:100%; justify-content:center; padding:14px; font-size:15px; font-weight:800; border-radius:10px; box-shadow: 0 4px 14px rgba(46, 125, 126, 0.35);" onclick="submitPriceDropAlert()">
+                <span>Pre-Authorize &amp; Activate Auto-Book &#x26A1;</span>
+              </button>
+              <div style="text-align:center; font-size:11px; color:#64748B; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                <span>🔒</span> 256-Bit GDS Encryption • RBI E-Mandate Compliant • Zero Cancel Fee
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER ACTIVITY & DASHBOARD MODAL -->
+  <div class="ota-booking-modal-overlay" id="flyvis-user-dashboard-modal" onclick="if(event.target===this) closeUserDashboard()">
+    <div class="ota-booking-modal" style="max-width:540px;">
+      <div class="ota-modal-head">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <h3 style="margin:0;">My Account &amp; Past Actions</h3>
+        </div>
+        <button type="button" onclick="closeUserDashboard()" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--fv-muted);">&times;</button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div style="display:flex; border-bottom:1px solid #E2E8F0; background:#F8FAFC; padding:0 8px; overflow-x:auto;">
+        <button type="button" class="ud-tab-btn active" data-tab="flights" onclick="renderDashboardContent('flights')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#0D1B2A; cursor:pointer; border-bottom:2px solid #2E7D7E; white-space:nowrap;">
+          My Flights
+        </button>
+        <button type="button" class="ud-tab-btn" data-tab="visas" onclick="renderDashboardContent('visas')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#64748B; cursor:pointer; white-space:nowrap;">
+          My Visas
+        </button>
+        <button type="button" class="ud-tab-btn" data-tab="dummy" onclick="renderDashboardContent('dummy')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#64748B; cursor:pointer; white-space:nowrap;">
+          My Dummy Tickets
+        </button>
+        <button type="button" class="ud-tab-btn" data-tab="wallet" onclick="renderDashboardContent('wallet')" style="padding:12px 14px; background:none; border:none; font-size:13px; font-weight:800; color:#64748B; cursor:pointer; white-space:nowrap;">
+          My Wallet
+        </button>
+      </div>
+
+      <div class="ota-modal-body" id="user-dashboard-body">
+        <!-- Injected dynamically by js/auth.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. RADAR SCANNER OVERLAY -->
+  <div class="ota-scanner-overlay" id="ota-scanner-overlay">
+    <div class="ota-scanner-card">
+      <div style="width:48px; height:48px; border-radius:50%; border:3px solid var(--fv-primary-light); border-top-color:var(--fv-primary); animation:spin 0.8s linear infinite; margin:0 auto 16px;"></div>
+      <h3 style="font-size:18px; font-weight:900; color:var(--fv-navy); margin:0 0 6px;" id="scanner-title">Scanning Google Flights Live Stream...</h3>
+      <p style="font-size:13px; color:var(--fv-muted); margin:0;" id="scanner-desc">Fetching real-time carrier seat inventory &amp; credit card multipliers.</p>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+
+  <!-- Firebase & Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/auth.js?v=100"></script>
+  <script src="js/sidebar.js?v=100"></script>
+  <script src="js/cards_data.js"></script>
+  <script src="js/flight_wizard.js?v=1002"></script>
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (hamburger && mobileNav) {
+      hamburger.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    }
+  </script>
+</body>
+</html>

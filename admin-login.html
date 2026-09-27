@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Sign In — Flyvis Enterprise Travel Portal</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="js/data.js?v=231"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      background: #FFFFFF;
+      overflow-x: hidden;
+    }
+
+    .split-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100vw;
+    }
+
+    /* Left Brand & Hero Section */
+    .hero-panel {
+      flex: 1;
+      min-width: 0;
+      background: linear-gradient(135deg, #F0F6FE 0%, #E1EFFE 45%, #EBF4FC 75%, #F0FBF6 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 80px;
+      overflow: hidden;
+    }
+
+    /* Ambient mesh blur glow elements */
+    .hero-panel::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -80px;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(191, 219, 254, 0.65) 0%, rgba(219, 234, 254, 0) 70%);
+      filter: blur(50px);
+      pointer-events: none;
+    }
+
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -60px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(209, 250, 229, 0.55) 0%, rgba(209, 250, 229, 0) 70%);
+      filter: blur(50px);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      max-width: 520px;
+    }
+
+    /* FareOS Logo */
+    .brand-logo-wrap {
+      margin-bottom: 38px;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      text-decoration: none;
+    }
+
+    .brand-logo .brand-text-fare {
+      font-size: 32px;
+      font-weight: 900;
+      color: #0F172A;
+      letter-spacing: -0.7px;
+    }
+
+    .brand-logo .globe-icon {
+      width: 26px;
+      height: 26px;
+      margin: 0 1.5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo .brand-text-s {
+      font-size: 32px;
+      font-weight: 900;
+      color: #0F172A;
+      letter-spacing: -0.7px;
+    }
+
+    .brand-logo .brand-tm {
+      font-size: 11px;
+      font-weight: 800;
+      color: #334155;
+      vertical-align: super;
+      margin-left: 2px;
+    }
+
+    .brand-subline {
+      font-size: 8.5px;
+      font-weight: 800;
+      color: #64748B;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .hero-welcome-tag {
+      font-size: 12px;
+      font-weight: 800;
+      color: #64748B;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-heading {
+      font-size: 38px;
+      font-weight: 800;
+      color: #0F172A;
+      line-height: 1.15;
+      letter-spacing: -0.8px;
+      margin-bottom: 16px;
+    }
+
+    .hero-desc {
+      font-size: 15.5px;
+      color: #64748B;
+      line-height: 1.55;
+      font-weight: 450;
+      margin-bottom: 36px;
+    }
+
+    /* Frosted SSL Pill */
+    .security-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      border-radius: 9999px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    /* Right Auth Form Section */
+    .form-panel {
+      flex: 1;
+      min-width: 0;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px 30px 24px;
+      position: relative;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 380px;
+      margin: auto 0;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 7px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon-left {
+      position: absolute;
+      left: 14px;
+      color: #94A3B8;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 46px;
+      padding-left: 42px;
+      padding-right: 14px;
+      font-size: 14px;
+      font-weight: 450;
+      color: #0F172A;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .form-input::placeholder {
+      color: #94A3B8;
+      font-weight: 400;
+    }
+
+    .form-input:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .form-input.has-right-btn {
+      padding-right: 44px;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #94A3B8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      transition: color 0.15s ease;
+    }
+
+    .password-toggle-btn:hover {
+      color: #475569;
+    }
+
+    .form-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+
+    .remember-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      color: #334155;
+      font-weight: 500;
+    }
+
+    .custom-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid #CBD5E1;
+      accent-color: #2563EB;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: #2563EB;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .forgot-link:hover {
+      color: #1D4ED8;
+      text-decoration: underline;
+    }
+
+    /* Continue / Action Button */
+    .btn-submit {
+      width: 100%;
+      height: 46px;
+      background: #2563EB;
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
+    }
+
+    .btn-submit:hover {
+      background: #1D4ED8;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.99);
+    }
+
+    .btn-submit:disabled {
+      background: #94A3B8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Sub-links */
+    .help-text {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+      color: #64748B;
+    }
+
+    .help-text a {
+      color: #2563EB;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .help-text a:hover {
+      text-decoration: underline;
+    }
+
+    .auth-toggle-box {
+      text-align: center;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #F1F5F9;
+      font-size: 13px;
+      color: #64748B;
+    }
+
+    .auth-toggle-box a {
+      color: #2563EB;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .auth-toggle-box a:hover {
+      text-decoration: underline;
+    }
+
+    /* Quick Demo Login Cards */
+    .quick-demo-container {
+      margin-top: 22px;
+      background: #F8FAFC;
+      border: 1px dashed #CBD5E1;
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .quick-demo-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .demo-pill-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .demo-btn {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #1E293B;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .demo-btn:hover {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+      color: #1D4ED8;
+    }
+
+    .demo-role-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: #2563EB;
+      background: #DBEAFE;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Footer */
+    .portal-footer {
+      font-size: 12px;
+      color: #94A3B8;
+      text-align: center;
+      padding-top: 16px;
+    }
+
+    /* Toast Notification */
+    .auth-toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 99999;
+      transform: translateY(-50px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .auth-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .auth-toast.success {
+      border-left: 4px solid #10B981;
+    }
+
+    .auth-toast.error {
+      border-left: 4px solid #EF4444;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 960px) {
+      .split-layout {
+        flex-direction: column;
+      }
+      .hero-panel {
+        padding: 40px 24px;
+        flex: none;
+      }
+      .hero-heading {
+        font-size: 28px;
+      }
+      .form-panel {
+        padding: 40px 20px;
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="split-layout">
+
+    <!-- LEFT HERO & BRANDING PANEL -->
+    <div class="hero-panel">
+      <div class="hero-content">
+
+        <!-- Flyvis Brand Logo -->
+        <div class="brand-logo-wrap">
+          <div class="brand-logo">
+            <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" style="width:36px; height:36px; object-fit:contain; margin-right:8px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.08));" />
+            <span class="brand-text-fare">Flyv<span style="color:#2563EB;">i</span>s</span>
+            <span class="brand-tm">TM</span>
+          </div>
+          <div class="brand-subline">OPERATING SYSTEM FOR TRAVEL</div>
+        </div>
+
+        <!-- Tagline & Heading (Dynamic for Sign-in vs Sign-up) -->
+        <div class="hero-welcome-tag" id="hero-tag">
+          <span>&mdash;</span> WELCOME BACK
+        </div>
+        <h1 class="hero-heading" id="hero-heading">Sign in to your<br/>admin dashboard</h1>
+        <p class="hero-desc" id="hero-desc">Enter your credentials to access the Flyvis admin console.</p>
+
+        <!-- SSL Frosted Security Badge -->
+        <div class="security-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Secured with 256-bit SSL encryption</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT FORM PANEL -->
+    <div class="form-panel">
+      <div></div> <!-- Spacer -->
+
+      <div class="form-container">
+
+        <!-- ========================================== -->
+        <!-- SIGN IN FORM (DEFAULT) -->
+        <!-- ========================================== -->
+        <form id="signin-form" onsubmit="handleAdminSignIn(event)">
+
+          <!-- Email Input -->
+          <div class="form-group">
+            <label class="form-label" for="signin-email">Email</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input type="email" id="signin-email" class="form-input" placeholder="Enter your email" required autocomplete="username" />
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group">
+            <label class="form-label" for="signin-password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input type="password" id="signin-password" class="form-input has-right-btn" placeholder="Enter your password" required autocomplete="current-password" />
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('signin-password', this)" title="Toggle visibility">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember me & Forgot Password row -->
+          <div class="form-options-row">
+            <label class="remember-wrap">
+              <input type="checkbox" id="signin-remember" class="custom-checkbox" checked />
+              <span>Remember me</span>
+            </label>
+            <a href="javascript:void(0)" class="forgot-link" onclick="handleForgotPassword()">Forgot password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-submit" id="btn-signin">
+            <span id="btn-signin-text">Continue</span>
+          </button>
+
+          <!-- Trouble signing in -->
+          <div class="help-text">
+            Trouble signing in? <a href="mailto:support@flyvis.com?subject=Flyvis%20Admin%20Access%20Assistance">Contact support</a>
+          </div>
+
+          <!-- Switch to Sign Up -->
+          <div class="auth-toggle-box">
+            Don't have an admin account? <a href="javascript:void(0)" onclick="switchAuthMode('signup')">Create one</a>
+          </div>
+
+          <!-- Quick 1-Click Demo Accounts -->
+          <div class="quick-demo-container">
+            <div class="quick-demo-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>1-Click Test Admin Logins</span>
+            </div>
+            <div class="demo-pill-grid">
+              <div class="demo-btn" onclick="fillDemoCredentials('susen@flyvis.com', 'admin123')">
+                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px; margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Susen</span>
+                <span class="demo-role-tag">Super Admin</span>
+              </div>
+              <div class="demo-btn" onclick="fillDemoCredentials('admin@flyvis.com', 'zaid123')">
+                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px; margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Zaid Khaleel</span>
+                <span class="demo-role-tag">Lead Admin</span>
+              </div>
+              <div class="demo-btn" onclick="fillDemoCredentials('flights@flyvis.com', 'desk123')">
+                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px; margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Flight Desk</span>
+                <span class="demo-role-tag">Ticketing Desk</span>
+              </div>
+              <div class="demo-btn" onclick="fillDemoCredentials('support@flyvis.com', 'support123')">
+                <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px; margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Support Desk</span>
+                <span class="demo-role-tag" style="background:#FEF2F2; color:#DC2626; border-color:#FECACA;">Passive</span>
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- ========================================== -->
+        <!-- SIGN UP FORM (CREATE ADMIN ACCOUNT) -->
+        <!-- ========================================== -->
+        <form id="signup-form" onsubmit="handleAdminSignUp(event)" style="display:none;">
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label class="form-label" for="signup-name">Full Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input type="text" id="signup-name" class="form-input" placeholder="e.g. Susen or Zaid" required />
+            </div>
+          </div>
+
+          <!-- Email Input -->
+          <div class="form-group">
+            <label class="form-label" for="signup-email">Work Email</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input type="email" id="signup-email" class="form-input" placeholder="name@flyvis.com" required autocomplete="username" />
+            </div>
+          </div>
+
+          <!-- Role Selector -->
+          <div class="form-group">
+            <label class="form-label" for="signup-role">Assigned Admin Role</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </span>
+              <select id="signup-role" class="form-input" style="cursor:pointer;" required>
+                <option value="Super Admin">Super Admin (Full Platform Control)</option>
+                <option value="Lead Admin">Lead Admin (Operations & Team)</option>
+                <option value="Ticketing Desk" selected>Ticketing Desk (Manual Updates & GDS)</option>
+                <option value="Operations Desk">Operations Desk (Support & Alerts)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group">
+            <label class="form-label" for="signup-password">Create Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input type="password" id="signup-password" class="form-input has-right-btn" placeholder="Minimum 6 characters" minlength="6" required autocomplete="new-password" />
+              <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('signup-password', this)" title="Toggle visibility">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Enterprise Passkey -->
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label class="form-label" for="signup-passcode">Enterprise Admin Key</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-2-2l2 2m-4 4l-9 9a2 2 0 0 0-.5 1.5l.5 3.5 3.5.5a2 2 0 0 0 1.5-.5l9-9a2 2 0 0 0 0-2.83l-4.67-4.67a2 2 0 0 0-2.83 0z"/></svg>
+              </span>
+              <input type="text" id="signup-passcode" class="form-input" value="FLYVIS-2026" placeholder="Admin authorization code" />
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-submit" id="btn-signup">
+            <span id="btn-signup-text">Create Admin Account</span>
+          </button>
+
+          <!-- Switch to Sign In -->
+          <div class="auth-toggle-box" style="margin-top: 20px;">
+            Already have an admin account? <a href="javascript:void(0)" onclick="switchAuthMode('signin')">Sign in</a>
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        Flyvis Admin Portal &copy; 2026
+      </footer>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification Element -->
+  <div id="auth-toast" class="auth-toast">
+    <span id="toast-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </span>
+    <span id="toast-message">Notification</span>
+  </div>
+
+  <script src="js/admin_login.js?v=234"></script>
+</body>
+</html>

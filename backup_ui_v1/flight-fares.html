@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flight Fares — Flyvis</title>
+  <meta name="description" content="Exclusive flight deals and special fares curated by our travel experts. Book via WhatsApp." />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+  <style>
+    .ff-hero {
+      background: linear-gradient(160deg, #0D1B2A 0%, #1E3A46 60%, #0D1B2A 100%);
+      padding: 100px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .ff-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(46,125,126,0.15) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 20%, rgba(46,125,126,0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .ff-hero-inner { max-width: 700px; margin: 0 auto; position: relative; z-index: 1; }
+    .ff-hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; background: rgba(46,125,126,0.15);
+      border: 1px solid rgba(46,125,126,0.3); border-radius: 999px;
+      font-size: 13px; font-weight: 600; color: #7EC0C5; margin-bottom: 24px;
+    }
+    .ff-hero h1 { font-size: clamp(32px,5vw,52px); font-weight: 900; color: #fff; line-height: 1.15; margin-bottom: 16px; }
+    .ff-hero h1 span { color: #2E7D7E; }
+    .ff-hero p { font-size: 17px; color: rgba(255,255,255,0.7); max-width: 520px; margin: 0 auto; line-height: 1.7; }
+    .ff-main { max-width: 1100px; margin: 0 auto; padding: 64px 24px 80px; }
+    .ff-empty {
+      text-align: center; padding: 80px 24px;
+      color: var(--text-muted); font-size: 16px;
+    }
+    .ff-empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.3; }
+    .ff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .ff-loading { text-align: center; padding: 80px 24px; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+        <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+        <div class="nav-logo-text">
+          <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+          <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Explore</a></li>
+        <li><a href="visas.html">All Visas</a></li>
+        <li><a href="dummy-ticket.html">Dummy Ticket</a></li>
+        <li><a href="flight-fares.html" class="active">Flight Fares</a></li>
+        <li><a href="index.html#testimonials">Reviews</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Explore</a>
+    <a href="visas.html">All Visas</a>
+    <a href="dummy-ticket.html">Dummy Ticket</a>
+    <a href="flight-fares.html">Flight Fares</a>
+    <a href="index.html#testimonials">Reviews</a>
+  </div>
+
+  <section class="ff-hero">
+    <div class="ff-hero-inner">
+      <div class="ff-hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Limited Time Deals
+      </div>
+      <h1>Exclusive <span>Flight Fares</span></h1>
+      <p>Hand-picked deals and special fares curated by our travel experts. Book before they're gone.</p>
+    </div>
+  </section>
+
+  <div class="ff-main">
+    <div id="ff-content">
+      <div class="ff-loading">
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="margin-top:0">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <div class="nav-logo">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#7EC0C5;">i</span>s</span>
+            <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+          </div>
+        </div><span><span class="logo-fly">Fly</span><span class="logo-vis">vis</span></span></div>
+        <p style="font-size:13px">&#169; 2026 Flyvis Inc. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="index.html">Home</a>
+          <a href="visas.html">All Visas</a>
+          <a href="flight-fares.html">Flight Fares</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="js/data.js?v=20"></script>
+  <script>
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 20));
+    const ham = document.getElementById('hamburger'), mn = document.getElementById('mobile-nav');
+    ham.addEventListener('click', () => { mn.classList.toggle('open'); document.body.style.overflow = mn.classList.contains('open') ? 'hidden' : ''; });
+    mn.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { mn.classList.remove('open'); document.body.style.overflow = ''; }));
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadFlightsFromDB();
+      renderFFPage();
+    });
+
+    window.addEventListener('flightsUpdated', renderFFPage);
+
+    function renderFFPage() {
+      const content = document.getElementById('ff-content');
+      const flights = (window.cachedFlights || []).filter(f => f.active !== false);
+
+      if (flights.length === 0) {
+        content.innerHTML = `<div class="ff-empty">
+          <div class="ff-empty-icon">✈</div>
+          <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;color:var(--navy)">No deals available right now</h3>
+          <p>Check back soon — our team updates these regularly!</p>
+        </div>`;
+        return;
+      }
+
+      content.innerHTML = '<div class="ff-grid" id="ff-grid"></div>';
+      const grid = document.getElementById('ff-grid');
+
+      grid.innerHTML = flights.map((flight, index) => {
+        const flightBg = flight.customPhoto || '';
+        const hasPhoto = !!flightBg;
+        return `<div class="flight-card animate-on-scroll ${hasPhoto ? 'has-bg' : ''}" style="transition-delay:${index * 0.08}s;${hasPhoto ? `background-image:url('${flightBg}');background-size:cover;background-position:center;` : ''}">
+          ${hasPhoto ? '<div class="flight-card-overlay"></div>' : ''}
+          <div class="flight-card-content">
+            <div class="flight-card-header">
+              <div class="flight-airline" style="${hasPhoto ? 'color:rgba(255,255,255,0.9);' : ''}">${flight.airline}</div>
+              ${flight.tag ? `<div class="flight-tag">${flight.tag}</div>` : ''}
+            </div>
+            <div class="flight-route" style="${hasPhoto ? 'color:#fff;' : ''}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ocean);flex-shrink:0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              ${flight.route}
+            </div>
+            ${flight.notes ? `<div class="flight-notes" style="${hasPhoto ? 'color:rgba(255,255,255,0.8);border-color:rgba(255,255,255,0.2);' : ''}">${flight.notes}</div>` : ''}
+            <div class="flight-price-box" style="${hasPhoto ? 'border-color:rgba(255,255,255,0.2);' : ''}">
+              <div class="flight-price-label" style="${hasPhoto ? 'color:rgba(255,255,255,0.8);' : ''}">Starting from</div>
+              <div class="flight-price" style="${hasPhoto ? 'color:#2E7D7E;' : ''}">${flight.price}</div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Trigger animations
+      requestAnimationFrame(() => {
+        const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+        document.querySelectorAll('.animate-on-scroll').forEach(el => obs.observe(el));
+      });
+    }
+  </script>
+</body>
+</html>

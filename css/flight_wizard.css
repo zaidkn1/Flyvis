@@ -1,0 +1,1246 @@
+/* ==========================================================================
+   FLYVIS COMMERCIAL FLIGHT ENGINE & FINTECH MATRIX STYLESHEET
+   Design System: Google Flights + Skyscanner UX with Flyvis Brand Palette
+   ========================================================================== */
+
+:root {
+  --fv-primary: #2E7D7E;
+  --fv-primary-dark: #1E5E5F;
+  --fv-primary-light: #EAF6F6;
+  --fv-accent: #FF7043;
+  --fv-accent-light: #FFF0EB;
+  --fv-navy: #0D1B2A;
+  --fv-navy-light: #1E293B;
+  --fv-slate: #334155;
+  --fv-muted: #64748B;
+  --fv-border: #E2E8F0;
+  --fv-border-subtle: #F1F5F9;
+  --fv-bg-light: #F8FAFC;
+  --fv-card-bg: #FFFFFF;
+  --fv-green: #16A34A;
+  --fv-green-light: #DCFCE7;
+  --fv-radius-sm: 8px;
+  --fv-radius-md: 12px;
+  --fv-radius-lg: 18px;
+  --fv-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
+  --fv-shadow-md: 0 8px 24px -4px rgba(13, 27, 42, 0.08);
+  --fv-shadow-lg: 0 20px 35px -8px rgba(13, 27, 42, 0.12);
+}
+
+/* Base resets & typography */
+.flight-engine-wrapper {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--fv-navy);
+  background: var(--fv-bg-light);
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+
+/* === 1. TOP FLOATING OTA SEARCH CONSOLE === */
+.ota-search-hero {
+  background: linear-gradient(170deg, #FFFFFF 0%, #F1F6F7 100%);
+  border-bottom: 1px solid var(--fv-border);
+  padding: 36px 20px 28px;
+  position: relative;
+  box-shadow: 0 4px 20px -2px rgba(46, 125, 126, 0.06);
+}
+
+.ota-search-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.ota-hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ota-title-group h1 {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--fv-navy);
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
+}
+
+.ota-title-group p {
+  font-size: 14px;
+  color: var(--fv-muted);
+  margin: 0;
+}
+
+.ota-trip-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFFFFF;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--fv-border);
+  box-shadow: var(--fv-shadow-sm);
+}
+
+.ota-control-select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fv-slate);
+  cursor: pointer;
+  outline: none;
+  padding: 4px 6px;
+}
+
+/* Main Search Input Bar */
+.ota-search-bar {
+  display: grid;
+  grid-template-columns: 1.4fr auto 1.4fr 1.1fr 1fr auto;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1.5px solid var(--fv-border);
+  border-radius: var(--fv-radius-md);
+  box-shadow: var(--fv-shadow-md);
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.ota-search-bar:focus-within {
+  border-color: var(--fv-primary);
+}
+
+.ota-input-box {
+  padding: 12px 16px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.ota-input-box:not(:last-child) {
+  border-right: 1px solid var(--fv-border);
+}
+
+.ota-input-lbl {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--fv-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ota-input-field {
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--fv-navy);
+  outline: none;
+  width: 100%;
+  padding: 0;
+}
+
+.ota-swap-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--fv-border);
+  background: #FFFFFF;
+  color: var(--fv-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 -8px;
+  z-index: 2;
+  box-shadow: var(--fv-shadow-sm);
+}
+
+.ota-swap-btn:hover {
+  background: var(--fv-primary-light);
+  transform: rotate(180deg);
+}
+
+.btn-ota-search {
+  height: 100%;
+  min-height: 56px;
+  padding: 0 28px;
+  background: var(--fv-primary);
+  color: #FFFFFF;
+  border: none;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-ota-search:hover {
+  background: var(--fv-primary-dark);
+}
+
+/* === 2. 7-DAY FARE STRIP (GOOGLE FLIGHTS STYLE) === */
+.ota-date-carousel-wrap {
+  max-width: 1240px;
+  margin: 20px auto 0;
+  padding: 0 20px;
+}
+
+.ota-date-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  background: #FFFFFF;
+  padding: 8px;
+  border-radius: var(--fv-radius-md);
+  border: 1px solid var(--fv-border);
+  box-shadow: var(--fv-shadow-sm);
+}
+
+.ota-date-card {
+  text-align: center;
+  padding: 10px 4px;
+  border-radius: var(--fv-radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.ota-date-card:hover {
+  background: var(--fv-bg-light);
+  border-color: var(--fv-border);
+}
+
+.ota-date-card.active {
+  background: var(--fv-primary-light);
+  border-color: var(--fv-primary);
+}
+
+.ota-date-day {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fv-muted);
+  margin-bottom: 2px;
+}
+
+.ota-date-card.active .ota-date-day {
+  color: var(--fv-primary-dark);
+}
+
+.ota-date-price {
+  font-size: 13.5px;
+  font-weight: 900;
+  color: var(--fv-navy);
+}
+
+.ota-date-card.active .ota-date-price {
+  color: var(--fv-primary-dark);
+}
+
+.ota-date-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--fv-green);
+  margin-top: 2px;
+}
+
+/* === 3. CORE FLIGHT MATRIX CONTAINER (DUAL COLUMN) === */
+.ota-matrix-container {
+  max-width: 1240px;
+  margin: 24px auto 0;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* === 4. LEFT FILTER SIDEBAR === */
+.ota-filter-sidebar {
+  background: #FFFFFF;
+  border: 1px solid var(--fv-border);
+  border-radius: var(--fv-radius-md);
+  padding: 20px;
+  box-shadow: var(--fv-shadow-sm);
+  position: sticky;
+  top: 24px;
+}
+
+.ota-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--fv-border);
+  margin-bottom: 18px;
+}
+
+.ota-filter-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--fv-navy);
+}
+
+.btn-filter-reset {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fv-primary);
+  cursor: pointer;
+  padding: 0;
+}
+
+.ota-filter-section {
+  margin-bottom: 22px;
+}
+
+.ota-filter-section:not(:last-child) {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--fv-border-subtle);
+}
+
+.ota-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--fv-navy);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ota-checkbox-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fv-slate);
+  margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ota-checkbox-label input {
+  margin-right: 8px;
+  accent-color: var(--fv-primary);
+}
+
+.ota-filter-fare {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fv-muted);
+}
+
+/* Time Window Pill Selector */
+.ota-time-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.ota-time-pill {
+  padding: 8px;
+  border: 1px solid var(--fv-border);
+  border-radius: var(--fv-radius-sm);
+  background: #FFFFFF;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ota-time-pill:hover {
+  border-color: var(--fv-primary);
+}
+
+.ota-time-pill.selected {
+  border-color: var(--fv-primary);
+  background: var(--fv-primary-light);
+  color: var(--fv-primary-dark);
+}
+
+.ota-time-pill-title {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ota-time-pill-hrs {
+  font-size: 9.5px;
+  color: var(--fv-muted);
+}
+
+/* Credit Card Benefit Sidebar Selector */
+.ota-card-pill-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--fv-border);
+  border-radius: var(--fv-radius-sm);
+  margin-bottom: 6px;
+  cursor: pointer;
+  background: #FFFFFF;
+  transition: all 0.15s ease;
+}
+
+.ota-card-pill-item:hover {
+  border-color: var(--fv-muted);
+}
+
+.ota-card-pill-item.selected {
+  border-color: var(--fv-primary);
+  background: var(--fv-primary-light);
+}
+
+.ota-card-pill-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* === 5. RIGHT FLIGHT RESULTS STREAM === */
+.ota-results-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Top AI Price Prediction Banner (Hopper Style) */
+.ota-ai-banner {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  border-radius: var(--fv-radius-md);
+  padding: 16px 20px;
+  color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--fv-shadow-md);
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ota-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(22, 163, 74, 0.2);
+  color: #4ADE80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.ota-ai-advice-title {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+}
+
+.ota-ai-advice-desc {
+  font-size: 12.5px;
+  color: #94A3B8;
+}
+
+.btn-ota-track {
+  background: var(--fv-primary);
+  color: #FFFFFF;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-ota-track:hover {
+  background: var(--fv-primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Flight Card Component (Google Flights + Fintech Layer) */
+.ota-flight-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--fv-border);
+  border-radius: var(--fv-radius-md);
+  box-shadow: var(--fv-shadow-sm);
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.ota-flight-card:hover {
+  border-color: var(--fv-primary);
+  box-shadow: var(--fv-shadow-md);
+  transform: translateY(-1px);
+}
+
+.ota-card-main-row {
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: 160px 1fr 180px;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Airline Brand Column */
+.ota-airline-col {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ota-airline-logo-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ota-airline-name {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--fv-navy);
+  line-height: 1.2;
+}
+
+.ota-flight-code {
+  font-size: 11.5px;
+  color: var(--fv-muted);
+  font-weight: 600;
+}
+
+/* Flight Path & Times Column */
+.ota-path-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.ota-time-box {
+  text-align: center;
+}
+
+.ota-time-val {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--fv-navy);
+  letter-spacing: -0.5px;
+}
+
+.ota-airport-code {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fv-muted);
+}
+
+.ota-duration-track {
+  flex: 1;
+  max-width: 160px;
+  text-align: center;
+}
+
+.ota-duration-txt {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fv-slate);
+  margin-bottom: 4px;
+}
+
+.ota-track-line-visual {
+  height: 2px;
+  background: #CBD5E1;
+  position: relative;
+  margin: 0 4px;
+}
+
+.ota-track-stop-dot {
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fv-accent);
+  border: 1.5px solid #FFFFFF;
+}
+
+.ota-stops-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--fv-primary);
+  margin-top: 4px;
+}
+
+.ota-stops-label.nonstop {
+  color: var(--fv-green);
+}
+
+/* Price & Booking CTA Column */
+.ota-price-col {
+  text-align: right;
+  border-left: 1px solid var(--fv-border-subtle);
+  padding-left: 20px;
+}
+
+.ota-gross-price {
+  font-size: 12px;
+  color: var(--fv-muted);
+  text-decoration: line-through;
+}
+
+.ota-net-price {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--fv-navy);
+  letter-spacing: -0.5px;
+}
+
+.ota-card-savings-pill {
+  display: inline-block;
+  background: var(--fv-green-light);
+  color: var(--fv-green);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  margin: 3px 0 8px;
+}
+
+.btn-ota-select {
+  width: 100%;
+  padding: 9px 14px;
+  background: var(--fv-primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--fv-radius-sm);
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-ota-select:hover {
+  background: var(--fv-primary-dark);
+}
+
+/* Expandable Flight Drawer / Breakdown */
+.ota-card-drawer {
+  background: #F8FAFC;
+  border-top: 1px solid var(--fv-border);
+  padding: 16px 22px;
+  display: none;
+}
+
+.ota-card-drawer.open {
+  display: block;
+}
+
+.ota-drawer-toggle {
+  padding: 6px 22px;
+  background: #FAFAFA;
+  border-top: 1px solid var(--fv-border-subtle);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fv-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.ota-drawer-toggle:hover {
+  color: var(--fv-primary);
+}
+
+/* === 6. SLIDE-OVER BOARDING PASS BOOKING DRAWER / FULLSCREEN MODAL === */
+.ota-booking-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 47, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 10050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.ota-booking-modal {
+  background: #F8FAFC;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 98vw;
+  max-width: 1540px;
+  height: 97vh;
+  max-height: 97vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 35px 85px -15px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(15, 23, 42, 0.1);
+  animation: modalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ota-modal-head {
+  padding: 16px 28px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--fv-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ota-modal-head h3 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--fv-navy);
+  margin: 0;
+}
+
+.ota-modal-body {
+  padding: 24px 28px;
+  flex: 1;
+  overflow-y: auto;
+  background: #F8FAFC;
+}
+
+/* Two-column layout inside Full-Screen Booking Modal */
+.ota-booking-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.ota-booking-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ota-booking-sidebar-col {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (max-width: 992px) {
+  .ota-booking-modal-overlay {
+    padding: 10px;
+  }
+  .ota-booking-modal {
+    width: 98vw;
+    height: 96vh;
+    max-height: 96vh;
+    border-radius: 16px;
+  }
+  .ota-modal-head {
+    padding: 14px 18px;
+  }
+  .ota-modal-body {
+    padding: 16px;
+  }
+  .ota-booking-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .ota-booking-sidebar-col {
+    position: static;
+  }
+}
+
+/* Points Burn Slider inside Booking Modal */
+.ota-points-burn-box {
+  background: var(--fv-bg-light);
+  border: 1.5px solid var(--fv-border);
+  border-radius: var(--fv-radius-md);
+  padding: 16px;
+  margin-top: 18px;
+}
+
+.ota-points-slider {
+  width: 100%;
+  margin: 12px 0 8px;
+  accent-color: var(--fv-primary);
+}
+
+/* WhatsApp Direct CTA Button */
+.btn-ota-whatsapp-book {
+  width: 100%;
+  padding: 16px 20px;
+  background: #25D366;
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--fv-radius-md);
+  font-size: 16px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+  transition: all 0.2s ease;
+  margin-top: 20px;
+}
+
+.btn-ota-whatsapp-book:hover {
+  background: #20BA5A;
+  transform: translateY(-1px);
+}
+
+/* === 7. RADAR SCANNER OVERLAY === */
+.ota-scanner-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 42, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.ota-scanner-card {
+  background: #FFFFFF;
+  border-radius: var(--fv-radius-lg);
+  padding: 36px 32px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--fv-shadow-lg);
+}
+
+/* === RESPONSIVE BREAKPOINTS === */
+@media (max-width: 1024px) {
+  .ota-matrix-container {
+    grid-template-columns: 1fr;
+  }
+  .ota-filter-sidebar {
+    display: none;
+  }
+  .ota-date-strip {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .ota-search-bar {
+    grid-template-columns: 1fr;
+    border-radius: var(--fv-radius-md);
+  }
+  .ota-input-box:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid var(--fv-border);
+  }
+  .btn-ota-search {
+    border-radius: 0 0 10px 10px;
+    height: 50px;
+  }
+  .ota-card-main-row {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+  .ota-price-col {
+    text-align: left;
+    border-left: none;
+    border-top: 1px solid var(--fv-border-subtle);
+    padding-left: 0;
+    padding-top: 14px;
+  }
+/* User Profile & Dashboard Modal Styles */
+.user-profile-menu-wrap {
+  position: relative;
+}
+
+.btn-google-signin:hover {
+  background: #F8FAFC !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.ud-tab-btn {
+  transition: all 0.2s ease;
+}
+
+.ud-tab-btn.active {
+  color: var(--fv-primary) !important;
+  border-bottom: 2px solid var(--fv-primary) !important;
+}
+
+.ud-tab-btn:hover:not(.active) {
+  color: var(--fv-navy) !important;
+}
+
+/* ==========================================================================
+   FLYVIS CUSTOM INTERACTIVE UI CONTROLS (Replacing Native OS Selects/Dates)
+   ========================================================================== */
+
+/* Custom Dropdown Trigger Wrap */
+.fv-custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.fv-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fv-slate);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.fv-dropdown-trigger:hover, .fv-dropdown-trigger.open {
+  background: #F1F5F9;
+  color: var(--fv-navy);
+}
+
+.fv-dropdown-trigger .chevron-icon {
+  transition: transform 0.2s ease;
+  stroke: var(--fv-muted);
+}
+
+.fv-dropdown-trigger.open .chevron-icon {
+  transform: rotate(180deg);
+  stroke: var(--fv-primary);
+}
+
+/* Custom Floating Popover Menu */
+.fv-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #FFFFFF;
+  border-radius: var(--fv-radius-md);
+  border: 1px solid var(--fv-border);
+  box-shadow: 0 14px 36px -4px rgba(13, 27, 42, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  min-width: 200px;
+  padding: 6px;
+  z-index: 1050;
+  display: none;
+  animation: fvMenuSlide 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fv-dropdown-menu.align-right {
+  left: auto;
+  right: 0;
+}
+
+@keyframes fvMenuSlide {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.fv-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fv-slate);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fv-dropdown-item:hover {
+  background: #F8FAFC;
+  color: var(--fv-navy);
+}
+
+.fv-dropdown-item.selected {
+  background: var(--fv-primary-light);
+  color: var(--fv-primary-dark);
+}
+
+.fv-dropdown-item .check-icon {
+  color: var(--fv-primary);
+  opacity: 0;
+}
+
+.fv-dropdown-item.selected .check-icon {
+  opacity: 1;
+}
+
+/* Sort By Pill Trigger */
+.fv-sort-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--fv-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fv-navy);
+  cursor: pointer;
+  box-shadow: var(--fv-shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.fv-sort-trigger:hover, .fv-sort-trigger.open {
+  border-color: var(--fv-primary);
+  background: #FAFCFC;
+}
+
+/* Passenger Stepper Card */
+.fv-passenger-popover {
+  width: 270px;
+  padding: 14px;
+}
+
+.fv-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.fv-stepper-row:not(:last-child) {
+  border-bottom: 1px solid var(--fv-border-subtle);
+}
+
+.fv-stepper-label-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--fv-navy);
+}
+
+.fv-stepper-label-sub {
+  font-size: 11px;
+  color: var(--fv-muted);
+}
+
+.fv-stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fv-step-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--fv-border);
+  background: #FFFFFF;
+  color: var(--fv-navy);
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fv-step-btn:hover:not(:disabled) {
+  border-color: var(--fv-primary);
+  background: var(--fv-primary-light);
+  color: var(--fv-primary);
+}
+
+.fv-step-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.fv-step-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--fv-navy);
+  min-width: 16px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   CUSTOM INTERACTIVE TRAVEL CALENDAR POPOVER
+   ========================================================================== */
+.fv-calendar-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 340px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid var(--fv-border);
+  box-shadow: 0 18px 45px -6px rgba(13, 27, 42, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  padding: 18px;
+  z-index: 1100;
+  display: none;
+  animation: fvMenuSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fv-cal-presets-strip {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+  margin-bottom: 12px;
+  border-bottom: none;
+}
+
+.fv-cal-presets-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.fv-cal-preset-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--fv-slate);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.fv-cal-preset-pill:hover {
+  background: var(--fv-primary-light);
+  color: var(--fv-primary);
+}
+
+.fv-cal-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.fv-cal-month-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--fv-navy);
+  letter-spacing: -0.2px;
+}
+
+.fv-cal-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--fv-border);
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--fv-slate);
+  transition: all 0.15s ease;
+}
+
+.fv-cal-nav-btn:hover {
+  background: #F1F5F9;
+  color: var(--fv-navy);
+  border-color: #CBD5E1;
+}
+
+.fv-cal-weekdays-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--fv-muted);
+  margin-bottom: 8px;
+}
+
+.fv-cal-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.fv-cal-day-cell {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fv-navy);
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.fv-cal-day-cell:hover:not(.disabled):not(.selected) {
+  background: #F1F5F9;
+  color: var(--fv-primary);
+}
+
+.fv-cal-day-cell.disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.fv-cal-day-cell.selected {
+  background: var(--fv-primary) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 126, 0.35);
+  font-weight: 800;
+}
+
+

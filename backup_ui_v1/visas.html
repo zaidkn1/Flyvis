@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse All Visas — Flyvis</title>
+  <meta name="description" content="Browse and apply for visas to 120+ countries. Filter by visa type, processing time, and fee." />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+        <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+        <div class="nav-logo-text">
+          <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+          <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" id="nav-home">Explore</a></li>
+        <li><a href="visas.html" class="active" id="nav-visas">All Visas</a></li>
+        <li><a href="dummy-ticket.html" id="nav-dummy">Dummy Ticket</a></li>
+        <li><a href="flight-fares.html" id="nav-fares">Flight Fares</a></li>
+                <li><a href="index.html#testimonials" id="nav-reviews">Reviews</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Explore</a>
+    <a href="visas.html">All Visas</a>
+    <a href="dummy-ticket.html">Dummy Ticket</a>
+    <a href="flight-fares.html">Flight Fares</a>
+      </div>
+
+  <!-- BROWSE HERO -->
+  <section class="browse-hero">
+    <div class="browse-hero-inner">
+      <h1>Browse Visa Destinations</h1>
+      <p>120+ countries. Expert processing. Guaranteed on time.</p>
+      <div class="browse-search-bar">
+        <input
+          type="text"
+          class="browse-search-input"
+          id="browse-search-input"
+          placeholder="Search for a country or visa type..."
+          autocomplete="off"
+          aria-label="Search visa destinations"
+        />
+        <button class="browse-search-btn" id="browse-search-btn" onclick="filterVisas()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Search
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <div class="browse-filters">
+    <div class="browse-filters-inner">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-chip active" id="filter-all" data-filter="all" onclick="setFilter(this, 'all')">All Types</button>
+      <button class="filter-chip" id="filter-evisa" data-filter="e-Visa" onclick="setFilter(this, 'e-Visa')">e-Visa</button>
+      <button class="filter-chip" id="filter-sticker" data-filter="Sticker Visa" onclick="setFilter(this, 'Sticker Visa')">Sticker Visa</button>
+      <button class="filter-chip" id="filter-arrival" data-filter="Visa on Arrival" onclick="setFilter(this, 'Visa on Arrival')">Visa on Arrival</button>
+      <button class="filter-chip" id="filter-eta" data-filter="ETA" onclick="setFilter(this, 'ETA')">ETA</button>
+    </div>
+  </div>
+
+  <!-- BROWSE CONTENT -->
+  <div class="browse-content">
+    <p class="browse-results-count" id="results-count">
+      Showing <span id="results-num">0</span> destinations
+    </p>
+    <div class="browse-grid" id="browse-grid">
+      <div class="loading-spinner" style="grid-column:1/-1;"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer" style="margin-top:60px;">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <div class="nav-logo">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#7EC0C5;">i</span>s</span>
+            <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+          </div>
+        </div>
+        <p style="font-size:13px;">&#169; 2026 Flyvis Inc. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="index.html">Home</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script src="js/data.js?v=20"></script>
+  <script src="js/visas.js?v=20"></script>
+</body>
+</html>

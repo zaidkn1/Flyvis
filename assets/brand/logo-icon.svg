@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="100%" height="100%" fill="none">
+  <!-- Top bar of F in Deep Navy #0D1B2A -->
+  <path d="M 52 38 C 70 38, 105 38, 105 48 C 105 58, 70 58, 52 58 Z" fill="#0D1B2A"/>
+  
+  <!-- Main F upper stem and curve -->
+  <path d="M 48 38 C 76 38, 102 38, 102 46 C 102 54, 76 54, 62 68 C 55 76, 44 100, 39 122 C 34 116, 28 108, 23 118 C 28 95, 38 62, 48 38 Z" fill="#0D1B2A"/>
+  
+  <!-- Teal swoosh forming the middle stroke and flight trail -->
+  <path d="M 23 118 C 36 94, 52 72, 74 68 C 96 64, 110 52, 122 36 C 102 52, 78 62, 54 74 C 42 80, 36 104, 36 118 C 32 118, 27 118, 23 118 Z" fill="#2E7D7E"/>
+  <path d="M 36 118 C 42 118, 49 110, 56 98 C 62 88, 74 80, 88 74 C 70 82, 54 94, 48 118 Z" fill="#2E7D7E"/>
+  
+  <!-- Airplane icon in Teal #2E7D7E -->
+  <g transform="translate(122, 28) rotate(32) scale(0.9)">
+    <path d="M12 2 C13 2, 14 3, 14 5 L14 11 L23 16 L23 18.5 L14 15.5 L14 21 L17 23.5 L17 25.5 L12 24 L7 25.5 L7 23.5 L10 21 L10 15.5 L1 18.5 L1 16 L10 11 L10 5 C10 3, 11 2, 12 2 Z" fill="#2E7D7E"/>
+  </g>
+</svg>

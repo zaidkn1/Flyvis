@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flyvis — Visa & Travel Services</title>
+  <meta name="description" content="Apply for visas to 120+ countries online. Fast processing, expert support, and guaranteed on-time delivery." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Flyvis — Visa & Travel Services" />
+  <meta property="og:description" content="Apply for visas online to 120+ countries. Fast, guaranteed on-time delivery." />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+        <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+        <div class="nav-logo-text">
+          <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+          <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active" id="nav-home">Explore</a></li>
+        <li><a href="visas.html" id="nav-visas">All Visas</a></li>
+        <li><a href="dummy-ticket.html" id="nav-dummy">Dummy Ticket</a></li>
+        <li><a href="flight-fares.html" id="nav-fares">Flight Fares</a></li>
+                <li><a href="#testimonials" id="nav-reviews">Reviews</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#hero">Explore</a>
+    <a href="visas.html">All Visas</a>
+    <a href="flight-fares.html">Flight Fares</a>
+        <a href="#testimonials">Reviews</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <div class="hero-badge animate-on-scroll">
+        <div class="hero-badge-dot"></div>
+        Visas On Time — Guaranteed
+      </div>
+      <h1 class="animate-on-scroll stagger-1">
+        Travel The World<br/>
+        <span class="highlight">Without The Hassle</span>
+      </h1>
+      <p class="animate-on-scroll stagger-2">
+        Apply for visas to 120+ countries online. Fast processing, expert support, and guaranteed on-time delivery — all in one place.
+      </p>
+
+      <!-- Search Bar -->
+      <form class="search-bar animate-on-scroll stagger-3" id="main-search-bar" onsubmit="handleHeroSearch(event)">
+        <div class="search-field" id="search-destination-field">
+          <div class="search-field-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <div class="search-field-content">
+            <label for="destination-input" class="search-field-label">Destination</label>
+            <input
+              id="destination-input"
+              class="search-field-value"
+              placeholder="Where to? (e.g. Dubai, UK, Japan)"
+              style="border:none;outline:none;background:transparent;font-size:14px;font-weight:600;font-family:inherit;width:100%;color:#0D1B2A;"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div class="search-field" id="search-type-field">
+          <div class="search-field-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          </div>
+          <div class="search-field-content">
+            <label for="visa-type-select" class="search-field-label">Visa Type</label>
+            <select id="visa-type-select" class="search-field-value" style="border:none;outline:none;background:transparent;font-size:14px;font-weight:600;font-family:inherit;width:100%;color:#0D1B2A;cursor:pointer;">
+              <option value="">All Types</option>
+              <option value="e-Visa">e-Visa</option>
+              <option value="Sticker Visa">Sticker Visa</option>
+              <option value="Visa on Arrival">Visa on Arrival</option>
+              <option value="ETA">ETA</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-field" id="search-time-field">
+          <div class="search-field-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="search-field-content">
+            <label for="processing-select" class="search-field-label">Processing</label>
+            <select id="processing-select" class="search-field-value" style="border:none;outline:none;background:transparent;font-size:14px;font-weight:600;font-family:inherit;width:100%;color:#0D1B2A;cursor:pointer;">
+              <option value="">Any Time</option>
+              <option value="Fast">Fast (1–3 Days)</option>
+              <option value="Standard">Standard (3–7 Days)</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="search-btn" id="main-search-btn">
+          Search Visas
+        </button>
+      </form>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar animate-on-scroll stagger-4">
+        <div class="stat-item"><span class="stat-num">120+</span> Countries</div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-num">2M+</span> Happy Travelers</div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-num">98%</span> On-Time Rate</div>
+        <div class="stat-divider"></div>
+        <div class="stat-item"><span class="stat-num">24/7</span> Support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISA GRID SECTION -->
+  <section class="visa-section">
+    <div class="section-header animate-on-scroll">
+      <div class="section-tag">Popular Destinations</div>
+      <h2 class="section-title">Explore Visa Destinations</h2>
+      <p class="section-subtitle">Choose from hundreds of destinations and get your visa hassle-free</p>
+    </div>
+    <div class="visa-grid" id="visa-grid">
+      <div class="loading-spinner"><div class="spinner"></div></div>
+    </div>
+    <div style="text-align:center; margin-top:40px;" class="animate-on-scroll">
+      <a href="visas.html" class="btn-primary" id="view-all-visas-btn" style="font-size:15px; padding:14px 36px;">
+        View All Destinations
+      </a>
+    </div>
+  </section>
+
+  <!-- FLIGHT DEALS SECTION (Dynamic) -->
+  <section class="flights-section" id="flights-section" style="display: none;">
+    <div class="container">
+      <div class="section-tag animate-on-scroll">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        Flight Deals
+      </div>
+      <h2 class="section-title animate-on-scroll" style="transition-delay: 0.1s;">Exclusive Fares</h2>
+      <div class="flights-grid" id="flights-grid">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" id="how-it-works">
+    <div class="how-inner">
+      <div class="section-header animate-on-scroll">
+        <div class="section-tag">Simple Process</div>
+        <h2 class="section-title">Get Your Visa in 3 Easy Steps</h2>
+        <p class="section-subtitle">We handle all the paperwork. You just pack your bags.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card animate-on-scroll stagger-1">
+          <div class="step-number">1</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 class="step-title">Choose Destination</h3>
+          <p class="step-desc">Select your destination country from 120+ options. See visa requirements, fees, and processing times instantly.</p>
+        </div>
+        <div class="step-card animate-on-scroll stagger-2">
+          <div class="step-number">2</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <h3 class="step-title">Share Documents</h3>
+          <p class="step-desc">Upload your passport, photo, and required documents. Our team reviews everything before submission.</p>
+        </div>
+        <div class="step-card animate-on-scroll stagger-3">
+          <div class="step-number">3</div>
+          <div class="step-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3 class="step-title">Receive Your Visa</h3>
+          <p class="step-desc">Your visa is delivered on time, every time. Track your application status with real-time updates.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section">
+    <div class="section-header animate-on-scroll">
+      <div class="section-tag">Why Flyvis</div>
+      <h2 class="section-title">The Smarter Way to Get Visas</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card large animate-on-scroll">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="feature-text">
+          <h3>Visas On Time — Guaranteed</h3>
+          <p>We guarantee your visa will arrive before your travel date, or we refund 100% of our service fee. No ifs, no buts — that's our promise to every traveler.</p>
+        </div>
+      </div>
+      <div class="feature-card animate-on-scroll stagger-1">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="feature-text">
+          <h3>Lightning Fast Processing</h3>
+          <p>Most e-Visas processed in under 24 hours. Emergency processing available for urgent travel needs.</p>
+        </div>
+      </div>
+      <div class="feature-card animate-on-scroll stagger-2">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="feature-text">
+          <h3>120+ Countries Covered</h3>
+          <p>From UAE to USA, Schengen to Southeast Asia — the most comprehensive coverage of any visa platform.</p>
+        </div>
+      </div>
+      <div class="feature-card animate-on-scroll stagger-3">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.07 10a19.79 19.79 0 0 1-3-8.57A2 2 0 0 1 3 .18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 7.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 14h1a2 2 0 0 1 2 1.92z"/></svg>
+        </div>
+        <div class="feature-text">
+          <h3>24/7 Expert Support</h3>
+          <p>Real visa specialists available round the clock via WhatsApp. Never face a visa problem alone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="testimonials-inner">
+      <div class="section-header animate-on-scroll">
+        <div class="section-tag">Client Reviews</div>
+        <h2 class="section-title">Travelers Trust Flyvis</h2>
+        <p class="section-subtitle">Join over 2 million travelers who trust us with their visas</p>
+      </div>
+      <div class="reviews-grid">
+        <div class="review-card animate-on-scroll stagger-1">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="review-text">"Got my UAE visa in just 2 days. The whole process was seamless — I uploaded my documents, paid online, and received my e-Visa right in my inbox."</p>
+          <div class="review-author">
+            <div class="review-avatar">R</div>
+            <div>
+              <div class="review-name">Rahul Sharma</div>
+              <div class="review-location">Mumbai, India</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card animate-on-scroll stagger-2">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="review-text">"Applied for a Schengen visa and honestly expected the usual nightmare. Flyvis made it incredibly easy with proactive updates every step of the way."</p>
+          <div class="review-author">
+            <div class="review-avatar">S</div>
+            <div>
+              <div class="review-name">Sarah Al-Mansouri</div>
+              <div class="review-location">Dubai, UAE</div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card animate-on-scroll stagger-3">
+          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p class="review-text">"The on-time guarantee is real. My UK visa arrived 3 days before my flight. The support team answered all questions instantly. Will use Flyvis every time."</p>
+          <div class="review-author">
+            <div class="review-avatar">D</div>
+            <div>
+              <div class="review-name">David Osei</div>
+              <div class="review-location">Lagos, Nigeria</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:48px;" class="animate-on-scroll">
+        <div style="font-size:48px;font-weight:900;color:white;margin-bottom:8px;letter-spacing:-2px;">4.9 / 5</div>
+        <div style="font-size:24px;letter-spacing:4px;color:#2E7D7E;margin-bottom:8px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <div style="font-size:14px;opacity:0.7;">Based on 200,000+ verified reviews</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#7EC0C5;">i</span>s</span>
+            <span class="nav-logo-tagline">Your Journey. Simplified.</span>
+          </div>
+        </div>
+            <span><span class="logo-fly">Fly</span><span class="logo-vis">vis</span></span>
+          </div>
+          <p>The world's most reliable visa service. Trusted by 2M+ travelers in 50+ countries with an on-time delivery guarantee.</p>
+          <div class="footer-socials">
+            <div class="social-btn">X</div>
+            <div class="social-btn">f</div>
+            <div class="social-btn">in</div>
+            <div class="social-btn">ig</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="visas.html">e-Visas</a></li>
+            <li><a href="visas.html">Sticker Visas</a></li>
+            <li><a href="visas.html">Visa on Arrival</a></li>
+            <li><a href="visas.html">ETA / eTA</a></li>
+            <li><a href="#">Emergency Visa</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Partners</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">WhatsApp Support</a></li>
+            <li><a href="#">Track Application</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&#169; 2026 Flyvis Inc. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container" id="toast-container"></div>
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  
+  <script src="js/data.js?v=20"></script>
+  <script src="js/main.js?v=20"></script>
+</body>
+</html>

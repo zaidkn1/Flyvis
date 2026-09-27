@@ -1,0 +1,404 @@
+/* ==========================================================================
+   FLYVIS SLIDE-OVER SAAS SIDEBAR & MINIMAL 3-DASH TRIGGER
+   Seamless Transparent Navbar + Borderless 3-Dash Menu
+   ========================================================================== */
+
+:root {
+  --sb-width: 290px;
+  --sb-bg: #FFFFFF;
+  --sb-border: #E2E8F0;
+  --sb-text-main: #0D1B2A;
+  --sb-text-muted: #64748B;
+  --sb-hover-bg: #F1F5F9;
+  --sb-active-bg: #EAF6F6;
+  --sb-active-color: #2E7D7E;
+  --sb-primary: #2E7D7E;
+}
+
+/* 1. Minimal 3-Dash Menu Trigger Button (NO BOX / NO BORDER) */
+.btn-sidebar-trigger {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4.5px;
+  cursor: pointer;
+  padding: 4px 2px;
+  margin-right: 6px;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+
+.btn-sidebar-trigger:hover {
+  background: transparent !important;
+  opacity: 0.8;
+}
+
+.btn-sidebar-trigger span {
+  display: block;
+  height: 2px;
+  background: var(--sb-text-main);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.btn-sidebar-trigger span:nth-child(1) { width: 19px; }
+.btn-sidebar-trigger span:nth-child(2) { width: 14px; }
+.btn-sidebar-trigger span:nth-child(3) { width: 17px; }
+
+.btn-sidebar-trigger:hover span {
+  background: var(--sb-primary);
+  width: 19px;
+}
+
+/* 2. Frosted Backdrop Overlay */
+.flyvis-sb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flyvis-sb-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 3. Slide-Over Sidebar Container */
+.flyvis-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sb-width);
+  max-width: 85vw;
+  background: var(--sb-bg);
+  box-shadow: 10px 0 35px rgba(13, 27, 42, 0.15);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.flyvis-sidebar.open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+/* Top Header with Brand & Close Button */
+.sb-header {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--sb-border);
+}
+
+.sb-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.sb-brand-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.sb-brand-name {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--sb-text-main);
+  letter-spacing: -0.3px;
+}
+
+.sb-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--sb-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sb-close-btn:hover {
+  background: var(--sb-hover-bg);
+  color: var(--sb-text-main);
+  border-color: var(--sb-border);
+}
+
+/* User Profile Card inside Sidebar */
+.sb-user-card {
+  padding: 14px 18px;
+  background: #F8FAFC;
+  border-bottom: 1px solid var(--sb-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sb-user-card:hover {
+  background: #F1F5F9;
+}
+
+.sb-avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--sb-primary);
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.sb-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sb-user-role {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--sb-primary);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.sb-user-name {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--sb-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Scrollable Navigation Body */
+.sb-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sb-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94A3B8;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 0 10px 4px;
+}
+
+.sb-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sb-nav-item {
+  position: relative;
+}
+
+.sb-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--sb-text-main);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.sb-nav-link:hover {
+  background: var(--sb-hover-bg);
+}
+
+.sb-nav-link.active {
+  background: var(--sb-active-bg);
+  color: var(--sb-active-color);
+}
+
+.sb-nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sb-nav-text {
+  flex: 1;
+}
+
+.sb-badge {
+  background: #DCFCE7;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.sb-arrow-icon {
+  transition: transform 0.2s ease;
+  color: #94A3B8;
+}
+
+.sb-nav-item.open > .sb-nav-link .sb-arrow-icon {
+  transform: rotate(180deg);
+}
+
+/* Nested Sub-Menu with Tree Line */
+.sb-sub-menu {
+  list-style: none;
+  padding: 4px 0 4px 28px;
+  margin: 0;
+  display: none;
+  position: relative;
+}
+
+.sb-sub-menu::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 12px;
+  width: 1.5px;
+  background: #E2E8F0;
+}
+
+.sb-nav-item.open > .sb-sub-menu {
+  display: block;
+}
+
+.sb-sub-link {
+  display: block;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sb-text-muted);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.sb-sub-link::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 6px;
+  height: 1.5px;
+  background: #CBD5E1;
+}
+
+.sb-sub-link:hover {
+  color: var(--sb-primary);
+  background: #F8FAFC;
+}
+
+.sb-sub-link.active {
+  color: var(--sb-primary);
+  font-weight: 800;
+  background: var(--sb-active-bg);
+}
+
+/* Sidebar Footer */
+.sb-footer {
+  padding: 14px 18px;
+  border-top: 1px solid var(--sb-border);
+  font-size: 11.5px;
+  color: #94A3B8;
+}
+
+/* ==========================================================================
+   GLOBAL USER DASHBOARD MODAL STYLES (Applies across all pages)
+   ========================================================================== */
+#flyvis-user-dashboard-modal.ota-booking-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(13, 27, 42, 0.6) !important;
+  backdrop-filter: blur(5px) !important;
+  z-index: 10005 !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#flyvis-user-dashboard-modal .ota-booking-modal {
+  background: #FFFFFF;
+  border-radius: 16px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: udModalFadeIn 0.2s ease-out;
+  position: relative;
+}
+
+@keyframes udModalFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+#flyvis-user-dashboard-modal .ota-modal-head {
+  padding: 18px 22px;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#flyvis-user-dashboard-modal .ota-modal-body {
+  padding: 20px 22px;
+}
+
+.ud-tab-btn {
+  transition: all 0.15s ease;
+}
+
+.ud-tab-btn.active {
+  color: #2E7D7E !important;
+  border-bottom: 2.5px solid #2E7D7E !important;
+}

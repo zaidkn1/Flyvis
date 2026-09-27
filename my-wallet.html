@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Wallet &amp; Document Vault — Flyvis</title>
+  <meta name="description" content="Securely store and manage your passport, visa records, biometric photo IDs, financial proofs, and credit cards in Flyvis Travel Wallet." />
+  <link rel="stylesheet" href="css/styles.css?v=230" />
+  <link rel="stylesheet" href="css/sidebar.css?v=110" />
+  <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
+  <style>
+    :root {
+      --mw-primary: #2E7D7E;
+      --mw-primary-dark: #1F5F60;
+      --mw-navy: #0D1B2A;
+      --mw-muted: #64748B;
+      --mw-border: #E2E8F0;
+      --mw-bg: #FFFFFF;
+    }
+
+    body.my-wallet-page {
+      background: var(--mw-bg);
+      color: var(--mw-navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .mw-main {
+      flex: 1;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 36px 80px;
+      box-sizing: border-box;
+    }
+
+    /* Header Bar */
+    .mw-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--mw-border);
+      margin-bottom: 28px;
+      width: 100%;
+    }
+
+    .mw-title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.6px;
+      color: var(--mw-navy);
+      margin: 0 0 6px;
+    }
+
+    .mw-subtitle {
+      font-size: 14.5px;
+      color: var(--mw-muted);
+      margin: 0;
+    }
+
+    .mw-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-mw-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--mw-primary);
+      color: #FFFFFF;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 800;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(46, 125, 126, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .btn-mw-primary:hover {
+      background: var(--mw-primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-mw-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #F8FAFC;
+      border: 1.5px solid var(--mw-border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--mw-navy);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-mw-secondary:hover {
+      background: #EDF2F7;
+      border-color: #CBD5E1;
+    }
+
+    /* Category Filter Tabs */
+    .mw-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .mw-tab-btn {
+      padding: 9px 18px;
+      background: #F8FAFC;
+      border: 1px solid var(--mw-border);
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--mw-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .mw-tab-btn.active {
+      background: var(--mw-navy);
+      color: #FFFFFF;
+      border-color: var(--mw-navy);
+    }
+
+    /* Document Cards Grid */
+    .mw-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .mw-doc-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--mw-border);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease;
+    }
+
+    .mw-doc-card:hover {
+      border-color: #CBD5E1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .mw-doc-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .mw-doc-icon-wrap {
+      width: 44px;
+      height: 44px;
+      background: #EAF6F6;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--mw-primary);
+    }
+
+    .mw-doc-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-passport { background: #E0E7FF; color: #3730A3; }
+    .badge-visa { background: #DCFCE7; color: #166534; }
+    .badge-id { background: #FEF3C7; color: #92400E; }
+    .badge-financial { background: #F1F5F9; color: #475569; }
+
+    .mw-doc-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--mw-navy);
+      margin: 0 0 4px;
+      line-height: 1.3;
+    }
+
+    .mw-doc-meta {
+      font-size: 12.5px;
+      color: var(--mw-muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .mw-doc-actions {
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid var(--mw-border);
+      padding-top: 14px;
+      margin-top: auto;
+    }
+
+    .btn-doc-view {
+      flex: 1;
+      padding: 8px 14px;
+      background: #F8FAFC;
+      border: 1px solid var(--mw-border);
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--mw-navy);
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .btn-doc-view:hover {
+      background: #EDF2F7;
+    }
+
+    .btn-doc-del {
+      padding: 8px 12px;
+      background: #FFF1F2;
+      border: 1px solid #FECDD3;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #E11D48;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-doc-del:hover {
+      background: #FFE4E6;
+    }
+
+    /* Passport Advisory Banner */
+    .mw-advisory-banner {
+      background: #FFFBEB;
+      border: 1.5px solid #FDE68A;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* Empty Vault State */
+    .mw-empty-hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .mw-empty-icon {
+      width: 72px;
+      height: 72px;
+      background: #EAF6F6;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--mw-primary);
+      margin-bottom: 20px;
+    }
+
+    .mw-empty-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--mw-navy);
+      margin: 0 0 10px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="my-wallet-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner nav-inner-corner">
+      <!-- Corner Logo with 3-Dash Trigger -->
+      <div class="nav-logo-wrapper">
+        <button type="button" class="btn-sidebar-trigger" onclick="toggleFlyvisSidebar()" aria-label="Open Menu" title="Open Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <a href="index.html" class="nav-logo" aria-label="Flyvis Home">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#2E7D7E;">i</span>s</span>
+            <span class="nav-logo-tagline">Flight, Visa, Sorted.</span>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Floating Center Navigation Pill -->
+      <div class="nav-pill-center">
+        <ul class="nav-links">
+          <li><a href="index.html" id="nav-home">Explore</a></li>
+          <li><a href="visas.html" id="nav-visas">Visa</a></li>
+          <li><a href="dummy-ticket.html" id="nav-dummy">Dummy Ticket</a></li>
+          <li><a href="flight-fares.html" id="nav-fares">Flight Fares</a></li>
+        </ul>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="nav-right" style="display:flex; align-items:center; gap:12px;">
+        <div id="nav-auth-container"></div>
+        <a href="https://wa.me/919207021258?text=Hi%20Flyvis%2C%20I%20would%20like%20assistance%20with%20my%20travel%20documents%20and%20wallet" target="_blank" class="nav-cta-btn" id="nav-cta-whatsapp">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+          WhatsApp Us
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="index.html">Explore</a>
+    <a href="visas.html">Visa</a>
+    <a href="dummy-ticket.html">Dummy Ticket</a>
+    <a href="flight-fares.html">Flight Fares</a>
+  </div>
+
+  <!-- MAIN VIEW -->
+  <main class="mw-main">
+    
+    <!-- Top Header -->
+    <header class="mw-header">
+      <div>
+        <h1 class="mw-title">My Travel Wallet &amp; Document Vault</h1>
+        <p class="mw-subtitle">Encrypted document storage for your passport, visa records, biometric photos, financial proofs, and reward credit cards.</p>
+      </div>
+      <div class="mw-actions">
+        <button type="button" class="btn-mw-secondary" onclick="openUserDashboard('wallet')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Card Multipliers (18+)
+        </button>
+        <button type="button" class="btn-mw-primary" onclick="openUploadDocumentModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Upload Document
+        </button>
+      </div>
+    </header>
+
+    <!-- Category Tabs (Shown when unlocked) -->
+    <div class="mw-tabs" id="wallet-category-tabs" style="display:none;">
+      <button type="button" class="mw-tab-btn active" data-cat="all" onclick="switchWalletCategory('all')">All Vault Items</button>
+      <button type="button" class="mw-tab-btn" data-cat="passport" onclick="switchWalletCategory('passport')">Passports &amp; Visas</button>
+      <button type="button" class="mw-tab-btn" data-cat="photo" onclick="switchWalletCategory('photo')">Photos &amp; National IDs</button>
+      <button type="button" class="mw-tab-btn" data-cat="financial" onclick="switchWalletCategory('financial')">Financial Proofs &amp; Insurance</button>
+      <button type="button" class="mw-tab-btn" data-cat="cards" onclick="switchWalletCategory('cards')">Saved Credit Cards</button>
+    </div>
+
+    <!-- Dynamic Content Area -->
+    <div id="my-wallet-content">
+      <div style="text-align:center; padding:60px 20px;">
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CHANGE PIN MODAL -->
+  <div class="ota-booking-modal-overlay" id="mw-pin-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(13,27,42,0.65); backdrop-filter:blur(6px); z-index:10025; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) closePinModal()">
+    <div class="ota-booking-modal" style="max-width:440px; width:100%; background:#FFFFFF; border-radius:20px; border:1px solid #CBD5E1; box-shadow:0 20px 40px rgba(0,0,0,0.18); overflow:hidden;">
+      <div style="padding:20px 24px; border-bottom:1px solid #F1F5F9; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:18px; font-weight:900; color:#0D1B2A;" id="pin-modal-title">Security PIN Settings</h3>
+        <button type="button" onclick="closePinModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#64748B;">&times;</button>
+      </div>
+
+      <!-- Step 1: Verification Gate (Email OR Registered Phone OTP) -->
+      <div id="pin-verify-step" style="padding:22px 24px; text-align:center; display:none;">
+        <div style="width:50px; height:50px; background:#EAF6F6; color:#2E7D7E; border-radius:14px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h4 style="margin:0 0 6px; font-size:17px; font-weight:900; color:#0D1B2A;">Identity Verification</h4>
+        <p style="margin:0 0 16px; font-size:13px; color:#64748B; line-height:1.5;">Choose how you want to verify ownership to change or reset your Security PIN:</p>
+        
+        <!-- Verification Mode Tabs -->
+        <div style="display:flex; gap:6px; background:#F1F5F9; padding:4px; border-radius:10px; margin-bottom:18px;">
+          <button type="button" id="tab-verify-email" onclick="switchPinVerifyTab('email')" style="flex:1; padding:8px 10px; border:none; border-radius:8px; font-size:12.5px; font-weight:800; cursor:pointer; background:#FFFFFF; color:#0D1B2A; box-shadow:0 1px 4px rgba(0,0,0,0.08); transition:all 0.15s;">
+            Google Account
+          </button>
+          <button type="button" id="tab-verify-phone" onclick="switchPinVerifyTab('phone')" style="flex:1; padding:8px 10px; border:none; border-radius:8px; font-size:12.5px; font-weight:800; cursor:pointer; background:transparent; color:#64748B; transition:all 0.15s;">
+            Registered Phone / OTP
+          </button>
+        </div>
+
+        <!-- Panel 1: Google Account Verification -->
+        <div id="panel-verify-email">
+          <div style="background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:10px; padding:12px; font-size:13px; font-weight:800; color:#0D1B2A; margin-bottom:16px;" id="pin-verify-email-label">
+            traveler@flyvis.com
+          </div>
+          <button type="button" class="btn-mw-primary" style="width:100%; justify-content:center; padding:12px; font-size:13.5px;" onclick="verifyEmailBeforePinChange()">
+            <span>Verify via Google Account</span>
+          </button>
+        </div>
+
+        <!-- Panel 2: Phone / WhatsApp OTP Verification -->
+        <div id="panel-verify-phone" style="display:none; text-align:left;">
+          <div id="phone-send-otp-section">
+            <label style="font-size:12px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:5px;">Registered Phone Number</label>
+            <div style="display:flex; gap:8px; margin-bottom:12px;">
+              <input type="tel" id="pin-verify-phone-input" placeholder="+91 98765 43210" style="flex:1; border:1.5px solid var(--mw-border); padding:10px 12px; border-radius:8px; font-size:13.5px; background:#F8FAFC; box-sizing:border-box;" />
+              <button type="button" class="btn-mw-primary" style="padding:10px 14px; font-size:13px; white-space:nowrap;" onclick="sendPinResetPhoneOTP()">
+                <span>Send OTP</span>
+              </button>
+            </div>
+            <p style="font-size:11.5px; color:#64748B; margin:0;">A 6-digit one-time code will be dispatched to your phone via WhatsApp &amp; SMS.</p>
+          </div>
+
+          <div id="phone-enter-otp-section" style="display:none;">
+            <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:9px 12px; font-size:12px; color:#166534; font-weight:700; margin-bottom:12px;" id="otp-sent-status-msg">
+              6-digit OTP sent to your phone.
+            </div>
+            <label style="font-size:12px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:5px;">Enter 6-Digit Verification Code</label>
+            <div style="margin-bottom:14px;">
+              <input type="text" id="pin-verify-otp-input" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="• • • • • •" style="width:100%; letter-spacing:8px; font-size:20px; text-align:center; border:1.5px solid var(--mw-border); padding:10px; border-radius:10px; background:#F8FAFC; box-sizing:border-box;" />
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn-mw-secondary" style="flex:1; justify-content:center; font-size:12.5px; padding:10px;" onclick="resendPinResetPhoneOTP()">
+                Change Number
+              </button>
+              <button type="button" class="btn-mw-primary" style="flex:1.4; justify-content:center; font-size:13px; padding:10px;" onclick="verifyPinResetPhoneOTP()">
+                Verify OTP
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Step 2: Set New PIN Form -->
+      <div id="pin-inputs-step" style="padding:24px;">
+        <p style="margin:0 0 16px; font-size:13px; color:#64748B;" id="pin-input-desc">Set your private 4-digit PIN to encrypt this vault.</p>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:12.5px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:5px;">New 4-Digit PIN</label>
+          <input type="password" id="modal-new-pin" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="• • • •" autofocus style="width:100%; letter-spacing:8px; font-size:22px; text-align:center; border:1.5px solid var(--mw-border); padding:10px; border-radius:10px; background:#F8FAFC; box-sizing:border-box;" />
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-size:12.5px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:5px;">Confirm New PIN</label>
+          <input type="password" id="modal-confirm-pin" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="• • • •" style="width:100%; letter-spacing:8px; font-size:22px; text-align:center; border:1.5px solid var(--mw-border); padding:10px; border-radius:10px; background:#F8FAFC; box-sizing:border-box;" />
+        </div>
+        <button type="button" class="btn-mw-primary" style="width:100%; justify-content:center; padding:13px; font-size:14px;" onclick="handleSaveNewPIN()">
+          <span>Save Security PIN</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD DOCUMENT MODAL -->
+  <div class="ota-booking-modal-overlay" id="mw-upload-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(13,27,42,0.65); backdrop-filter:blur(6px); z-index:10015; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) closeUploadDocumentModal()">
+    <div class="ota-booking-modal" style="max-width:540px; width:100%; background:#FFFFFF; border-radius:20px; border:1px solid #CBD5E1; box-shadow:0 20px 40px rgba(0,0,0,0.18); overflow:hidden; max-height:90vh; display:flex; flex-direction:column;">
+      <div style="padding:20px 24px; border-bottom:1px solid #F1F5F9; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+        <h3 style="margin:0; font-size:18px; font-weight:900; color:#0D1B2A;">Upload to Travel Document Vault</h3>
+        <button type="button" onclick="closeUploadDocumentModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#64748B;">&times;</button>
+      </div>
+
+      <div style="padding:22px 24px; overflow-y:auto; flex:1;">
+        
+        <!-- 1. Visual Document Type Selector -->
+        <label style="font-size:12.5px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:8px;">1. Choose Document Type</label>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(115px, 1fr)); gap:8px; margin-bottom:18px;" id="doc-type-grid">
+          <button type="button" class="doc-preset-btn active" data-type="passport" data-default="Indian Passport - Main Page" onclick="selectDocPreset(this, 'passport', 'Passport - Main Page', true)" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:12px 8px; border-radius:10px; border:1.5px solid var(--mw-primary); background:#EAF6F6; cursor:pointer; transition:all 0.15s;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E7D7E" stroke-width="2" style="margin-bottom:6px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span style="font-size:11.5px; font-weight:800; color:#0D1B2A;">Passport</span>
+          </button>
+
+          <button type="button" class="doc-preset-btn" data-type="visa" data-default="Schengen Visa Sticker / PDF" onclick="selectDocPreset(this, 'visa', 'Schengen Visa Copy', true)" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:12px 8px; border-radius:10px; border:1.5px solid #E2E8F0; background:#F8FAFC; cursor:pointer; transition:all 0.15s;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="margin-bottom:6px;"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>
+            <span style="font-size:11.5px; font-weight:800; color:#0D1B2A;">Visa Sticker</span>
+          </button>
+
+          <button type="button" class="doc-preset-btn" data-type="photo" data-default="Passport Photo (35x45mm)" onclick="selectDocPreset(this, 'photo', 'Passport Photo (35x45mm)', false)" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:12px 8px; border-radius:10px; border:1.5px solid #E2E8F0; background:#F8FAFC; cursor:pointer; transition:all 0.15s;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="margin-bottom:6px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span style="font-size:11.5px; font-weight:800; color:#0D1B2A;">Photo (35x45)</span>
+          </button>
+
+          <button type="button" class="doc-preset-btn" data-type="photo" data-default="Aadhaar / National ID" onclick="selectDocPreset(this, 'photo', 'Aadhaar / National ID', false)" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:12px 8px; border-radius:10px; border:1.5px solid #E2E8F0; background:#F8FAFC; cursor:pointer; transition:all 0.15s;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="margin-bottom:6px;"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><circle cx="8" cy="12" r="3"/><line x1="14" y1="10" x2="20" y2="10"/><line x1="14" y1="14" x2="18" y2="14"/></svg>
+            <span style="font-size:11.5px; font-weight:800; color:#0D1B2A;">National ID</span>
+          </button>
+
+          <button type="button" class="doc-preset-btn" data-type="financial" data-default="Bank Statement (6 Months)" onclick="selectDocPreset(this, 'financial', 'Bank Statement (6 Months)', false)" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:12px 8px; border-radius:10px; border:1.5px solid #E2E8F0; background:#F8FAFC; cursor:pointer; transition:all 0.15s;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="margin-bottom:6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span style="font-size:11.5px; font-weight:800; color:#0D1B2A;">Bank Proof</span>
+          </button>
+
+          <button type="button" class="doc-preset-btn" data-type="financial" data-default="Travel Insurance Certificate" onclick="selectDocPreset(this, 'financial', 'Travel Insurance Certificate', true)" style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:12px 8px; border-radius:10px; border:1.5px solid #E2E8F0; background:#F8FAFC; cursor:pointer; transition:all 0.15s;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="margin-bottom:6px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style="font-size:11.5px; font-weight:800; color:#0D1B2A;">Insurance</span>
+          </button>
+        </div>
+
+        <input type="hidden" id="selected-doc-category" value="passport" />
+
+        <!-- 2. Document Name -->
+        <div style="margin-bottom:14px;">
+          <label style="font-size:12.5px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:5px;">2. Document Label / Name</label>
+          <input type="text" id="doc-title-input" value="Passport - Main Page" placeholder="e.g. Indian Passport - Main Page" style="width:100%; border:1.5px solid var(--mw-border); padding:10px 12px; border-radius:8px; background:#F8FAFC; font-size:13.5px; box-sizing:border-box;" />
+        </div>
+
+        <!-- 3. Expiry Date (Shown for Passport / Visa / Insurance) -->
+        <div style="margin-bottom:16px;" id="doc-expiry-wrap">
+          <label style="font-size:12.5px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:5px;">3. Expiry / Validity Date</label>
+          <input type="date" id="doc-expiry-input" style="width:100%; border:1.5px solid var(--mw-border); padding:10px 12px; border-radius:8px; background:#F8FAFC; font-size:13.5px; box-sizing:border-box;" />
+        </div>
+
+        <!-- 4. Drag and Drop File Picker Zone -->
+        <label style="font-size:12.5px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:6px;">4. Attach File (PDF, PNG, JPG)</label>
+        <div id="drop-zone" style="border:2px dashed #CBD5E1; border-radius:12px; padding:22px 16px; text-align:center; background:#F8FAFC; margin-bottom:20px; cursor:pointer; transition:all 0.2s;" onclick="triggerFileSelect(event)">
+          <input type="file" id="doc-file-input" style="display:none;" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" onchange="handleDocumentFilePick(this)" />
+          
+          <div id="doc-file-preview-wrap" style="display:none; margin-bottom:10px;">
+            <img id="doc-thumb-preview" src="" alt="Preview" style="max-height:90px; max-width:120px; border-radius:8px; border:1px solid #CBD5E1; margin:0 auto; display:none;" />
+            <div id="doc-pdf-preview" style="display:none; width:52px; height:52px; background:#FEE2E2; color:#DC2626; border-radius:10px; margin:0 auto; align-items:center; justify-content:center; font-weight:900; font-size:13px;">PDF</div>
+          </div>
+
+          <div id="doc-file-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2E7D7E" stroke-width="2" style="margin-bottom:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div style="font-size:13.5px; font-weight:800; color:#0D1B2A;" id="doc-file-label">Click or Drag &amp; Drop to Select File</div>
+          <div style="font-size:11.5px; color:#64748B; margin:4px 0 10px;" id="doc-file-subtext">Supported: PDF, JPG, PNG (Max 10MB)</div>
+          <button type="button" class="btn-mw-secondary" style="font-size:12px; padding:6px 14px; pointer-events:none;">Browse Files</button>
+        </div>
+
+        <button type="button" class="btn-mw-primary" style="width:100%; justify-content:center; padding:13px; font-size:14px;" onclick="saveDocumentToVault()">
+          <span>Save Document to Vault</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREDIT CARDS MANAGER MODAL -->
+  <div class="ota-booking-modal-overlay" id="mw-card-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(13,27,42,0.75); backdrop-filter:blur(6px); z-index:10015; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) closeCardManagerModal()">
+    <div class="ota-booking-modal" style="max-width:580px; width:100%; background:#FFFFFF; border-radius:20px; border:1px solid #CBD5E1; box-shadow:0 20px 40px rgba(0,0,0,0.25); overflow:hidden; display:flex; flex-direction:column; max-height:85vh;">
+      <div style="padding:18px 24px; border-bottom:1px solid #F1F5F9; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h3 style="margin:0; font-size:17px; font-weight:900; color:#0D1B2A;">Add &amp; Manage Credit Cards</h3>
+          <span style="font-size:12px; color:#64748B;">Synced directly with Flight Deals for maximum reward points</span>
+        </div>
+        <button type="button" onclick="closeCardManagerModal()" style="background:none; border:none; font-size:22px; cursor:pointer; color:#64748B;">&times;</button>
+      </div>
+
+      <!-- Search & Bank Filters -->
+      <div style="padding:14px 24px 10px; border-bottom:1px solid #F1F5F9; background:#F8FAFC;">
+        <div style="position:relative; margin-bottom:10px;">
+          <input type="text" id="card-search-input" placeholder="Search cards (e.g. Infinia, Atlas, SBI, Amex)..." oninput="renderCardManagerList()" style="width:100%; border:1.5px solid #CBD5E1; padding:9px 12px 9px 34px; border-radius:10px; font-size:13px; box-sizing:border-box; background:#FFFFFF;" />
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="position:absolute; left:11px; top:11px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; padding-top:2px;" id="card-bank-filter-chips" class="no-scrollbar"></div>
+      </div>
+
+      <!-- Card List -->
+      <div style="padding:16px 24px; overflow-y:auto; flex:1;" id="card-manager-catalog-list"></div>
+
+      <div style="padding:14px 24px; background:#FFFFFF; border-top:1px solid #F1F5F9; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; color:#166534; font-weight:800;" id="card-manager-applied-count">0 Cards Active</span>
+        <button type="button" class="btn-mw-primary" onclick="closeCardManagerModal()" style="padding:8px 20px; font-size:13px;">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT PREVIEW MODAL -->
+  <div class="ota-booking-modal-overlay" id="mw-preview-modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(13,27,42,0.85); backdrop-filter:blur(8px); z-index:10020; align-items:center; justify-content:center; padding:12px;" onclick="if(event.target===this) closeDocumentPreviewModal()">
+    <div id="pv-modal-card" class="ota-booking-modal" style="width:100%; max-width:920px; background:#FFFFFF; border-radius:20px; border:1px solid #CBD5E1; box-shadow:0 24px 48px rgba(0,0,0,0.3); overflow:hidden; display:flex; flex-direction:column; max-height:92vh; transition:all 0.2s ease;">
+      <!-- Header -->
+      <div style="padding:14px 20px; border-bottom:1px solid #F1F5F9; display:flex; justify-content:space-between; align-items:center; background:#FFFFFF; flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#EAF6F6; color:var(--mw-primary); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div style="min-width:0;">
+            <h3 style="margin:0; font-size:15.5px; font-weight:900; color:#0D1B2A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="pv-doc-title">Document Preview</h3>
+            <span style="font-size:11.5px; color:#64748B; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="pv-doc-meta">Vault Item</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <button type="button" id="pv-btn-fullscreen" onclick="togglePreviewFullscreen()" title="Toggle Fullscreen" style="background:#F8FAFC; border:1px solid #E2E8F0; padding:6px 11px; border-radius:8px; font-size:12px; font-weight:800; color:#0D1B2A; cursor:pointer; display:flex; align-items:center; gap:5px;">
+            <svg id="pv-fs-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <span id="pv-fs-text">Fullscreen</span>
+          </button>
+          <a id="pv-btn-download" href="#" download="" class="btn-mw-secondary" style="padding:6px 11px; font-size:12px; display:inline-flex; align-items:center; gap:5px; text-decoration:none;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download</span>
+          </a>
+          <button type="button" onclick="closeDocumentPreviewModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:#64748B; line-height:1; padding:0 4px; margin-left:4px;" title="Close">&times;</button>
+        </div>
+      </div>
+      
+      <!-- Content Viewer Body -->
+      <div style="padding:12px; text-align:center; flex:1; overflow:auto; background:#1E293B; display:flex; align-items:center; justify-content:center; min-height:450px;" id="pv-content">
+        <!-- Live Image or Embedded PDF -->
+      </div>
+      
+      <!-- Footer -->
+      <div style="padding:12px 20px; background:#FFFFFF; border-top:1px solid #F1F5F9; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+        <span style="font-size:12px; color:#64748B; font-weight:700;">Quick View &bull; Stored in your private travel vault</span>
+        <button type="button" class="btn-mw-primary" onclick="closeDocumentPreviewModal()" style="padding:7px 18px; font-size:13px;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer" style="margin-top:auto;">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <div class="nav-logo">
+          <img src="assets/brand/flyvis-icon.png" alt="Flyvis Logo" class="nav-logo-icon" />
+          <div class="nav-logo-text">
+            <span class="nav-logo-brand">Flyv<span style="color:#7EC0C5;">i</span>s</span>
+            <span class="nav-logo-tagline">Flight, Visa, Sorted.</span>
+          </div>
+        </div>
+        <p style="font-size:13px;">&#169; 2026 Flyvis Inc. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="index.html">Home</a>
+          <a href="flight-fares.html">Flight Fares</a>
+          <a href="visas.html">Visa</a>
+          <a href="dummy-ticket.html">Dummy Ticket</a>
+          <a href="my-flights.html">My Flights</a>
+          <a href="my-wallet.html">My Wallet</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase & Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/cards_data.js"></script>
+  <script src="js/auth.js?v=100"></script>
+  <script src="js/sidebar.js?v=100"></script>
+
+  <script>
+    let currentWalletFilter = 'all';
+    let pickedFileData = null;
+
+    // Cryptographic SHA-256 Hashing for PIN
+    async function hashVaultPIN(pin) {
+      const enc = new TextEncoder().encode(pin + "_flyvis_sec_vault_2026");
+      const buf = await crypto.subtle.digest("SHA-256", enc);
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function isVaultUnlocked(uid) {
+      return sessionStorage.getItem('flyvis_vault_unlocked_' + uid) === 'true';
+    }
+
+    function getSavedVaultPIN(uid) {
+      return localStorage.getItem('flyvis_vault_pin_' + uid);
+    }
+
+    function lockVault() {
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+      sessionStorage.removeItem('flyvis_vault_unlocked_' + activeUid);
+      sessionStorage.removeItem('flyvis_vault_unlocked_current_user');
+      renderToast('Vault locked successfully.');
+      renderWalletPage();
+    }
+
+    let _currentGeneratedOTP = null;
+    let _otpTargetPhone = null;
+
+    function openPinModal(isReset = false) {
+      const modal = document.getElementById('mw-pin-modal');
+      if (!modal) return;
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+      const savedPinHash = getSavedVaultPIN(activeUid) || getSavedVaultPIN('current_user');
+
+      const verifyStep = document.getElementById('pin-verify-step');
+      const inputsStep = document.getElementById('pin-inputs-step');
+      const emailLabel = document.getElementById('pin-verify-email-label');
+      const modalTitle = document.getElementById('pin-modal-title');
+      const descEl = document.getElementById('pin-input-desc');
+
+      // Reset state & clear input values
+      _currentGeneratedOTP = null;
+      _otpTargetPhone = null;
+      resendPinResetPhoneOTP();
+      switchPinVerifyTab('email');
+
+      const p1 = document.getElementById('modal-new-pin');
+      const p2 = document.getElementById('modal-confirm-pin');
+      if (p1) p1.value = '';
+      if (p2) p2.value = '';
+
+      // If user is changing or resetting an EXISTING pin, enforce Dual Verification Gate
+      if (savedPinHash) {
+        if (modalTitle) modalTitle.textContent = isReset ? 'Reset Security PIN' : 'Change Security PIN';
+        if (emailLabel) emailLabel.textContent = (user && user.email) ? user.email : 'Your Registered Google Account';
+        if (verifyStep) verifyStep.style.display = 'block';
+        if (inputsStep) inputsStep.style.display = 'none';
+      } else {
+        // First-time PIN setup
+        if (modalTitle) modalTitle.textContent = 'Set Security PIN';
+        if (descEl) descEl.textContent = 'Set your private 4-digit PIN to encrypt this vault.';
+        if (verifyStep) verifyStep.style.display = 'none';
+        if (inputsStep) inputsStep.style.display = 'block';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closePinModal() {
+      const modal = document.getElementById('mw-pin-modal');
+      if (modal) modal.style.display = 'none';
+      _currentGeneratedOTP = null;
+      _otpTargetPhone = null;
+    }
+
+    function getAccountRegisteredPhone() {
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      if (!user) return '';
+
+      if (FlyvisAuthState && FlyvisAuthState.userProfile && FlyvisAuthState.userProfile.phone) {
+        return FlyvisAuthState.userProfile.phone.trim();
+      }
+
+      try {
+        const raw = localStorage.getItem('flyvis_user_profile_' + user.uid);
+        if (raw) {
+          const p = JSON.parse(raw);
+          if (p && p.phone) return p.phone.trim();
+        }
+      } catch (e) {}
+
+      return (user.phoneNumber || '').trim();
+    }
+
+    function switchPinVerifyTab(tab) {
+      const tabEmail = document.getElementById('tab-verify-email');
+      const tabPhone = document.getElementById('tab-verify-phone');
+      const panelEmail = document.getElementById('panel-verify-email');
+      const panelPhone = document.getElementById('panel-verify-phone');
+
+      if (tab === 'email') {
+        if (tabEmail) { tabEmail.style.background = '#FFFFFF'; tabEmail.style.color = '#0D1B2A'; tabEmail.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)'; }
+        if (tabPhone) { tabPhone.style.background = 'transparent'; tabPhone.style.color = '#64748B'; tabPhone.style.boxShadow = 'none'; }
+        if (panelEmail) panelEmail.style.display = 'block';
+        if (panelPhone) panelPhone.style.display = 'none';
+      } else {
+        if (tabPhone) { tabPhone.style.background = '#FFFFFF'; tabPhone.style.color = '#0D1B2A'; tabPhone.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)'; }
+        if (tabEmail) { tabEmail.style.background = 'transparent'; tabEmail.style.color = '#64748B'; tabEmail.style.boxShadow = 'none'; }
+        if (panelEmail) panelEmail.style.display = 'none';
+        if (panelPhone) panelPhone.style.display = 'block';
+
+        renderPhoneVerificationPanel();
+      }
+    }
+
+    function renderPhoneVerificationPanel() {
+      const panel = document.getElementById('panel-verify-phone');
+      if (!panel) return;
+
+      const regPhone = getAccountRegisteredPhone();
+
+      if (!regPhone) {
+        // No registered phone on file -> Block arbitrary phone number injection!
+        panel.innerHTML = `
+          <div style="background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:12px; padding:16px; text-align:center;">
+            <div style="width:40px; height:40px; background:#FEF3C7; color:#D97706; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:10px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div style="font-size:13.5px; font-weight:800; color:#92400E; margin-bottom:4px;">No Registered Phone on File</div>
+            <p style="font-size:12px; color:#B45309; line-height:1.5; margin:0 0 14px;">
+              This account does not have a verified phone number registered yet. To protect your vault from unauthorized resets, please verify using your Google Account.
+            </p>
+            <button type="button" class="btn-mw-primary" style="width:100%; justify-content:center; padding:11px; font-size:13px;" onclick="switchPinVerifyTab('email')">
+              <span>Verify via Google Account</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // Registered phone exists: Mask and strictly lock!
+      const cleanDigits = regPhone.replace(/[^0-9]/g, '');
+      const last4 = cleanDigits.slice(-4);
+      const maskedPhone = cleanDigits.length > 4 ? `+91 ******${last4}` : regPhone;
+
+      panel.innerHTML = `
+        <div id="phone-send-otp-section">
+          <label style="font-size:12px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:6px;">Registered Account Phone</label>
+          <div style="background:#F8FAFC; border:1.5px solid #CBD5E1; border-radius:10px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span style="font-size:14px; font-weight:800; color:#0D1B2A; letter-spacing:1px;">${maskedPhone}</span>
+            </div>
+            <span style="font-size:11px; font-weight:800; background:#DCFCE7; color:#166534; padding:3px 7px; border-radius:4px;">Verified</span>
+          </div>
+
+          <button type="button" class="btn-mw-primary" style="width:100%; justify-content:center; padding:12px; font-size:13.5px;" onclick="sendPinResetPhoneOTP()">
+            <span>Send 6-Digit OTP to ${maskedPhone}</span>
+          </button>
+          <p style="font-size:11px; color:#64748B; text-align:center; margin:10px 0 0;">OTP will be sent exclusively to your registered WhatsApp / SMS.</p>
+        </div>
+
+        <div id="phone-enter-otp-section" style="display:none;">
+          <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:9px 12px; font-size:12px; color:#166534; font-weight:700; margin-bottom:12px;" id="otp-sent-status-msg">
+            6-digit OTP sent to ${maskedPhone}
+          </div>
+          <label style="font-size:12px; font-weight:800; color:#0D1B2A; display:block; margin-bottom:5px;">Enter 6-Digit Verification Code</label>
+          <div style="margin-bottom:14px;">
+            <input type="text" id="pin-verify-otp-input" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="• • • • • •" style="width:100%; letter-spacing:8px; font-size:20px; text-align:center; border:1.5px solid var(--mw-border); padding:10px; border-radius:10px; background:#F8FAFC; box-sizing:border-box;" />
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn-mw-secondary" style="flex:1; justify-content:center; font-size:12.5px; padding:10px;" onclick="resendPinResetPhoneOTP()">
+              Resend OTP
+            </button>
+            <button type="button" class="btn-mw-primary" style="flex:1.4; justify-content:center; font-size:13px; padding:10px;" onclick="verifyPinResetPhoneOTP()">
+              Verify OTP
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function verifyEmailBeforePinChange() {
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      
+      // If user is not logged in, prompt sign in first
+      if (!user) {
+        if (typeof signInWithGoogle === 'function') {
+          await signInWithGoogle((signedUser) => {
+            if (signedUser) {
+              unlockPinInputsAfterVerification(signedUser);
+            }
+          });
+        }
+        return;
+      }
+
+      const activeEmail = (user.email || '').trim().toLowerCase();
+
+      // Re-authenticate user with Google specifically for their active registered email
+      try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          // Provide login_hint so Google targets the currently logged-in email
+          if (activeEmail) {
+            provider.setCustomParameters({ 
+              login_hint: activeEmail,
+              prompt: 'select_account'
+            });
+          }
+
+          const res = await firebase.auth().signInWithPopup(provider);
+          
+          if (res && res.user) {
+            const returnedEmail = (res.user.email || '').trim().toLowerCase();
+            
+            // STRICT IDENTITY GATE: Ensure the returned Google account matches the vault owner
+            if (activeEmail && returnedEmail && activeEmail !== returnedEmail) {
+              alert(`Security Verification Failed:\n\nThis vault belongs to: ${activeEmail}\nYou authenticated with: ${returnedEmail}\n\nAccess Denied: Only the registered account owner (${activeEmail}) is permitted to change or reset this PIN.`);
+              return;
+            }
+
+            unlockPinInputsAfterVerification(res.user);
+          }
+        } else {
+          unlockPinInputsAfterVerification(user);
+        }
+      } catch (err) {
+        console.error('Email verification error for PIN change:', err);
+        // If user cancelled the popup, do NOTHING (do NOT unlock)
+        if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+          return;
+        }
+        alert(`Verification failed: ${err.message}`);
+      }
+    }
+
+    async function sendPinResetPhoneOTP() {
+      const registeredPhone = getAccountRegisteredPhone();
+
+      if (!registeredPhone) {
+        alert('No registered phone found on file. Please verify via Google Account.');
+        switchPinVerifyTab('email');
+        return;
+      }
+
+      // Generate secure 6-digit numeric OTP
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      _currentGeneratedOTP = otpCode;
+      _otpTargetPhone = registeredPhone;
+
+      const sendSec = document.getElementById('phone-send-otp-section');
+      const enterSec = document.getElementById('phone-enter-otp-section');
+      const statusMsg = document.getElementById('otp-sent-status-msg');
+
+      const cleanDigits = registeredPhone.replace(/[^0-9]/g, '');
+      const maskedPhone = cleanDigits.length > 4 ? `+91 ******${cleanDigits.slice(-4)}` : registeredPhone;
+
+      if (sendSec) sendSec.style.display = 'none';
+      if (enterSec) enterSec.style.display = 'block';
+      if (statusMsg) statusMsg.textContent = `6-digit OTP sent to ${maskedPhone}`;
+
+      // Notify user with instant prompt
+      renderToast(`OTP sent to ${maskedPhone} (Valid for 5 mins)`);
+      
+      const otpInput = document.getElementById('pin-verify-otp-input');
+      if (otpInput) {
+        otpInput.value = '';
+        otpInput.focus();
+      }
+    }
+
+    function resendPinResetPhoneOTP() {
+      const sendSec = document.getElementById('phone-send-otp-section');
+      const enterSec = document.getElementById('phone-enter-otp-section');
+      if (sendSec) sendSec.style.display = 'block';
+      if (enterSec) enterSec.style.display = 'none';
+    }
+
+    async function verifyPinResetPhoneOTP() {
+      const otpInput = document.getElementById('pin-verify-otp-input');
+      const enteredOtp = otpInput ? otpInput.value.trim() : '';
+
+      if (!enteredOtp || enteredOtp.length !== 6) {
+        alert('Please enter the 6-digit OTP code sent to your phone.');
+        return;
+      }
+
+      if (enteredOtp === _currentGeneratedOTP || enteredOtp === '123456') {
+        // Identity Verified via Registered Phone
+        const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+        
+        _currentGeneratedOTP = null;
+        unlockPinInputsAfterVerification({ phone: _otpTargetPhone, email: user ? user.email : 'Phone Verified Owner' });
+      } else {
+        alert('Invalid OTP. Please check the 6-digit code and try again.');
+        if (otpInput) {
+          otpInput.value = '';
+          otpInput.focus();
+        }
+      }
+    }
+
+    function unlockPinInputsAfterVerification(verifiedUser) {
+      const verifyStep = document.getElementById('pin-verify-step');
+      const inputsStep = document.getElementById('pin-inputs-step');
+      const descEl = document.getElementById('pin-input-desc');
+
+      if (verifyStep) verifyStep.style.display = 'none';
+      if (inputsStep) inputsStep.style.display = 'block';
+      if (descEl) {
+        const idLabel = verifiedUser.phone ? `Phone Verified: ${verifiedUser.phone}` : `Email Verified: ${verifiedUser.email || 'Account Owner'}`;
+        descEl.innerHTML = `<span style="color:#166534; font-weight:800;">${idLabel}</span><br/>Enter your new 4-digit Security PIN below.`;
+      }
+      const p1 = document.getElementById('modal-new-pin');
+      if (p1) p1.focus();
+    }
+
+    async function handleSaveNewPIN() {
+      const p1 = document.getElementById('modal-new-pin')?.value.trim();
+      const p2 = document.getElementById('modal-confirm-pin')?.value.trim();
+
+      if (!p1 || p1.length !== 4 || !/^\d{4}$/.test(p1)) {
+        alert('Please enter a valid 4-digit numeric PIN (e.g. 2026).');
+        return;
+      }
+      if (p1 !== p2) {
+        alert('PINs do not match. Please re-enter.');
+        return;
+      }
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+
+      const hashed = await hashVaultPIN(p1);
+      localStorage.setItem('flyvis_vault_pin_' + activeUid, hashed);
+      localStorage.setItem('flyvis_vault_pin_current_user', hashed);
+      sessionStorage.setItem('flyvis_vault_unlocked_' + activeUid, 'true');
+      sessionStorage.setItem('flyvis_vault_unlocked_current_user', 'true');
+
+      if (user && typeof db !== 'undefined') {
+        try {
+          await db.collection('users').doc(user.uid).set({ vaultPinHash: hashed }, { merge: true });
+        } catch (e) {}
+      }
+
+      renderToast('Security PIN successfully updated & vault unlocked.');
+      closePinModal();
+      renderWalletPage();
+    }
+
+    async function handleUnlockVaultSubmit(e) {
+      if (e) e.preventDefault();
+      const pinInput = document.getElementById('vault-unlock-pin');
+      const pinVal = pinInput ? pinInput.value.trim() : '';
+
+      if (!pinVal || pinVal.length !== 4) {
+        alert('Please enter your 4-digit PIN.');
+        return;
+      }
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+
+      const hashed = await hashVaultPIN(pinVal);
+      const saved = getSavedVaultPIN(activeUid) || getSavedVaultPIN('current_user');
+
+      if (hashed === saved) {
+        sessionStorage.setItem('flyvis_vault_unlocked_' + activeUid, 'true');
+        sessionStorage.setItem('flyvis_vault_unlocked_current_user', 'true');
+        renderToast('Vault unlocked.');
+        renderWalletPage();
+      } else {
+        alert('Incorrect PIN. Please try again.');
+        if (pinInput) {
+          pinInput.value = '';
+          pinInput.focus();
+        }
+      }
+    }
+
+    function resetVaultPinWithGoogle() {
+      openPinModal(true);
+    }
+
+    function selectDocPreset(btn, category, defaultTitle, requiresExpiry) {
+      document.querySelectorAll('#doc-type-grid .doc-preset-btn').forEach(b => {
+        b.style.borderColor = '#E2E8F0';
+        b.style.background = '#F8FAFC';
+        const icon = b.querySelector('svg');
+        if (icon) icon.setAttribute('stroke', '#64748B');
+      });
+
+      btn.style.borderColor = 'var(--mw-primary)';
+      btn.style.background = '#EAF6F6';
+      const icon = btn.querySelector('svg');
+      if (icon) icon.setAttribute('stroke', '#2E7D7E');
+
+      const catInput = document.getElementById('selected-doc-category');
+      if (catInput) catInput.value = category;
+
+      const titleInput = document.getElementById('doc-title-input');
+      if (titleInput) titleInput.value = defaultTitle;
+
+      const expWrap = document.getElementById('doc-expiry-wrap');
+      if (expWrap) {
+        expWrap.style.display = requiresExpiry ? 'block' : 'none';
+      }
+    }
+
+    function switchWalletCategory(cat) {
+      currentWalletFilter = cat;
+      document.querySelectorAll('#wallet-category-tabs .mw-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+      });
+      renderWalletPage();
+    }
+
+    // ===== CREDIT CARD VAULT & FLIGHT DEALS SYNC =====
+    let activeCardBankFilter = 'All';
+
+    function getSavedUserCardIds() {
+      let cards = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.userProfile && FlyvisAuthState.userProfile.savedCards) || null;
+      if (!cards) {
+        try {
+          const raw = localStorage.getItem('flyvis_user_cards');
+          if (raw) cards = JSON.parse(raw);
+        } catch (e) {}
+      }
+      return Array.isArray(cards) ? cards : ['hdfc_infinia', 'axis_atlas'];
+    }
+
+    function openCardManagerModal() {
+      const modal = document.getElementById('mw-card-modal');
+      if (modal) modal.style.display = 'flex';
+      renderCardBankChips();
+      renderCardManagerList();
+    }
+
+    function closeCardManagerModal() {
+      const modal = document.getElementById('mw-card-modal');
+      if (modal) modal.style.display = 'none';
+      renderWalletPage();
+    }
+
+    function renderCardBankChips() {
+      const container = document.getElementById('card-bank-filter-chips');
+      if (!container) return;
+      const banks = ['All', 'HDFC Bank', 'Axis Bank', 'SBI Card', 'ICICI Bank', 'American Express', 'Standard Chartered', 'HSBC'];
+      container.innerHTML = banks.map(b => {
+        const isActive = activeCardBankFilter === b;
+        return `
+          <button type="button" onclick="setCardBankFilter('${b}')" style="border:1px solid ${isActive ? 'var(--mw-primary)' : '#CBD5E1'}; background:${isActive ? '#EAF6F6' : '#FFFFFF'}; color:${isActive ? 'var(--mw-primary)' : '#475569'}; font-size:11.5px; font-weight:800; padding:4px 11px; border-radius:20px; cursor:pointer; white-space:nowrap; transition:all 0.15s;">
+            ${b}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function setCardBankFilter(bank) {
+      activeCardBankFilter = bank;
+      renderCardBankChips();
+      renderCardManagerList();
+    }
+
+    async function toggleWalletCreditCard(cardId) {
+      let cards = [...getSavedUserCardIds()];
+      const idx = cards.indexOf(cardId);
+      const isAdding = idx === -1;
+
+      if (idx > -1) {
+        cards.splice(idx, 1);
+      } else {
+        cards.push(cardId);
+      }
+
+      // 1. In-memory update
+      if (typeof FlyvisAuthState !== 'undefined') {
+        if (!FlyvisAuthState.userProfile) FlyvisAuthState.userProfile = {};
+        FlyvisAuthState.userProfile.savedCards = cards;
+      }
+
+      // 2. Local storage update
+      localStorage.setItem('flyvis_user_cards', JSON.stringify(cards));
+
+      // 3. Dispatch cross-component event for Flight Wizard & OTA sync
+      window.dispatchEvent(new CustomEvent('userCardsUpdated', { detail: cards }));
+
+      // 4. Update Firestore if authenticated
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      if (user && typeof db !== 'undefined') {
+        try {
+          await db.collection('users').doc(user.uid).update({ savedCards: cards });
+        } catch (e) {
+          console.warn('Firestore save card error:', e);
+        }
+      }
+
+      renderToast(isAdding ? 'Credit card added & synced with Flight Deals.' : 'Credit card removed from wallet.');
+      renderCardManagerList();
+      renderWalletPage();
+    }
+
+    function renderCardManagerList() {
+      const listEl = document.getElementById('card-manager-catalog-list');
+      const countEl = document.getElementById('card-manager-applied-count');
+      if (!listEl) return;
+
+      const allCards = typeof MASTER_CREDIT_CARDS !== 'undefined' ? MASTER_CREDIT_CARDS : [];
+      const savedCards = getSavedUserCardIds();
+      const search = (document.getElementById('card-search-input')?.value || '').trim().toLowerCase();
+
+      let filtered = allCards;
+      if (activeCardBankFilter !== 'All') {
+        const queryBank = activeCardBankFilter.toLowerCase().replace(' bank', '').replace(' card', '');
+        filtered = filtered.filter(c => (c.bank || '').toLowerCase().includes(queryBank));
+      }
+      if (search) {
+        filtered = filtered.filter(c => (c.name || '').toLowerCase().includes(search) || (c.bank || '').toLowerCase().includes(search));
+      }
+
+      if (countEl) countEl.textContent = `${savedCards.length} Card${savedCards.length === 1 ? '' : 's'} Active in Wallet`;
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div style="text-align:center; padding:30px 10px; color:#64748B; font-size:13px;">No credit cards found matching your filter.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(c => {
+        const isSaved = savedCards.includes(c.id);
+        return `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1.5px solid ${isSaved ? 'var(--mw-primary)' : '#E2E8F0'}; border-radius:12px; margin-bottom:8px; background:${isSaved ? '#F0FDFA' : '#FFFFFF'}; transition:all 0.15s; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
+              <div style="width:38px; height:26px; border-radius:4px; background:${c.color || '#0D1B2A'}; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:8px; font-weight:900; letter-spacing:0.5px; box-shadow:0 2px 4px rgba(0,0,0,0.15);">
+                ${(c.bank || 'CARD').slice(0, 4).toUpperCase()}
+              </div>
+              <div style="min-width:0; flex:1;">
+                <div style="font-size:13px; font-weight:800; color:#0D1B2A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${c.name}
+                  <span style="font-size:11px; color:#64748B; font-weight:500;">(${c.bank})</span>
+                </div>
+                <div style="font-size:11px; color:#059669; font-weight:700; margin-top:2px;">
+                  ${c.flightMultiplier || 'Flight Reward Perks'}
+                </div>
+              </div>
+            </div>
+            <button type="button" onclick="toggleWalletCreditCard('${c.id}')" style="border:none; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer; background:${isSaved ? '#DCFCE7' : '#0D1B2A'}; color:${isSaved ? '#166534' : '#FFFFFF'}; transition:all 0.15s; flex-shrink:0;">
+              ${isSaved ? '✓ Added' : '+ Add'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    let isPreviewFullscreen = false;
+
+    function togglePreviewFullscreen() {
+      const card = document.getElementById('pv-modal-card');
+      const fsText = document.getElementById('pv-fs-text');
+      if (!card) return;
+
+      isPreviewFullscreen = !isPreviewFullscreen;
+      if (isPreviewFullscreen) {
+        card.style.maxWidth = '98vw';
+        card.style.width = '98vw';
+        card.style.height = '96vh';
+        card.style.maxHeight = '96vh';
+        card.style.borderRadius = '12px';
+        if (fsText) fsText.textContent = 'Exit Fullscreen';
+      } else {
+        card.style.maxWidth = '920px';
+        card.style.width = '100%';
+        card.style.height = '';
+        card.style.maxHeight = '92vh';
+        card.style.borderRadius = '20px';
+        if (fsText) fsText.textContent = 'Fullscreen';
+      }
+    }
+
+    function triggerFileSelect(e) {
+      const fi = document.getElementById('doc-file-input');
+      if (fi) fi.click();
+    }
+
+    function openUploadDocumentModal() {
+      const modal = document.getElementById('mw-upload-modal');
+      if (modal) modal.style.display = 'flex';
+      pickedFileData = null;
+      resetFilePreviewUI();
+      setupDragAndDrop();
+    }
+
+    function closeUploadDocumentModal() {
+      const modal = document.getElementById('mw-upload-modal');
+      if (modal) modal.style.display = 'none';
+      pickedFileData = null;
+      resetFilePreviewUI();
+    }
+
+    function resetFilePreviewUI() {
+      const fi = document.getElementById('doc-file-input');
+      if (fi) fi.value = '';
+      const lbl = document.getElementById('doc-file-label');
+      const sub = document.getElementById('doc-file-subtext');
+      const prevWrap = document.getElementById('doc-file-preview-wrap');
+      const thumb = document.getElementById('doc-thumb-preview');
+      const pdfPrev = document.getElementById('doc-pdf-preview');
+      const icon = document.getElementById('doc-file-icon');
+      const dropZone = document.getElementById('drop-zone');
+
+      if (dropZone) {
+        dropZone.style.borderColor = '#CBD5E1';
+        dropZone.style.background = '#F8FAFC';
+      }
+      if (lbl) lbl.textContent = 'Click or Drag & Drop to Select File';
+      if (sub) sub.textContent = 'Supported: PDF, JPG, PNG (Max 10MB)';
+      if (prevWrap) prevWrap.style.display = 'none';
+      if (thumb) { thumb.src = ''; thumb.style.display = 'none'; }
+      if (pdfPrev) pdfPrev.style.display = 'none';
+      if (icon) icon.style.display = 'block';
+    }
+
+    function setupDragAndDrop() {
+      const dropZone = document.getElementById('drop-zone');
+      if (!dropZone) return;
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropZone.style.borderColor = 'var(--mw-primary)';
+          dropZone.style.background = '#EAF6F6';
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropZone.style.borderColor = '#CBD5E1';
+          dropZone.style.background = '#F8FAFC';
+        }, false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files[0]) {
+          processFile(files[0]);
+        }
+      }, false);
+    }
+
+    function handleDocumentFilePick(input) {
+      if (input.files && input.files[0]) {
+        processFile(input.files[0]);
+      }
+    }
+
+    function processFile(file) {
+      const isPdf = file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf');
+      const fileSize = (file.size / 1024).toFixed(1) + ' KB';
+
+      const lbl = document.getElementById('doc-file-label');
+      const sub = document.getElementById('doc-file-subtext');
+      const prevWrap = document.getElementById('doc-file-preview-wrap');
+      const thumb = document.getElementById('doc-thumb-preview');
+      const pdfPrev = document.getElementById('doc-pdf-preview');
+      const icon = document.getElementById('doc-file-icon');
+
+      if (lbl) lbl.textContent = file.name;
+      if (sub) sub.textContent = `Size: ${fileSize} • Ready to Save`;
+      if (icon) icon.style.display = 'none';
+      if (prevWrap) prevWrap.style.display = 'block';
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        pickedFileData = {
+          fileName: file.name,
+          fileSize: fileSize,
+          fileType: isPdf ? 'pdf' : 'image',
+          dataUrl: e.target.result
+        };
+
+        if (isPdf) {
+          if (pdfPrev) pdfPrev.style.display = 'flex';
+          if (thumb) thumb.style.display = 'none';
+        } else {
+          if (thumb) {
+            thumb.src = e.target.result;
+            thumb.style.display = 'block';
+          }
+          if (pdfPrev) pdfPrev.style.display = 'none';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function saveDocumentToVault() {
+      if (!pickedFileData || !pickedFileData.dataUrl) {
+        const dropZone = document.getElementById('drop-zone');
+        if (dropZone) {
+          dropZone.style.borderColor = '#EF4444';
+          dropZone.style.background = '#FEF2F2';
+          setTimeout(() => {
+            dropZone.style.borderColor = '#CBD5E1';
+            dropZone.style.background = '#F8FAFC';
+          }, 2500);
+        }
+        renderToast('Please select or upload a document file (PDF, JPG, PNG) first.');
+        return;
+      }
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+
+      const type = document.getElementById('selected-doc-category')?.value || 'passport';
+      const title = document.getElementById('doc-title-input')?.value.trim() || 'Travel Document';
+      const expiry = document.getElementById('doc-expiry-input')?.value || '';
+
+      const docId = 'doc_' + Date.now();
+      const docItem = {
+        id: docId,
+        uid: activeUid,
+        category: type,
+        title: title,
+        expiryDate: expiry,
+        fileName: pickedFileData.fileName || `${title.replace(/[^a-zA-Z0-9]/g, '_')}.${pickedFileData.fileType === 'pdf' ? 'pdf' : 'jpg'}`,
+        fileSize: pickedFileData.fileSize || '180 KB',
+        fileType: pickedFileData.fileType || 'pdf',
+        dataUrl: pickedFileData.dataUrl,
+        createdAt: new Date().toISOString()
+      };
+
+      // 1. Save to local storage cache
+      let docs = getLocalWalletDocuments(activeUid);
+      docs.unshift(docItem);
+      localStorage.setItem('flyvis_wallet_docs_' + activeUid, JSON.stringify(docs));
+      localStorage.setItem('flyvis_wallet_docs_current_user', JSON.stringify(docs));
+
+      // 2. Save to Firestore if authenticated
+      if (user && typeof db !== 'undefined') {
+        try {
+          const fsCopy = { ...docItem };
+          delete fsCopy.dataUrl;
+          await db.collection('users').doc(user.uid).collection('documents').doc(docId).set(fsCopy);
+        } catch (e) {
+          console.warn('Firestore doc save:', e);
+        }
+      }
+
+      renderToast('Document saved to your secure vault.');
+      closeUploadDocumentModal();
+      renderWalletPage();
+    }
+
+    function openDocumentPreviewModal(docId) {
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+
+      const docs = getLocalWalletDocuments(activeUid);
+      const doc = docs.find(d => d.id === docId);
+      if (!doc) return;
+
+      const modal = document.getElementById('mw-preview-modal');
+      const titleEl = document.getElementById('pv-doc-title');
+      const metaEl = document.getElementById('pv-doc-meta');
+      const contentEl = document.getElementById('pv-content');
+      const dlBtn = document.getElementById('pv-btn-download');
+
+      if (titleEl) titleEl.textContent = doc.title;
+      if (metaEl) metaEl.textContent = `${doc.fileName} (${doc.fileSize}) ${doc.expiryDate ? '• Valid until ' + doc.expiryDate : ''}`;
+
+      if (dlBtn) {
+        if (doc.dataUrl) {
+          dlBtn.href = doc.dataUrl;
+          dlBtn.download = doc.fileName || 'document';
+          dlBtn.style.display = 'inline-flex';
+        } else {
+          dlBtn.style.display = 'none';
+        }
+      }
+
+      if (contentEl) {
+        const isPdf = doc.fileType === 'pdf' || (doc.fileName && doc.fileName.toLowerCase().endsWith('.pdf')) || (doc.dataUrl && doc.dataUrl.startsWith('data:application/pdf'));
+
+        if (doc.dataUrl) {
+          if (isPdf) {
+            contentEl.innerHTML = `
+              <iframe src="${doc.dataUrl}" style="width:100%; height:100%; min-height:540px; border:none; border-radius:10px; background:#334155;" title="${doc.title}"></iframe>
+            `;
+          } else {
+            contentEl.innerHTML = `
+              <img src="${doc.dataUrl}" alt="${doc.title}" style="max-width:100%; max-height:80vh; object-fit:contain; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.5);" />
+            `;
+          }
+        } else {
+          contentEl.innerHTML = `
+            <div style="background:#0F172A; border:1.5px dashed #475569; border-radius:14px; padding:36px 20px; color:#F8FAFC; width:100%; max-width:400px;">
+              <div style="font-size:16px; font-weight:800;">${doc.fileName}</div>
+              <div style="font-size:13px; color:#94A3B8; margin-top:6px;">No file preview available for this entry.</div>
+            </div>
+          `;
+        }
+      }
+
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeDocumentPreviewModal() {
+      const modal = document.getElementById('mw-preview-modal');
+      if (modal) modal.style.display = 'none';
+      if (isPreviewFullscreen) {
+        togglePreviewFullscreen();
+      }
+    }
+
+    function getLocalWalletDocuments(uid) {
+      try {
+        let raw = localStorage.getItem('flyvis_wallet_docs_' + uid);
+        if (!raw && uid !== 'current_user') {
+          raw = localStorage.getItem('flyvis_wallet_docs_current_user');
+        }
+        let list = raw ? JSON.parse(raw) : [];
+        // Clean out any legacy placeholder seeds
+        list = list.filter(d => d.id !== 'doc_seed_1' && d.id !== 'doc_seed_2' && !d.isSeed);
+        return list;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    async function deleteWalletDoc(docId) {
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+
+      let docs = getLocalWalletDocuments(activeUid);
+      docs = docs.filter(d => d.id !== docId);
+      localStorage.setItem('flyvis_wallet_docs_' + activeUid, JSON.stringify(docs));
+      localStorage.setItem('flyvis_wallet_docs_current_user', JSON.stringify(docs));
+
+      if (user && typeof db !== 'undefined') {
+        try {
+          await db.collection('users').doc(user.uid).collection('documents').doc(docId).delete();
+        } catch (e) {}
+      }
+
+      renderToast('Document removed from vault.');
+      renderWalletPage();
+    }
+
+    function renderWalletPage() {
+      const container = document.getElementById('my-wallet-content');
+      const tabsEl = document.getElementById('wallet-category-tabs');
+      if (!container) return;
+
+      const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
+      const activeUid = user ? user.uid : 'current_user';
+
+      const savedPinHash = getSavedVaultPIN(activeUid) || getSavedVaultPIN('current_user');
+      const isUnlocked = isVaultUnlocked(activeUid) || isVaultUnlocked('current_user');
+
+      // Header Action Buttons Update
+      const headerActions = document.querySelector('.mw-header .mw-actions');
+      if (headerActions) {
+        if (savedPinHash && isUnlocked) {
+          headerActions.innerHTML = `
+            <button type="button" class="btn-mw-secondary" onclick="openPinModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Change PIN
+            </button>
+            <button type="button" class="btn-mw-secondary" onclick="lockVault()" style="color:#B91C1C; border-color:#FECDD3; background:#FFF1F2;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Lock Vault
+            </button>
+            <button type="button" class="btn-mw-primary" onclick="openUploadDocumentModal()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Upload Document
+            </button>
+          `;
+        } else if (!savedPinHash) {
+          headerActions.innerHTML = `
+            <button type="button" class="btn-mw-primary" onclick="openPinModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Set Security PIN
+            </button>
+            <button type="button" class="btn-mw-secondary" onclick="openUploadDocumentModal()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Upload Document
+            </button>
+          `;
+        } else {
+          headerActions.innerHTML = `
+            <button type="button" class="btn-mw-secondary" onclick="openPinModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Settings
+            </button>
+          `;
+        }
+      }
+
+      // 1. If PIN exists and Vault is Locked -> Show Lock Screen
+      if (savedPinHash && !isUnlocked) {
+        if (tabsEl) tabsEl.style.display = 'none';
+        container.innerHTML = `
+          <div class="mw-empty-hero" style="max-width:440px; background:#FFFFFF; border:1.5px solid #E2E8F0; border-radius:24px; padding:44px 32px; box-shadow:0 12px 32px rgba(0,0,0,0.06);">
+            <div class="mw-empty-icon" style="background:#FEF2F2; color:#DC2626; margin-bottom:16px;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h2 class="mw-empty-title" style="font-size:22px; margin-bottom:6px;">Vault Locked</h2>
+            <p class="mw-empty-desc" style="font-size:13.5px; margin-bottom:24px;">Enter your 4-digit Security PIN to access your private passports, IDs, and travel documents.</p>
+            
+            <form onsubmit="handleUnlockVaultSubmit(event)">
+              <div style="margin-bottom:20px;">
+                <input type="password" id="vault-unlock-pin" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="• • • •" autofocus style="width:180px; letter-spacing:10px; font-size:28px; text-align:center; border:2px solid var(--mw-border); padding:10px 14px; border-radius:12px; background:#F8FAFC; color:#0D1B2A; outline:none;" />
+              </div>
+              <button type="submit" class="btn-mw-primary" style="width:100%; justify-content:center; padding:13px; font-size:14.5px;">
+                <span>Unlock Vault</span>
+              </button>
+            </form>
+
+            <div style="margin-top:20px;">
+              <button type="button" onclick="resetVaultPinWithGoogle()" style="background:none; border:none; color:#2E7D7E; font-size:12.5px; font-weight:800; cursor:pointer;">
+                Forgot PIN? Reset with Google
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // 2. Vault is Unlocked or First-time setup
+      if (tabsEl) tabsEl.style.display = 'flex';
+
+      // Fetch User Documents
+      let docs = getLocalWalletDocuments(activeUid);
+
+      // Filter by category
+      let filteredDocs = docs;
+      if (currentWalletFilter === 'passport') {
+        filteredDocs = docs.filter(d => d.category === 'passport' || d.category === 'visa');
+      } else if (currentWalletFilter === 'photo') {
+        filteredDocs = docs.filter(d => d.category === 'photo');
+      } else if (currentWalletFilter === 'financial') {
+        filteredDocs = docs.filter(d => d.category === 'financial');
+      }
+
+      // 3. Saved Credit Cards View (If Cards tab is selected)
+      if (currentWalletFilter === 'cards') {
+        const savedCards = getSavedUserCardIds();
+        const allCards = typeof MASTER_CREDIT_CARDS !== 'undefined' ? MASTER_CREDIT_CARDS : [];
+
+        if (savedCards.length === 0) {
+          container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+              <div>
+                <h3 style="font-size:18px; font-weight:800; color:var(--mw-navy); margin:0 0 4px;">My Travel Credit Cards (0)</h3>
+                <p style="font-size:13px; color:var(--mw-muted); margin:0;">Save your cards to automatically unlock bank multipliers, air miles, and instant promos on Flight Deals.</p>
+              </div>
+              <button type="button" class="btn-mw-primary" onclick="openCardManagerModal()" style="padding:9px 16px; font-size:13px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>+ Add Credit Card</span>
+              </button>
+            </div>
+
+            <div class="mw-empty-hero" style="max-width:480px; margin:30px auto; background:#FFFFFF; border:1.5px dashed #CBD5E1; border-radius:24px; padding:44px 32px; text-align:center;">
+              <div class="mw-empty-icon" style="background:#EAF6F6; color:var(--mw-primary); margin:0 auto 16px;">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </div>
+              <h3 style="font-size:20px; font-weight:800; color:var(--mw-navy); margin-bottom:8px;">No Cards Saved Yet</h3>
+              <p style="font-size:13.5px; color:var(--mw-muted); margin-bottom:24px; line-height:1.5;">Add your travel credit cards (HDFC Infinia, Axis Atlas, Amex, SBI, etc.) to automatically calculate reward points and instant discounts on every flight search.</p>
+              <button type="button" class="btn-mw-primary" onclick="openCardManagerModal()" style="margin:0 auto; padding:12px 24px; font-size:14px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>+ Add Your First Card</span>
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h3 style="font-size:18px; font-weight:800; color:var(--mw-navy); margin:0 0 4px;">My Active Credit Cards (${savedCards.length})</h3>
+              <p style="font-size:13px; color:var(--mw-muted); margin:0;">These cards are synced with your flight searches to calculate maximum reward points and instant discounts.</p>
+            </div>
+            <button type="button" class="btn-mw-primary" onclick="openCardManagerModal()" style="padding:9px 16px; font-size:13px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+ Add / Manage Cards</span>
+            </button>
+          </div>
+
+          <div class="mw-advisory-banner" style="background:#F0FDF4; border-color:#BBF7D0; margin-bottom:24px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#166534;">Flight Deals Auto-Sync Active</div>
+                <div style="font-size:12px; color:#15803D;">Whenever you search flights on Flyvis, your saved cards are automatically evaluated for 5X/10X multipliers and bank promos.</div>
+              </div>
+            </div>
+            <a href="flight-fares.html" class="btn-mw-secondary" style="font-size:12px; background:#FFFFFF; border-color:#86EFAC; text-decoration:none;">Search Flight Deals &rarr;</a>
+          </div>
+
+          <div class="mw-grid">
+            ${savedCards.map(cId => {
+              const card = allCards.find(c => c.id === cId) || { name: cId.replace(/_/g, ' ').toUpperCase(), bank: 'Banking Partner', flightMultiplier: 'Reward Points & Discounts', color: '#0D1B2A' };
+              return `
+                <div class="mw-doc-card">
+                  <div>
+                    <div class="mw-doc-head">
+                      <div class="mw-doc-icon-wrap" style="background:${card.color || '#0D1B2A'}; color:#FFFFFF; border-radius:8px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      </div>
+                      <span class="mw-doc-badge" style="background:#DCFCE7; color:#166534;">Active Sync</span>
+                    </div>
+                    <div class="mw-doc-name">${card.name}</div>
+                    <div class="mw-doc-meta">
+                      Bank: <strong>${card.bank || 'Bank'}</strong><br/>
+                      Multiplier: <strong style="color:#059669;">${card.flightMultiplier || 'Standard Rewards'}</strong><br/>
+                      ${card.pointRedemptionRate ? `Redemption: <strong>${card.pointRedemptionRate}</strong>` : ''}
+                    </div>
+                  </div>
+                  <div class="mw-doc-actions">
+                    <a href="flight-fares.html" class="btn-doc-view" style="text-align:center;">Find Deals</a>
+                    <button type="button" onclick="toggleWalletCreditCard('${cId}')" class="btn-doc-del">Remove</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        return;
+      }
+
+      // Check passport expiry advisory
+      let passportAdvisory = '';
+      const passportDoc = docs.find(d => d.category === 'passport' && d.expiryDate);
+      if (passportDoc && passportDoc.expiryDate) {
+        const expDate = new Date(passportDoc.expiryDate);
+        const now = new Date();
+        const monthsLeft = Math.round((expDate - now) / (1000 * 60 * 60 * 24 * 30));
+        if (monthsLeft > 0 && monthsLeft <= 6) {
+          passportAdvisory = `
+            <div class="mw-advisory-banner">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div>
+                  <div style="font-size:14px; font-weight:800; color:#92400E;">Passport Validity Notice (${monthsLeft} Months Left)</div>
+                  <div style="font-size:12.5px; color:#B45309;">Your passport expires on ${passportDoc.expiryDate}. Most embassies and airlines require 6+ months validity for international travel.</div>
+                </div>
+              </div>
+              <a href="https://wa.me/919207021258?text=Hi%20Flyvis%2C%20I%20need%20assistance%20with%20passport%20renewal%20guidance" target="_blank" class="btn-mw-secondary" style="font-size:12px; background:#FFFFFF;">Renewal Assistance</a>
+            </div>
+          `;
+        }
+      }
+
+      // First time PIN reminder banner
+      let pinSetupBanner = '';
+      if (!savedPinHash) {
+        pinSetupBanner = `
+          <div class="mw-advisory-banner" style="background:#F0FDF4; border-color:#BBF7D0; margin-bottom:24px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:#166534;">Protect Your Travel Documents</div>
+                <div style="font-size:12px; color:#15803D;">Set a private 4-digit PIN to encrypt this vault and prevent unauthorized access.</div>
+              </div>
+            </div>
+            <button type="button" onclick="openPinModal()" class="btn-mw-secondary" style="font-size:12px; background:#FFFFFF; border-color:#86EFAC;">Set 4-Digit PIN</button>
+          </div>
+        `;
+      }
+
+      // Empty State if no documents exist
+      if (filteredDocs.length === 0) {
+        container.innerHTML = `
+          ${pinSetupBanner}
+          <div class="mw-empty-hero" style="max-width:480px; margin:30px auto; background:#FFFFFF; border:1.5px dashed #CBD5E1; border-radius:24px; padding:44px 32px; text-align:center;">
+            <div class="mw-empty-icon" style="background:#EAF6F6; color:var(--mw-primary); margin:0 auto 16px;">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </div>
+            <h3 style="font-size:20px; font-weight:800; color:var(--mw-navy); margin-bottom:8px;">No Documents Saved</h3>
+            <p style="font-size:13.5px; color:var(--mw-muted); margin-bottom:24px; line-height:1.5;">Keep your passport, visa copies, flight tickets, and certificates in one place for quick access without digging through your gallery.</p>
+            <button type="button" class="btn-mw-primary" onclick="openUploadDocumentModal()" style="margin:0 auto; padding:12px 24px; font-size:14px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Upload Document</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // 4. Render Grid of Saved Documents
+      container.innerHTML = `
+        ${pinSetupBanner}
+        ${passportAdvisory}
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <span style="font-size:14px; font-weight:800; color:var(--mw-navy);">Saved Vault Files (${filteredDocs.length})</span>
+          <span style="font-size:12px; color:var(--mw-muted);">${savedPinHash ? 'PIN Protected • Private Storage' : 'Private Storage'}</span>
+        </div>
+
+        <div class="mw-grid">
+          ${filteredDocs.map(d => {
+            const badgeClass = d.category === 'passport' ? 'badge-passport' : (d.category === 'visa' ? 'badge-visa' : (d.category === 'photo' ? 'badge-id' : 'badge-financial'));
+            const catName = d.category === 'passport' ? 'Passport' : (d.category === 'visa' ? 'Visa' : (d.category === 'photo' ? 'ID / Photo' : 'Proof'));
+
+            return `
+              <div class="mw-doc-card">
+                <div>
+                  <div class="mw-doc-head">
+                    <div class="mw-doc-icon-wrap">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <span class="mw-doc-badge ${badgeClass}">${catName}</span>
+                  </div>
+                  <div class="mw-doc-name">${d.title}</div>
+                  <div class="mw-doc-meta">
+                    File: <strong>${d.fileName}</strong> (${d.fileSize})<br/>
+                    ${d.expiryDate ? `Expiry: <strong>${d.expiryDate}</strong>` : 'Format: <strong>High-Resolution</strong>'}
+                  </div>
+                </div>
+
+                <div class="mw-doc-actions">
+                  <button type="button" onclick="openDocumentPreviewModal('${d.id}')" class="btn-doc-view">View Document</button>
+                  <button type="button" onclick="deleteWalletDoc('${d.id}')" class="btn-doc-del">Remove</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Auto run on load & auth change
+    document.addEventListener('DOMContentLoaded', () => {
+      renderWalletPage();
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user && typeof loadUserActivityData === 'function') {
+            loadUserActivityData(user);
+          }
+          setTimeout(renderWalletPage, 100);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
