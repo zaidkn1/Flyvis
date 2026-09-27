@@ -13,17 +13,21 @@ Trains a Gradient Boosting / Random Forest model to predict:
 from pathlib import Path
 
 TRAIN_CSV = Path(__file__).resolve().parent / "datasets" / "buy_or_wait_paired_trajectories.csv"
+if not TRAIN_CSV.exists():
+    TRAIN_CSV = Path(__file__).resolve().parent / "datasets" / "sample_trajectories.csv"
+MODEL_PATH = Path(__file__).resolve().parent / "decision_model.joblib"
 
 
 def main():
     try:
+        import joblib
         import pandas as pd
         from sklearn.ensemble import HistGradientBoostingClassifier
         from sklearn.metrics import classification_report, roc_auc_score
         from sklearn.model_selection import train_test_split
     except ImportError:
-        print("To run model training, install scikit-learn & pandas:")
-        print("  pip install pandas scikit-learn")
+        print("To run model training, install scikit-learn, joblib & pandas:")
+        print("  pip install pandas scikit-learn joblib")
         return
 
     print(f"📊 Loading Paired Trajectory Dataset from {TRAIN_CSV}...")
@@ -64,6 +68,9 @@ def main():
         print(f"ROC AUC Score: {roc_auc_score(y_test, probs):.4f}")
     except Exception:
         pass
+
+    joblib.dump(clf, MODEL_PATH)
+    print(f"\n💾 Saved trained model artifact to {MODEL_PATH}")
 
 
 if __name__ == "__main__":
