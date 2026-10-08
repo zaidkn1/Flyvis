@@ -7,6 +7,7 @@
   <meta name="robots" content="noindex, nofollow" />
   <link rel="stylesheet" href="css/styles.css?v=234" />
   <link rel="stylesheet" href="css/admin.css?v=234" />
+  <link rel="stylesheet" href="css/shadcn_theme.css?v=1" />
   <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -847,7 +848,7 @@
     }
   </style>
 
-  <script src="js/admin_flight_bookings.js?v=234"></script>
+  <script src="js/admin_flight_bookings.js?v=237"></script>
   <script src="js/google_sheets_sync.js?v=237"></script>
   <!-- Booking list configuration Modal (matching reference screenshot) -->
   <div class="admin-modal-overlay" id="booking-config-modal" style="display:none;" onclick="if(event.target===this) closeBookingConfigModal()">
@@ -986,6 +987,61 @@
     </div>
   </div>
 
-  <script src="js/admin_unified_bar.js"></script>
+    <!-- Admin Passport & Travel Document Viewer Modal -->
+  <div class="admin-modal-overlay" id="admin-passport-viewer-modal" style="display:none; z-index:99999;" onclick="if(event.target===this) closeAdminPassportViewer()">
+    <div class="admin-modal-card" style="max-width:760px; width:95%; border-radius:14px; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.35);">
+      <div class="admin-modal-header" style="background:#0F172A; color:#FFFFFF; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-size:10.5px; font-weight:800; color:#38BDF8; letter-spacing:0.5px; text-transform:uppercase;">KYC &amp; TRAVEL DOCUMENT VERIFICATION</div>
+          <h3 class="admin-modal-title" id="admin-pv-title" style="color:#FFFFFF; font-size:16px; margin:2px 0 0;">Passport Document Inspection</h3>
+        </div>
+        <button class="admin-modal-close" onclick="closeAdminPassportViewer()" style="color:#94A3B8; font-size:24px; cursor:pointer; background:none; border:none; line-height:1;">&times;</button>
+      </div>
+
+      <div class="admin-modal-body" style="padding:20px; background:#F8FAFC;">
+        <!-- Metadata Row -->
+        <div style="background:#FFFFFF; border:1px solid #E2E8F0; border-radius:10px; padding:14px 16px; margin-bottom:16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; font-size:12px;">
+          <div>
+            <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase;">TRAVELER NAME</div>
+            <div style="font-weight:800; color:#0F172A; margin-top:2px;" id="admin-pv-pax">VALUED TRAVELER</div>
+          </div>
+          <div>
+            <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase;">PASSPORT NUMBER</div>
+            <div style="font-family:monospace; font-weight:800; color:#0F172A; margin-top:2px;" id="admin-pv-num">P1234567</div>
+          </div>
+          <div>
+            <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase;">EXPIRY DATE</div>
+            <div style="font-weight:800; color:#0F172A; margin-top:2px;" id="admin-pv-exp">2029-08-14</div>
+          </div>
+          <div>
+            <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase;">NATIONALITY</div>
+            <div style="font-weight:700; color:#334155; margin-top:2px;" id="admin-pv-country">India (IND)</div>
+          </div>
+          <div>
+            <div style="font-size:10px; font-weight:700; color:#64748B; text-transform:uppercase;">KYC STATUS</div>
+            <div style="font-weight:800; color:#059669; margin-top:2px;" id="admin-pv-status">VERIFIED</div>
+          </div>
+        </div>
+
+        <!-- Document Preview Container -->
+        <div id="admin-pv-content" style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:10px; min-height:360px; max-height:65vh; overflow:auto; display:flex; align-items:center; justify-content:center; padding:12px;">
+          <!-- Dynamically populated: <img> or <iframe> or Certificate -->
+        </div>
+      </div>
+
+      <div class="admin-modal-footer" style="padding:14px 20px; background:#FFFFFF; border-top:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <span style="font-size:11.5px; color:#64748B;" id="admin-pv-meta">Filename: passport.pdf</span>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="fareos-btn-tool" onclick="closeAdminPassportViewer()">Close</button>
+          <a id="admin-pv-download-btn" href="#" download="passport_copy.pdf" class="btn-primary" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:7px 16px; border-radius:6px; text-decoration:none; background:#2563EB; color:#FFFFFF;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Passport Copy
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="js/admin_unified_bar.js"></script>
 </body>
 </html>

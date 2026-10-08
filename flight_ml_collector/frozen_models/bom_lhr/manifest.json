@@ -1,0 +1,88 @@
+{
+  "route": "BOM->LHR",
+  "customer_profile": {
+    "origin": "BOM",
+    "destination": "LHR",
+    "cabin": "economy",
+    "currency": "INR",
+    "max_stops": 1,
+    "allowed_airlines": "ALL",
+    "baggage_constraint": "ANY"
+  },
+  "training_cutoff_utc": "2026-09-29T09:46:46.050692+00:00",
+  "n_train_verified": 51,
+  "n_val_cases": 63,
+  "decision_threshold_wait": 0.6,
+  "random_state": 42,
+  "models": {
+    "model_1": {
+      "label": "Model 1 (Current-Trip Only)",
+      "file": "model_1.joblib",
+      "feature_columns": [
+        "carrier",
+        "calendar_lead_days",
+        "current_price",
+        "dep_day_of_week",
+        "is_weekend_dep"
+      ],
+      "categorical_columns": [
+        "carrier",
+        "dep_day_of_week"
+      ],
+      "n_features": 5
+    },
+    "model_2": {
+      "label": "Model 2 (+ Trailing History)",
+      "file": "model_2.joblib",
+      "feature_columns": [
+        "carrier",
+        "calendar_lead_days",
+        "current_price",
+        "dep_day_of_week",
+        "is_weekend_dep",
+        "hist_n_prior_quotes",
+        "hist_min_60d",
+        "hist_max_60d",
+        "hist_mean_60d",
+        "hist_std_60d",
+        "delta_24h",
+        "hist_has_history",
+        "ratio_to_hist_mean"
+      ],
+      "categorical_columns": [
+        "carrier",
+        "dep_day_of_week"
+      ],
+      "n_features": 13
+    },
+    "model_3": {
+      "label": "Model 3 (+ History & Schedule Context)",
+      "file": "model_3.joblib",
+      "feature_columns": [
+        "carrier",
+        "calendar_lead_days",
+        "current_price",
+        "dep_day_of_week",
+        "is_weekend_dep",
+        "hist_n_prior_quotes",
+        "hist_min_60d",
+        "hist_max_60d",
+        "hist_mean_60d",
+        "hist_std_60d",
+        "delta_24h",
+        "hist_has_history",
+        "ratio_to_hist_mean",
+        "ratio_to_forward_60d_median",
+        "ratio_to_nearby_median",
+        "ratio_to_same_dow_median",
+        "n_other_forward_dates",
+        "n_nearby_dates_available"
+      ],
+      "categorical_columns": [
+        "carrier",
+        "dep_day_of_week"
+      ],
+      "n_features": 18
+    }
+  }
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.visa.fixed_dates_collector</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Library/Frameworks/Python.framework/Versions/3.13/bin/python3</string>
+        <string>-u</string>
+        <string>/Users/zaidkhaleel/Documents/visa/flight_ml_collector/collect_fixed_dates.py</string>
+        <string>--daemon</string>
+        <string>--interval-hours</string>
+        <string>12</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/zaidkhaleel/Documents/visa/flight_ml_collector</string>
+    <key>StandardOutPath</key>
+    <string>/Users/zaidkhaleel/Documents/visa/flight_ml_collector/fixed_dates_collector.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/zaidkhaleel/Documents/visa/flight_ml_collector/fixed_dates_collector.log</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>

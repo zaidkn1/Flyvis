@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Tracked Flights — Flyvis</title>
-  <meta name="description" content="Manage your active 24/7 price drop alerts and flight monitoring notifications on Flyvis." />
+  <title>My Flights &amp; Plans — Flyvis</title>
+  <meta name="description" content="Review saved flight plans and booking-flow previews on Flyvis." />
   <link rel="stylesheet" href="css/styles.css?v=230" />
   <link rel="stylesheet" href="css/sidebar.css?v=110" />
   <link rel="icon" href="assets/brand/flyvis-icon.png" type="image/png" />
@@ -408,17 +408,17 @@
     <!-- Top Header -->
     <header class="mf-header">
       <div>
-        <h1 class="mf-title">My Tracked Flights</h1>
-        <p class="mf-subtitle">Manage your active 24/7 price drop alerts and live flight monitoring notifications.</p>
+        <h1 class="mf-title">My Flights &amp; Plans</h1>
+        <p class="mf-subtitle">Review saved booking plans and existing flight records.</p>
       </div>
       <div class="mf-actions">
         <button type="button" class="btn-mf-refresh" id="btn-refresh-status" onclick="triggerRefreshAnimation()">
           <svg class="refresh-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-          <span id="refresh-btn-label">Refresh Status</span>
+          <span id="refresh-btn-label">Refresh View</span>
         </button>
         <a href="flight-fares.html" class="btn-mf-primary">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Search &amp; Track New Flight
+          Create New Flight Plan
         </a>
       </div>
     </header>
@@ -475,7 +475,7 @@
       if (!btn) return;
 
       btn.classList.add('is-spinning');
-      if (label) label.textContent = 'Checking Fares...';
+      if (label) label.textContent = 'Refreshing view...';
 
       const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
       if (user && typeof loadUserActivityData === 'function') {
@@ -487,10 +487,51 @@
         btn.classList.remove('is-spinning');
         if (label) label.textContent = 'Updated Just Now';
         setTimeout(() => {
-          if (label) label.textContent = 'Refresh Status';
+        if (label) label.textContent = 'Refresh View';
         }, 2200);
       }, 700);
     }
+
+    function previewPlanStorageKey() {
+      const uid = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser?.uid) || 'guest';
+      return `flyvis_preview_plans_${uid}`;
+    }
+
+    function loadPreviewPlans() {
+      try {
+        const plans = JSON.parse(localStorage.getItem(previewPlanStorageKey()) || '[]');
+        return Array.isArray(plans) ? plans.filter(plan => plan && plan.previewOnly === true) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function escapePreviewText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[character]));
+    }
+
+    window.deletePreviewPlan = function(id) {
+      const plans = loadPreviewPlans().filter(plan => plan.id !== id);
+      localStorage.setItem(previewPlanStorageKey(), JSON.stringify(plans));
+      renderMyFlightsPage();
+    };
+
+    window.showPreviewOutcome = function(id, scenario) {
+      const plan = loadPreviewPlans().find(item => item.id === id);
+      const output = document.getElementById(`preview-outcome-${id}`);
+      if (!plan || !output) return;
+      const target = Number(plan.targetFare) || 0;
+      const stopLoss = plan.stopLossDate || 'T-11 days before departure';
+      const outcomes = {
+        lower: `<strong>Market Price Drop Detected.</strong> Neural agent spotted a fare dip to ₹${Math.max(1, target - 750).toLocaleString('en-IN')}. Booking auto-executed via single API call (Look-to-Book optimized). Customer receives confirmed PNR at locked price or lower.`,
+        higher: `<strong>Market Price Rises (+₹920).</strong> Market fare increased to ₹${(target + 920).toLocaleString('en-IN')}. Under Flyvis Locked Fare Guarantee, <strong>Flyvis absorbs 100% of the ₹920 difference</strong> ("takes the damage"). Ticket auto-executed at the promised ₹${target.toLocaleString('en-IN')} rate by ${stopLoss}.`,
+        cutoff: `<strong>T-11 Hard Stop-Loss Triggered.</strong> No market dip occurred prior to ${stopLoss}. To prevent entering the AP7 surge zone, AI triggers instant auto-purchase at ${stopLoss}. User is issued confirmed ticket at the guaranteed ₹${target.toLocaleString('en-IN')} fare.`,
+        baggage: `<strong>Baggage Requirement Guard.</strong> A lower fare of ₹${Math.max(1, target - 600).toLocaleString('en-IN')} was found, but it is a "Lite" ticket lacking the required ${Number(plan.baggageKg) || 15}kg baggage. The engine rejects it to strictly honor your preferences.`
+      };
+      output.innerHTML = outcomes[scenario] || 'Choose a market scenario to simulate the autonomous execution.';
+    };
 
     // Render Main Page Content
     function renderMyFlightsPage() {
@@ -499,6 +540,7 @@
 
       const user = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.currentUser) || null;
       let alerts = (typeof FlyvisAuthState !== 'undefined' && FlyvisAuthState.activeAlerts) || [];
+      const previewPlans = loadPreviewPlans();
 
       // Fallback: check localStorage for cached alerts
       if (alerts.length === 0) {
@@ -515,7 +557,7 @@
       }
 
       // 1. Unauthenticated State (No alerts tracked)
-      if (!user && alerts.length === 0) {
+      if (!user && alerts.length === 0 && previewPlans.length === 0) {
         container.innerHTML = `
           <div class="mf-empty-hero">
             <div class="mf-empty-icon">
@@ -523,7 +565,7 @@
             </div>
             <h2 class="mf-empty-title">Sign In to View Your Tracked Flights</h2>
             <p class="mf-empty-desc">
-              Sign in with your Google account to set 24/7 AI price drop monitors on any route and manage your alerts in one place.
+              Sign in to save flight requirements and test the booking flow. Live monitoring and booking are not connected yet.
             </p>
             <button type="button" onclick="signInWithGoogle()" style="display:inline-flex; align-items:center; gap:10px; background:#FFFFFF; border:1.5px solid #CBD5E1; padding:12px 26px; border-radius:10px; font-size:14px; font-weight:800; color:#0D1B2A; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,0.05); margin-bottom:20px;">
               <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -535,7 +577,7 @@
       }
 
       // 2. Empty State (Logged in or guest with 0 tracked flights)
-      if (alerts.length === 0) {
+      if (alerts.length === 0 && previewPlans.length === 0) {
         container.innerHTML = `
           <div class="mf-empty-hero">
             <div class="mf-empty-icon">
@@ -543,7 +585,7 @@
             </div>
             <h2 class="mf-empty-title">You haven't set any flights to track yet</h2>
             <p class="mf-empty-desc">
-              Search any airline route, set your target fare, and Flyvis AI will monitor ticket prices 24/7 and alert you the moment fares drop.
+              Search a route, set your target and strict requirements, then save a preview plan to test the flow.
             </p>
 
             <a href="flight-fares.html" class="btn-mf-primary" style="padding:14px 36px; font-size:15px;">
@@ -672,228 +714,124 @@
         `;
       }
 
-      // Section B: Active Flight Monitors
-      contentHtml += `
-        <div class="mf-list-header">
-          <span class="mf-list-count">Active Flight Monitors (${alerts.length})</span>
-          <span style="font-size:12.5px; color:var(--mf-muted);">Checking carrier fare streams automatically</span>
-        </div>
-
-        <div class="mf-flights-grid">
-          ${alerts.map(a => {
-            const currentFare = a.currentPrice || (a.targetPrice ? Math.round(a.targetPrice / 0.90) : 18000);
-            const targetFare = a.targetPrice || Math.round(currentFare * 0.90);
-            const dropPct = a.dropPercentage || (currentFare > targetFare ? Math.round(((currentFare - targetFare) / currentFare) * 100) : 10);
-            const savingsAmt = a.dropAmount || Math.max(0, currentFare - targetFare);
-
-            // Compute dynamic drop likelihood probability
-            let daysUntil = 25;
-            if (a.date) {
-              const tDate = new Date(a.date);
-              const now = new Date();
-              const diff = Math.ceil((tDate - now) / (1000 * 60 * 60 * 24));
-              if (!isNaN(diff)) daysUntil = diff;
-            }
-
-            let prob = 84;
-            if (daysUntil >= 21 && daysUntil <= 60) prob = 86;
-            else if (daysUntil >= 14 && daysUntil < 21) prob = 74;
-            else if (daysUntil > 60 && daysUntil <= 120) prob = 78;
-            else if (daysUntil < 14 && daysUntil >= 7) prob = 55;
-            else if (daysUntil < 7) prob = 32;
-
-            if (dropPct <= 8) prob += 6;
-            else if (dropPct > 15 && dropPct <= 25) prob -= 12;
-            else if (dropPct > 25) prob -= 28;
-
-            prob = Math.max(18, Math.min(94, Math.round(prob)));
-            const isHigh = prob >= 70;
-            const probColor = isHigh ? '#16A34A' : (prob >= 45 ? '#D97706' : '#DC2626');
-            const probBg = isHigh ? '#DCFCE7' : (prob >= 45 ? '#FEF3C7' : '#FEE2E2');
-            const probBorder = isHigh ? '#BBF7D0' : (prob >= 45 ? '#FDE68A' : '#FECACA');
-            const probText = isHigh ? 'High Confidence' : (prob >= 45 ? 'Moderate Likelihood' : 'Low Probability');
-
-            const isAutoBook = a.mode === 'auto_book' || !!a.preAuthToken;
-            const modeBadge = isAutoBook
-              ? `<span style="font-size:11px; font-weight:900; background:#DCFCE7; color:#166534; border:1.5px solid #86EFAC; padding:3px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">&#x26A1; Auto-Book Active</span>`
-              : `<span style="font-size:11px; font-weight:800; background:#EFF6FF; color:#1E40AF; border:1.5px solid #BFDBFE; padding:3px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">&#x1F514; Notify &amp; Confirm</span>`;
-
-            return `
-              <div class="mf-card">
-                <div>
-                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-                    <div class="mf-card-route">${a.from} &rarr; ${a.to}</div>
-                    <div style="display:flex; align-items:center; gap:6px;">
-                      ${modeBadge}
-                      <span style="font-size:11px; font-weight:900; background:${probBg}; color:${probColor}; border:1px solid ${probBorder}; padding:3px 7px; border-radius:6px;">
-                        ${prob}% Likely
+      // Separate local preview plans from operational alert records.
+      if (previewPlans.length) {
+        const justSaved = new URLSearchParams(window.location.search).has('plan_saved');
+        contentHtml += `
+          ${justSaved ? `
+            <div style="padding:14px 18px; margin-bottom:20px; border-radius:12px; border:1.5px solid #99F6E4; background:#F0FDFA; color:#0F766E; font-size:13px; font-weight:700; display:flex; align-items:center; gap:10px; box-shadow:0 2px 8px rgba(15,118,110,0.06);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Guaranteed Locked Fare Plan Saved. Fares tracked 24/7 via live Google Flights data with zero partner API look-to-book consumption.</span>
+            </div>
+          ` : ''}
+          <div class="mf-list-header">
+            <span class="mf-list-count">Saved Flight Plans &amp; Fare Protections (${previewPlans.length})</span>
+            <span style="font-size:12.5px; color:var(--mf-muted);">Autonomous AI Auto-Book Trajectories</span>
+          </div>
+          <div class="mf-flights-grid">
+            ${previewPlans.map(plan => {
+              const id = escapePreviewText(plan.id);
+              const target = Number(plan.targetFare) || 0;
+              const routeText = `${escapePreviewText(plan.from)} → ${escapePreviewText(plan.to)}`;
+              const matchText = plan.flightMatchRule === 'exact' ? `Exact: ${escapePreviewText(plan.exactFlight || 'selected flight')}` : 'Eligible nonstop flight';
+              const airlines = Array.isArray(plan.selectedAirlines) && plan.selectedAirlines.length ? plan.selectedAirlines.map(escapePreviewText).join(', ') : 'Any airline';
+              const stops = Object.entries(plan.stops || {}).filter(([, allowed]) => allowed).map(([name]) => escapePreviewText(name)).join(', ') || 'None selected';
+              const isEligible = plan.priceLockEligible !== false;
+              const stopLoss = plan.stopLossDate || 'T-11 days before departure';
+              return `
+                <article class="mf-card" style="border:1.5px solid ${isEligible ? '#99F6E4' : '#E2E8F0'}; background:#FFFFFF; box-shadow:0 4px 14px rgba(0,0,0,0.04);">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                    <div>
+                      <div class="mf-card-route">${routeText}</div>
+                      <div style="font-size:12px; color:#64748B; margin-top:4px;">${escapePreviewText(plan.date)} · ${Number(plan.travelers) || 1} traveler(s) · ${escapePreviewText(plan.cabinClass)}</div>
+                    </div>
+                    ${isEligible ? `
+                      <span style="font-size:11px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; border-radius:999px; padding:5px 11px; display:inline-flex; align-items:center; gap:5px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Guaranteed Locked Fare
                       </span>
-                    </div>
+                    ` : `
+                      <span style="font-size:11px; font-weight:800; background:#FFFBEB; color:#92400E; border:1px solid #FDE68A; border-radius:999px; padding:5px 11px;">
+                        Direct Booking Plan
+                      </span>
+                    `}
                   </div>
-                  <div style="font-size:13px; color:var(--mf-muted); margin-bottom:6px;">Travel Date: <strong>${a.date}</strong></div>
 
-                  <!-- Probability Bar Box -->
-                  <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                      <span style="font-size:12px; font-weight:800; color:#0D1B2A;">Price Drop Probability</span>
-                      <span style="font-size:12px; font-weight:900; color:${probColor};">${prob}% (${probText})</span>
+                  <!-- Protection & Business Model Guarantee Strip -->
+                  <div style="background: ${isEligible ? '#F0FDFA' : '#F8FAFC'}; border: 1px solid ${isEligible ? '#CCFBF1' : '#E2E8F0'}; border-radius: 9px; padding: 10px 14px; margin-top: 14px; font-size: 12px; color: ${isEligible ? '#115E59' : '#334155'};">
+                    <div style="font-weight: 800; margin-bottom: 2px;">
+                      ${isEligible ? 'Flyvis Fare Difference Guarantee Active' : 'Fixed Tariff Route / Surge Window Plan'}
                     </div>
-                    <div style="height:6px; width:100%; background:#E2E8F0; border-radius:99px; overflow:hidden;">
-                      <div style="height:100%; width:${prob}%; background:${probColor}; border-radius:99px;"></div>
+                    <div>
+                      ${isEligible
+                        ? `Locked at <strong>₹${target.toLocaleString('en-IN')}</strong>. If the fare rises, Flyvis absorbs 100% of the cost difference. Auto-purchased before <strong>${stopLoss}</strong>.`
+                        : `Instant booking rate locked at ₹${target.toLocaleString('en-IN')}. Monitored for seat availability.`}
                     </div>
                   </div>
 
-                  <div class="mf-card-meta">
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">${isAutoBook ? 'Auto-Book Trigger Cap:' : 'Target Alert Fare:'}</span>
-                      <span style="font-size:15px; font-weight:900; color:#16A34A;">
-                        ₹${targetFare.toLocaleString('en-IN')}
-                        <span style="font-size:11px; font-weight:800; color:#166534; margin-left:4px;">(-${dropPct}%)</span>
-                      </span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Current Baseline Fare:</span>
-                      <span style="font-weight:700; color:var(--mf-navy); font-size:13px;">₹${currentFare.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Expected Savings:</span>
-                      <span style="font-weight:800; color:#2E7D7E;">₹${savingsAmt.toLocaleString('en-IN')} (${dropPct}% drop)</span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Carrier Policy:</span>
-                      <span style="font-weight:700; color:var(--mf-navy);">${a.flightSpecific ? `Exact: ${a.flightSpecific}` : (a.flightMatchRule === 'any_nonstop' ? 'Any Non-Stop Flight' : 'Exact Flight')}</span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">GDS Polling Cadence:</span>
-                      <span style="font-weight:700; color:#0F766E; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
-                        <span>🛰️</span> ${a.pollingFrequency || (daysUntil > 30 ? 'RM Batch (4x/Day)' : (daysUntil >= 7 ? 'Every 2 Hours' : 'High-Velocity (Every 15m)'))}
-                        <small style="color:#64748B; font-weight:600;">(T-${daysUntil}d)</small>
-                      </span>
-                    </div>
-                    <!-- TCOT All-Inclusive Package Requirement Rows -->
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Required Bundle:</span>
-                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px; flex-wrap:wrap;">
-                        ${(() => {
-                          const pkg = a.requiredPackage || {};
-                          const bagKg = pkg.baggageKg !== undefined ? pkg.baggageKg : (a.minCheckedBagsKg !== undefined ? a.minCheckedBagsKg : (a.baggagePreference === 'hand_baggage_only' ? 0 : 15));
-                          const hasMeal = !!pkg.requireMeal;
-                          const seat = pkg.requireSeat || 'any';
-                          const seatStr = seat === 'extra_legroom' ? 'XL Seat' : (seat === 'standard' ? 'Window/Aisle' : 'Any Seat');
-                          const hasFlex = !!pkg.requireFlexi;
-                          return `
-                            <span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 6px; border-radius:5px;">🧳 ${bagKg}kg Bag</span>
-                            <span style="font-size:10.5px; font-weight:800; background:${hasMeal ? '#FEF3C7' : '#F8FAFC'}; color:${hasMeal ? '#92400E' : '#64748B'}; border:1px solid ${hasMeal ? '#FDE68A' : '#CBD5E1'}; padding:2px 6px; border-radius:5px;">🍱 ${hasMeal ? 'Meal Included' : 'No Meal'}</span>
-                            <span style="font-size:10.5px; font-weight:800; background:${seat !== 'any' ? '#EFF6FF' : '#F8FAFC'}; color:${seat !== 'any' ? '#1E40AF' : '#64748B'}; border:1px solid ${seat !== 'any' ? '#BFDBFE' : '#CBD5E1'}; padding:2px 6px; border-radius:5px;">💺 ${seatStr}</span>
-                            ${hasFlex ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 6px; border-radius:5px;">🔄 1 Free Change</span>' : ''}
-                          `;
-                        })()}
-                      </span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">TCOT Target Cap:</span>
-                      <span style="font-weight:900; color:#14532D; font-size:13.5px; display:inline-flex; align-items:center; gap:6px;">
-                        ₹${(a.allInclusiveTargetCap || a.requiredPackage?.allInclusiveTargetCapPerPax || targetFare).toLocaleString('en-IN')}
-                        <span style="font-size:10px; font-weight:800; background:#CCFBF1; color:#0F766E; border:1px solid #99F6E4; padding:1px 6px; border-radius:4px;">TCOT Shield Active</span>
-                      </span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Red-Eye Safeguard:</span>
-                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
-                        ${a.isMidnightDeparture
-                          ? `<span style="font-size:10.5px; font-weight:800; background:#FFFBEB; color:#92400E; border:1px solid #FDE68A; padding:2px 7px; border-radius:6px;" title="${a.midnightDepartureInfo?.warning || ''}">🌙 Early AM Flight (Day-Before Check-in)</span>`
-                          : (a.excludeMidnightRedEye !== false
-                            ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 7px; border-radius:6px;">🌙 00:00–04:00 Excluded</span>'
-                            : '<span style="font-size:10.5px; font-weight:800; background:#F8FAFC; color:#475569; border:1px solid #CBD5E1; padding:2px 7px; border-radius:6px;">🌙 Red-Eyes Permitted</span>')}
-                      </span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Price Drift Policy:</span>
-                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
-                        ${a.priceDriftTolerance === 'flexible_500'
-                          ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 7px; border-radius:6px;">🛡️ Flexible (&le; ₹500 Drift)</span>'
-                          : '<span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 7px; border-radius:6px;">🛡️ Strict (₹0 Slippage)</span>'}
-                      </span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Document Clearance:</span>
-                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
-                        ${a.isInternationalRoute === false || a.inadComplianceStatus === 'DOMESTIC_EXEMPT'
-                          ? '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 7px; border-radius:6px;">🪪 Domestic Govt ID (Aadhaar / Voter ID)</span>'
-                          : (a.inadComplianceStatus === 'COMPLIANT' || !a.inadComplianceStatus
-                            ? `<span style="font-size:10.5px; font-weight:800; background:#F0FDF4; color:#166534; border:1px solid #BBF7D0; padding:2px 7px; border-radius:6px;" title="Passport valid through ${a.inadDetails?.expiryFormatted || a.passportExpiry || '2028'}">✓ 6M Passport Verified (INAD Clear)</span>`
-                            : `<span style="font-size:10.5px; font-weight:800; background:#FFF1F2; color:#9F1239; border:1.5px solid #FECDD3; padding:2px 7px; border-radius:6px;" title="${a.inadDetails?.warning || ''}">🚨 INAD Risk: Passport Renewal Required (&lt; 6M)</span>`)}
-                      </span>
-                    </div>
-                    <div class="mf-card-meta-row">
-                      <span style="color:var(--mf-muted);">Connection Shield:</span>
-                      <span style="font-weight:700; color:#0D1B2A; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
-                        ${a.connectionSafeguard?.requireProtectedConnections === false || a.connectionSafeguard?.transferPolicy === 'SELF_TRANSFERS_PERMITTED'
-                          ? '<span style="font-size:10.5px; font-weight:800; background:#FFFBEB; color:#92400E; border:1px solid #FDE68A; padding:2px 7px; border-radius:6px;">⚠️ Self-Transfers Permitted</span>'
-                          : '<span style="font-size:10.5px; font-weight:800; background:#F0FDFA; color:#0F766E; border:1px solid #99F6E4; padding:2px 7px; border-radius:6px;">🛡️ Protected Connections Only</span>'}
-                      </span>
-                    </div>
-
-                    ${isAutoBook ? (() => {
-                      let daysValid = 60;
-                      if (a.tokenExpiresAt) {
-                        const diff = Math.ceil((new Date(a.tokenExpiresAt) - new Date()) / (1000 * 60 * 60 * 24));
-                        if (!isNaN(diff) && diff > 0) daysValid = diff;
-                      }
-                      const isNearExpiry = daysValid <= 7;
-                      const statusColor = isNearExpiry ? '#D97706' : '#166534';
-                      const statusBg = isNearExpiry ? '#FEF3C7' : '#DCFCE7';
-                      const statusText = isNearExpiry ? `⚠️ Renews in ${daysValid}d` : `🟢 Active (${daysValid} days left)`;
-
-                      return `
-                      <!-- Auto-Book Pre-Auth Box -->
-                      <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:10px 12px; margin-top:8px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; margin-bottom:4px;">
-                          <span style="color:#166534; font-weight:800;">E-Mandate Pre-Authorized:</span>
-                          <span style="font-weight:900; color:#14532D;">•••• ${a.preAuthCard?.last4 || '4242'}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:4px;">
-                          <span style="color:#64748B;">Token Health:</span>
-                          <span style="font-weight:800; color:${statusColor}; background:${statusBg}; padding:1px 6px; border-radius:4px; font-size:10.5px;">${statusText}</span>
-                        </div>
-                        <div style="font-size:11px; color:#15803D; margin-bottom:3px;">Traveler: <strong>${a.travelerName || 'Primary Flyer'}</strong> (${a.passportNumber || 'Passport Synced'}${a.passportExpiry ? ` &bull; Exp: ${a.passportExpiry}` : ''})</div>
-                        <div style="font-size:10.5px; color:#0F766E; font-weight:700;">⚡ 15-Min Amadeus Seat Hold (TKTL Safeguard Active)</div>
-                        <div style="font-size:10.5px; color:#1D4ED8; margin-top:2px; font-weight:700;">🛡️ Atomic GDS Pre-Execution Price Freeze Active</div>
-                        <div style="font-size:10.5px; color:#15803D; margin-top:2px; font-weight:700;">🛡️ Fare Family Shield (0kg Basic Economy Protected)</div>
-                        <div style="font-size:10.5px; color:#166534; margin-top:2px; font-weight:700;">📦 TCOT Shield: All-Inclusive Bundle Enforced (${a.requiredPackage?.baggageKg !== undefined ? a.requiredPackage.baggageKg : 15}kg Bag${a.requiredPackage?.requireMeal ? ' + Hot Meal' : ''}${a.requiredPackage?.requireSeat && a.requiredPackage?.requireSeat !== 'any' ? ' + Seat' : ''})</div>
-                        <div style="font-size:10.5px; color:${a.inadComplianceStatus === 'INAD_RISK' || a.inadComplianceStatus === 'EXPIRED' ? '#991B1B' : '#047857'}; margin-top:2px; font-weight:700;">${a.isInternationalRoute === false ? '🪪 Domestic Route (Passport Exempt)' : '🪪 6-Month Passport Validity Verified (INAD Shield Active)'}</div>
-                        <div style="font-size:10.5px; color:#0F766E; margin-top:2px; font-weight:700;">🔄 Connection Shield: ${a.connectionSafeguard?.requireProtectedConnections === false ? 'Self-Transfers Permitted' : 'Protected Interline Enforced (No Tight Self-Transfers)'}</div>
-                        <div style="font-size:10.5px; color:#92400E; margin-top:2px; font-weight:700;">🌙 Midnight Trap Defense Active</div>
-                        <div style="font-size:10.5px; color:#166534; margin-top:2px; font-weight:700;">&#x2713; 24-Hour Free Cancellation Protected</div>
-                      </div>
-                      `;
-                    })() : ''}
-
-                    ${a.phone ? `
-                      <div class="mf-card-meta-row" style="border-top:1px solid var(--mf-border); margin-top:8px; padding-top:8px;">
-                        <span style="color:var(--mf-muted);">Alert Contact:</span>
-                        <span style="font-weight:700; color:var(--mf-navy);">${a.phone}</span>
-                      </div>
-                    ` : ''}
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-top:14px; font-size:12px;">
+                    <div><strong>Locked Fare:</strong> ₹${target.toLocaleString('en-IN')} / traveler</div>
+                    <div><strong>Stop-Loss Cutoff:</strong> ${stopLoss}</div>
+                    <div><strong>Pricing Benchmark:</strong> MakeMyTrip / Cleartrip Parity</div>
+                    <div><strong>Flight Rule:</strong> ${matchText}</div>
+                    <div><strong>Checked Baggage:</strong> ${Number(plan.baggageKg) || 15}kg minimum</div>
+                    <div><strong>Departure Slot:</strong> ${escapePreviewText(plan.departureTimeWindow || 'any')}</div>
+                    <div><strong>Preferred Airline:</strong> ${escapePreviewText(plan.preferredAirline || 'all')}</div>
                   </div>
-                </div>
 
-                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
-                  <button type="button" onclick="openPostBookingAncModal('${a.id || 'BKNG-1075025'}', '${a.from} → ${a.to}', '${a.flightSpecific || 'Commercial Airline'}', 'PNR-ACTIVE')" style="flex:1; background:#EFF6FF; color:#1D4ED8; border:1.5px solid #93C5FD; border-radius:8px; padding:9px 12px; font-size:12px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
-                    🧳 Add Baggage / Add-on
-                  </button>
-                  <a href="flight-fares.html?from=${a.from}&to=${a.to}&date=${a.date}" class="btn-card-check" style="flex:1; text-align:center;">
-                    Check Fares
-                  </a>
-                  <button type="button" onclick="deletePriceAlert('${a.id}')" class="btn-card-del" style="padding:9px 12px;">
-                    Remove
-                  </button>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
+                  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid #F1F5F9;">
+                    <label style="font-size:12px; font-weight:700; color:#334155;">Simulate Execution Scenario:
+                      <select aria-label="Preview outcome for ${routeText}" onchange="showPreviewOutcome('${id}', this.value)" style="margin-left:6px; padding:7px 9px; border:1px solid #CBD5E1; border-radius:7px; background:white; font-size:12px;">
+                        <option value="">Choose a market scenario</option>
+                        <option value="lower">Market price drops (AI books dip)</option>
+                        <option value="higher">Market price rises (Flyvis absorbs loss)</option>
+                        <option value="cutoff">T-11 stop-loss date reached</option>
+                        <option value="baggage">Baggage rule check</option>
+                      </select>
+                    </label>
+                    <button type="button" onclick="deletePreviewPlan('${id}')" class="btn-card-del" style="margin-left:auto;">Remove plan</button>
+                  </div>
+                  <div id="preview-outcome-${id}" role="status" aria-live="polite" style="margin-top:12px; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; background:#F8FAFC; color:#334155; font-size:12px; line-height:1.5;">
+                    Select a market scenario above to simulate the neural agent's autonomous execution.
+                  </div>
+                </article>`;
+            }).join('')}
+          </div>`;
+      }
+
+      if (alerts.length) {
+        contentHtml += `
+          <div class="mf-list-header" style="margin-top:24px;">
+            <span class="mf-list-count">Earlier alert records (${alerts.length})</span>
+            <span style="font-size:12.5px; color:var(--mf-muted);">Created in the previous prototype</span>
+          </div>
+          <div style="padding:10px 14px; margin-bottom:14px; border:1px solid #FDE68A; border-radius:9px; background:#FFFBEB; color:#92400E; font-size:12px; line-height:1.45;">
+            These records do not prove that a fare is being monitored, a card is authorized, or a ticket is booked. Check any real booking directly with Flyvis support.
+          </div>
+          <div class="mf-flights-grid">
+            ${alerts.map(alertRecord => {
+              const target = Number(alertRecord.targetPrice);
+              const bag = alertRecord.requiredPackage?.baggageKg ?? alertRecord.minCheckedBagsKg;
+              return `
+                <article class="mf-card" style="border:1px solid #E2E8F0;">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;">
+                    <div class="mf-card-route">${escapePreviewText(alertRecord.from || '?')} → ${escapePreviewText(alertRecord.to || '?')}</div>
+                    <span style="font-size:11px; font-weight:800; border-radius:999px; padding:5px 9px; background:#F1F5F9; color:#475569;">Status unverified</span>
+                  </div>
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-top:14px; font-size:12px; color:#334155;">
+                    <div><strong>Travel date:</strong> ${escapePreviewText(alertRecord.date || 'Not set')}</div>
+                    <div><strong>Saved target:</strong> ${Number.isFinite(target) && target > 0 ? `₹${target.toLocaleString('en-IN')}` : 'Not set'}</div>
+                    <div><strong>Requested mode:</strong> ${alertRecord.mode === 'auto_book' ? 'Auto-book' : 'Notify and confirm'}</div>
+                    <div><strong>Checked bag:</strong> ${Number.isFinite(Number(bag)) ? `${Number(bag)}kg requested` : 'Not recorded'}</div>
+                  </div>
+                  <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <a href="flight-fares.html?from=${encodeURIComponent(alertRecord.from || '')}&to=${encodeURIComponent(alertRecord.to || '')}&date=${encodeURIComponent(alertRecord.date || '')}" class="btn-card-check">Check route</a>
+                    <button type="button" data-id="${escapePreviewText(alertRecord.id || '')}" onclick="deletePriceAlert(this.dataset.id)" class="btn-card-del">Remove record</button>
+                  </div>
+                </article>`;
+            }).join('')}
+          </div>`;
+      }
 
       container.innerHTML = contentHtml;
     }

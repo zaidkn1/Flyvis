@@ -13,6 +13,7 @@ import urllib.parse
 import re
 import datetime
 import time
+import sqlite3
 import requests
 from bs4 import BeautifulSoup
 
@@ -110,16 +111,24 @@ def scrape_google_flights_live(orig, dest, travel_date, cabin_class="economy"):
                 is_nonstop = 'Nonstop' in clean_label or 'non-stop' in clean_label.lower()
 
                 if m_price and m_flight:
-                    price = int(m_price.group(1).replace(',', ''))
+                    bare_price = int(m_price.group(1).replace(',', ''))
                     airline = m_flight.group(1).strip()
                     dep_time = m_dep.group(1).strip() if m_dep else "Flexible"
                     arr_time = m_arr.group(1).strip() if m_arr else "Flexible"
                     
-                    sig = f"{airline}_{dep_time}_{arr_time}_{price}"
+                    sig = f"{airline}_{dep_time}_{arr_time}_{bare_price}"
                     if sig not in seen:
                         seen.add(sig)
                         fleet = AIRLINE_FLEET.get(airline, {"code": airline[:2].upper(), "color": "#0D1B2A"})
                         duration = calculate_duration(dep_time, arr_time) if dep_time != "Flexible" else "Direct"
+
+                        # Option 1: Standard Verified Retail Benchmark (MakeMyTrip / Cleartrip tier)
+                        # Google Flights headline prices often come from loss-leader or bare-bones foreign OTAs (e.g. ly.com).
+                        # We calibrate to the standard verified Indian retail benchmark (+12% intl, +9% domestic)
+                        # so that our B2B provider API can fulfill profitably and protect Look-to-Book ratios.
+                        is_intl = orig[:2] != dest[:2]
+                        retail_multiplier = 1.12 if is_intl else 1.09
+                        retail_price = int(round((bare_price * retail_multiplier) / 10.0) * 10)
 
                         parsed_flights.append({
                             "name": airline,
@@ -131,8 +140,10 @@ def scrape_google_flights_live(orig, dest, travel_date, cabin_class="economy"):
                             "color": fleet["color"],
                             "logoBg": fleet["color"],
                             "textColor": "#fff",
-                            "basePrice": price,
-                            "isInternational": orig[:2] != dest[:2],
+                            "basePrice": retail_price,
+                            "bareAggregatorPrice": bare_price,
+                            "retailBenchmark": "MakeMyTrip / Cleartrip Standard",
+                            "isInternational": is_intl,
                             "routeType": "International Direct" if is_nonstop else "International Connecting"
                         })
     except Exception as err:
@@ -504,7 +515,115 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
-        if parsed.path == '/api/scrape-flights':
+        if parsed.path == '/api/route-price-history':
+            params = urllib.parse.parse_qs(parsed.query)
+            orig = params.get('from', ['DEL'])[0].strip().upper()
+            dest = params.get('to', ['DXB'])[0].strip().upper()
+            departure = params.get('date', [''])[0].strip()
+            carrier = params.get('carrier', [''])[0].strip().upper()
+            current_fare_str = params.get('current', [''])[0].strip()
+
+            if not re.fullmatch(r'[A-Z]{3}', orig) or not re.fullmatch(r'[A-Z]{3}', dest):
+                orig, dest = 'DEL', 'DXB'
+
+            db_path = os.path.join(DIRECTORY, 'flight_ml_collector', 'live_quotes.sqlite')
+            days = []
+            if os.path.isfile(db_path):
+                try:
+                    with sqlite3.connect(f'file:{db_path}?mode=ro', uri=True, timeout=5) as db:
+                        rows = []
+                        # 1. Try exact departure date if given
+                        if departure and re.fullmatch(r'\d{4}-\d{2}-\d{2}', departure):
+                            rows = db.execute('''
+                                SELECT substr(s.started_at, 1, 10) AS observed_day,
+                                       ROUND(MIN(o.total_amount), 0) AS lowest_price,
+                                       COUNT(*) AS observation_count
+                                FROM searches s JOIN observations o ON o.search_id = s.id
+                                WHERE s.query_key = ? AND o.stage = 'search'
+                                  AND o.currency = 'INR' AND o.total_amount > 0
+                                GROUP BY observed_day ORDER BY observed_day ASC
+                            ''', (f'{orig}-{dest}|{departure}',)).fetchall()
+
+                        # 2. Try carrier-specific historical observations if available
+                        if (not rows or len(rows) < 4) and carrier:
+                            carrier_rows = db.execute('''
+                                SELECT substr(observed_at, 1, 10) AS observed_day,
+                                       ROUND(MIN(price), 0) AS lowest_price,
+                                       COUNT(*) AS observation_count
+                                FROM v_flight_observations
+                                WHERE origin = ? AND destination = ? AND carrier_code = ?
+                                  AND currency = 'INR' AND price > 0
+                                GROUP BY observed_day ORDER BY observed_day ASC
+                            ''', (orig, dest, carrier)).fetchall()
+                            if len(carrier_rows) >= 3:
+                                rows = carrier_rows
+
+                        # 3. Fallback to route-level past observations across searches
+                        if not rows or len(rows) < 4:
+                            route_rows = db.execute('''
+                                SELECT substr(s.started_at, 1, 10) AS observed_day,
+                                       ROUND(MIN(o.total_amount), 0) AS lowest_price,
+                                       COUNT(*) AS observation_count
+                                FROM searches s JOIN observations o ON o.search_id = s.id
+                                WHERE s.query_key LIKE ? AND o.stage = 'search'
+                                  AND o.currency = 'INR' AND o.total_amount > 0
+                                GROUP BY observed_day ORDER BY observed_day ASC
+                            ''', (f'{orig}-{dest}%',)).fetchall()
+                            if route_rows:
+                                rows = route_rows
+
+                        # 4. Fallback to v_flight_observations for origin/dest
+                        if not rows:
+                            rows = db.execute('''
+                                SELECT substr(observed_at, 1, 10) AS observed_day,
+                                       ROUND(MIN(price), 0) AS lowest_price,
+                                       COUNT(*) AS observation_count
+                                FROM v_flight_observations
+                                WHERE origin = ? AND destination = ?
+                                  AND currency = 'INR' AND price > 0
+                                GROUP BY observed_day ORDER BY observed_day ASC
+                            ''', (orig, dest)).fetchall()
+
+                        days = [{'date': day, 'price': int(price), 'observation_count': count}
+                                for day, price, count in rows]
+                except Exception as db_err:
+                    print(f"⚠️ SQLite history query notice: {db_err}")
+                    days = []
+
+            # Ensure today's live quoted fare is included
+            today_str = datetime.date.today().isoformat()
+            if current_fare_str:
+                try:
+                    c_price = int(float(current_fare_str))
+                    # If today exists, update it to the exact chosen flight fare; otherwise append
+                    found = False
+                    for d in days:
+                        if d['date'] == today_str:
+                            d['price'] = c_price
+                            found = True
+                            break
+                    if not found and c_price > 0:
+                        days.append({'date': today_str, 'price': c_price, 'observation_count': 1})
+                except ValueError:
+                    pass
+
+            body = json.dumps({
+                'status': 'success',
+                'route': f'{orig}-{dest}',
+                'carrier': carrier,
+                'departure_date': departure,
+                'currency': 'INR',
+                'source': 'live_quotes_sqlite',
+                'days': days
+            }).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Cache-Control', 'no-store')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        elif parsed.path == '/api/scrape-flights':
             params = urllib.parse.parse_qs(parsed.query)
             orig = params.get('from', ['DEL'])[0].upper().strip()
             dest = params.get('to', ['NRT'])[0].upper().strip()
