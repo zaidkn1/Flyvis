@@ -23,7 +23,7 @@ const FlyvisOtaState = {
     timeWindow: "any",
     selectedAirlines: [],
     baggage: "standard",
-    selectedCardIds: ["hdfc_infinia"], // default pre-applied card for demo
+    selectedCardIds: [], // Start clean with exact Google Flights parity
     maxPrice: Infinity
   },
   rawFlights: [],
@@ -1840,7 +1840,12 @@ async function executeOtaFlightSearch() {
     if (res.ok) {
       const data = await res.json();
       if (data && data.flights && data.flights.length > 0) {
-        FlyvisOtaState.rawFlights = data.flights;
+        FlyvisOtaState.rawFlights = data.flights.map(f => ({
+          ...f,
+          orig: origCode,
+          dest: destCode,
+          departureDate: depDate
+        }));
       } else {
         FlyvisOtaState.rawFlights = generateCalibratedFallbackFlights(origCode, destCode, depDate);
       }
@@ -5913,7 +5918,7 @@ function goToFunnelStep(stepNum) {
   }
 }
 
-function handleStep1Continue() {
+async function handleStep1Continue() {
   const origHidden = document.getElementById("ota-orig-code");
   const destHidden = document.getElementById("ota-dest-code");
   const origInput = document.getElementById("ota-orig-input");
@@ -5955,9 +5960,43 @@ function handleStep1Continue() {
   FlyvisOtaState.route.departureDate = depDate;
   FlyvisOtaState.route.returnDate = retDate;
 
-  // Make sure raw flights exist for this corridor
-  if (!FlyvisOtaState.rawFlights || FlyvisOtaState.rawFlights.length === 0 || FlyvisOtaState.rawFlights[0]?.orig !== origCode) {
-    FlyvisOtaState.rawFlights = generateCalibratedFallbackFlights(origCode, destCode, depDate);
+  // Verify whether real Google Flights are already loaded for this corridor
+  const hasMatchingFlights = FlyvisOtaState.rawFlights && 
+    FlyvisOtaState.rawFlights.length > 0 &&
+    FlyvisOtaState.rawFlights[0]?.orig === origCode &&
+    FlyvisOtaState.rawFlights[0]?.dest === destCode &&
+    (!FlyvisOtaState.rawFlights[0]?.departureDate || FlyvisOtaState.rawFlights[0]?.departureDate === depDate);
+
+  if (!hasMatchingFlights) {
+    const scanner = document.getElementById("ota-scanner-overlay");
+    const counterEl = document.getElementById("ota-results-counter");
+    if (scanner) scanner.style.display = "flex";
+    if (counterEl) counterEl.textContent = `Connecting to Google Flights for ${origCode} → ${destCode}...`;
+
+    try {
+      const url = `/api/scrape-flights?from=${encodeURIComponent(origCode)}&to=${encodeURIComponent(destCode)}&date=${encodeURIComponent(depDate)}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.flights && data.flights.length > 0) {
+          FlyvisOtaState.rawFlights = data.flights.map(f => ({
+            ...f,
+            orig: origCode,
+            dest: destCode,
+            departureDate: depDate
+          }));
+        } else {
+          FlyvisOtaState.rawFlights = generateCalibratedFallbackFlights(origCode, destCode, depDate);
+        }
+      } else {
+        FlyvisOtaState.rawFlights = generateCalibratedFallbackFlights(origCode, destCode, depDate);
+      }
+    } catch (err) {
+      console.warn("Live scraper fetch notice:", err);
+      FlyvisOtaState.rawFlights = generateCalibratedFallbackFlights(origCode, destCode, depDate);
+    } finally {
+      if (scanner) scanner.style.display = "none";
+    }
   }
 
   // Update Step 2 Route Summaries

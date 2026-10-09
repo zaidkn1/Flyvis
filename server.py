@@ -75,87 +75,195 @@ def calculate_duration(dep_time_str, arr_time_str):
     except Exception:
         return "4 hr 15 min"
 
-def scrape_google_flights_live(orig, dest, travel_date, cabin_class="economy"):
+# Import high-capacity live Google Flights engine
+sys.path.insert(0, os.path.join(DIRECTORY, "flight_ml_collector"))
+try:
+    from live_google_collector import fetch_and_parse_route
+    HAS_LIVE_COLLECTOR = True
+except Exception as e:
+    print(f"⚠️ Could not import live_google_collector: {e}")
+    HAS_LIVE_COLLECTOR = False
+
+def format_time_12h(time_str):
+    try:
+        if not time_str or time_str == "Flexible":
+            return "Flexible"
+        parts = time_str.split(":")
+        h = int(parts[0])
+        m = int(parts[1])
+        suffix = "AM" if h < 12 else "PM"
+        display_h = h % 12
+        if display_h == 0:
+            display_h = 12
+        return f"{display_h}:{m:02d} {suffix}"
+    except Exception:
+        return time_str
+
+def format_duration_mins(total_mins):
+    if not total_mins or total_mins <= 0:
+        return "Direct"
+    hrs = total_mins // 60
+    mins = total_mins % 60
+    if hrs > 0 and mins > 0:
+        return f"{hrs} hr {mins:02d} min"
+    elif hrs > 0:
+        return f"{hrs} hr"
+    else:
+        return f"{mins} min"
+
+def scrape_google_flights_live(orig, dest, travel_date, cabin_class="economy", force_refresh=False):
     cache_key = f"{orig}-{dest}_{travel_date}_{cabin_class}"
     now = time.time()
     
-    if cache_key in CACHE:
+    if not force_refresh and cache_key in CACHE:
         cached_entry = CACHE[cache_key]
         if now - cached_entry["timestamp"] < CACHE_TTL_SECONDS:
-            print(f" [Cache Hit] Returning cached live flights for {cache_key}")
+            print(f"⚡ [Cache Hit] Returning cached live flights for {cache_key}")
             return cached_entry["data"]
 
     formatted_date = travel_date or (datetime.date.today() + datetime.timedelta(days=15)).strftime("%Y-%m-%d")
-    print(f" [Live Scraper] Querying live Google Flights for {orig} -> {dest} on {formatted_date}...")
+    print(f"🔍 [Live Google Engine] Querying real-time Google Flights for {orig} -> {dest} on {formatted_date}...")
 
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-IN,en;q=0.9',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
-    }
-
-    url = f"https://www.google.com/travel/flights?q=Flights%20to%20{dest}%20from%20{orig}%20on%20{formatted_date}%20one%20way"
     parsed_flights = []
     seen = set()
 
+    # Calculate lead days
     try:
-        r = requests.get(url, headers=headers, timeout=8)
-        if r.status_code == 200:
-            soup = BeautifulSoup(r.text, 'html.parser')
-            for el in soup.find_all(attrs={'aria-label': True}):
-                clean_label = re.sub(r'[\s\u202f\u00a0]+', ' ', el['aria-label'])
-                m_price = re.search(r'From\s+([\d,]+)\s+Indian\s+rupees', clean_label, re.I) or re.search(r'₹([\d,]+)', clean_label)
-                m_flight = re.search(r'(?:Nonstop|[\d]+\s*stop)\s+flight\s+with\s+([^.]+)\.', clean_label, re.I)
-                m_dep = re.search(r'Leaves\s+.*?at\s+([\d:]+\s*(?:AM|PM))', clean_label, re.I)
-                m_arr = re.search(r'arrives\s+.*?at\s+([\d:]+\s*(?:AM|PM))', clean_label, re.I)
-                is_nonstop = 'Nonstop' in clean_label or 'non-stop' in clean_label.lower()
+        dep_dt = datetime.datetime.strptime(formatted_date, "%Y-%m-%d").date()
+        lead_days = max(1, (dep_dt - datetime.date.today()).days)
+    except Exception:
+        lead_days = 15
 
-                if m_price and m_flight:
-                    bare_price = int(m_price.group(1).replace(',', ''))
-                    airline = m_flight.group(1).strip()
-                    dep_time = m_dep.group(1).strip() if m_dep else "Flexible"
-                    arr_time = m_arr.group(1).strip() if m_arr else "Flexible"
-                    
-                    sig = f"{airline}_{dep_time}_{arr_time}_{bare_price}"
-                    if sig not in seen:
-                        seen.add(sig)
-                        fleet = AIRLINE_FLEET.get(airline, {"code": airline[:2].upper(), "color": "#0D1B2A"})
-                        duration = calculate_duration(dep_time, arr_time) if dep_time != "Flexible" else "Direct"
+    # =========================================================================
+    # Method 1: Primary High-Precision Engine (fast_flights / primp protobuf)
+    # =========================================================================
+    if HAS_LIVE_COLLECTOR:
+        try:
+            res = fetch_and_parse_route(orig, dest, formatted_date, lead_days, currency="INR")
+            offers = res.get("offers", [])
+            for off in offers:
+                raw_price = off.get("price")
+                if raw_price is None or float(raw_price) <= 0:
+                    continue
+                exact_price = int(round(float(raw_price)))
 
-                        # Option 1: Standard Verified Retail Benchmark (MakeMyTrip / Cleartrip tier)
-                        # Google Flights headline prices often come from loss-leader or bare-bones foreign OTAs (e.g. ly.com).
-                        # We calibrate to the standard verified Indian retail benchmark (+12% intl, +9% domestic)
-                        # so that our B2B provider API can fulfill profitably and protect Look-to-Book ratios.
-                        is_intl = orig[:2] != dest[:2]
-                        retail_multiplier = 1.12 if is_intl else 1.09
-                        retail_price = int(round((bare_price * retail_multiplier) / 10.0) * 10)
+                airline_name = off.get("carrier_name") or "Airline"
+                carrier_code = off.get("carrier_code") or "XX"
+                flight_num = off.get("flight_number") or f"{carrier_code} 100"
 
-                        parsed_flights.append({
-                            "name": airline,
-                            "code": fleet["code"],
-                            "flightNum": f"{fleet['code']} {1000 + len(parsed_flights) * 15}",
-                            "departureTime": f"{dep_time} – {arr_time}" if dep_time != "Flexible" else "Multiple Departures",
-                            "duration": duration,
-                            "stops": "Nonstop" if is_nonstop else "1 stop",
-                            "color": fleet["color"],
-                            "logoBg": fleet["color"],
-                            "textColor": "#fff",
-                            "basePrice": retail_price,
-                            "bareAggregatorPrice": bare_price,
-                            "retailBenchmark": "MakeMyTrip / Cleartrip Standard",
-                            "isInternational": is_intl,
-                            "routeType": "International Direct" if is_nonstop else "International Connecting"
-                        })
-    except Exception as err:
-        print(f"️ Live Scrape Warning: {err}")
+                dep_24 = off.get("departure_time", "00:00")
+                arr_24 = off.get("arrival_time", "00:00")
+                dep_12 = format_time_12h(dep_24)
+                arr_12 = format_time_12h(arr_24)
+
+                segments = off.get("segments", [])
+                dur_mins = sum(s.get("duration_min", 0) for s in segments)
+                if dur_mins <= 0 and dep_24 != "00:00" and arr_24 != "00:00":
+                    dur_mins = 150
+                duration_str = format_duration_mins(dur_mins)
+
+                stops_count = off.get("stops", 0)
+                stops_str = "Nonstop" if stops_count == 0 else (f"{stops_count} stop" if stops_count == 1 else f"{stops_count} stops")
+
+                sig = f"{flight_num}_{dep_24}_{exact_price}"
+                if sig not in seen:
+                    seen.add(sig)
+                    fleet = AIRLINE_FLEET.get(airline_name, {"code": carrier_code, "color": "#0D1B2A"})
+                    is_nonstop = (stops_count == 0)
+
+                    parsed_flights.append({
+                        "name": airline_name,
+                        "code": fleet.get("code", carrier_code),
+                        "flightNum": flight_num,
+                        "departureTime": f"{dep_12} – {arr_12}",
+                        "departure": dep_24,
+                        "arrival": arr_24,
+                        "duration": duration_str,
+                        "stops": stops_str,
+                        "stopsCount": stops_count,
+                        "color": fleet.get("color", "#0D1B2A"),
+                        "logoBg": fleet.get("color", "#0D1B2A"),
+                        "textColor": "#fff",
+                        "basePrice": exact_price,              # EXACT UNMODIFIED GOOGLE FLIGHTS PRICE
+                        "bareAggregatorPrice": exact_price,    # EXACT UNMODIFIED GOOGLE FLIGHTS PRICE
+                        "price": exact_price,
+                        "currency": "INR",
+                        "retailBenchmark": "Google Flights Real-Time Live",
+                        "orig": orig,
+                        "dest": dest,
+                        "departureDate": formatted_date,
+                        "baggage": off.get("baggage", {}),
+                        "canonicalFlightId": off.get("canonical_flight_id", ""),
+                        "segments": segments
+                    })
+        except Exception as err:
+            print(f"⚠️ Primary live engine notice: {err}, falling back to direct web scraper...")
+
+    # =========================================================================
+    # Method 2: Resilient Direct Web Scraper Fallback (Zero Markup)
+    # =========================================================================
+    if not parsed_flights:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-IN,en;q=0.9',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
+        }
+        url = f"https://www.google.com/travel/flights?q=Flights%20to%20{dest}%20from%20{orig}%20on%20{formatted_date}%20one%20way"
+
+        try:
+            r = requests.get(url, headers=headers, timeout=12)
+            if r.status_code == 200:
+                soup = BeautifulSoup(r.text, 'html.parser')
+                for el in soup.find_all(attrs={'aria-label': True}):
+                    clean_label = re.sub(r'[\s\u202f\u00a0]+', ' ', el['aria-label'])
+                    m_price = re.search(r'From\s+([\d,]+)\s+Indian\s+rupees', clean_label, re.I) or re.search(r'₹([\d,]+)', clean_label)
+                    m_flight = re.search(r'(?:Nonstop|[\d]+\s*stop)\s+flight\s+with\s+([^.]+)\.', clean_label, re.I)
+                    m_dep = re.search(r'Leaves\s+.*?at\s+([\d:]+\s*(?:AM|PM))', clean_label, re.I)
+                    m_arr = re.search(r'arrives\s+.*?at\s+([\d:]+\s*(?:AM|PM))', clean_label, re.I)
+                    is_nonstop = 'Nonstop' in clean_label or 'non-stop' in clean_label.lower()
+
+                    if m_price and m_flight:
+                        exact_price = int(m_price.group(1).replace(',', ''))
+                        airline = m_flight.group(1).strip()
+                        dep_time = m_dep.group(1).strip() if m_dep else "Flexible"
+                        arr_time = m_arr.group(1).strip() if m_arr else "Flexible"
+                        
+                        sig = f"{airline}_{dep_time}_{arr_time}_{exact_price}"
+                        if sig not in seen:
+                            seen.add(sig)
+                            fleet = AIRLINE_FLEET.get(airline, {"code": airline[:2].upper(), "color": "#0D1B2A"})
+                            duration = calculate_duration(dep_time, arr_time) if dep_time != "Flexible" else "Direct"
+
+                            parsed_flights.append({
+                                "name": airline,
+                                "code": fleet["code"],
+                                "flightNum": f"{fleet['code']} {1000 + len(parsed_flights) * 15}",
+                                "departureTime": f"{dep_time} – {arr_time}" if dep_time != "Flexible" else "Multiple Departures",
+                                "duration": duration,
+                                "stops": "Nonstop" if is_nonstop else "1 stop",
+                                "stopsCount": 0 if is_nonstop else 1,
+                                "color": fleet["color"],
+                                "logoBg": fleet["color"],
+                                "textColor": "#fff",
+                                "basePrice": exact_price,           # EXACT UNMODIFIED GOOGLE FLIGHTS PRICE
+                                "bareAggregatorPrice": exact_price, # EXACT UNMODIFIED GOOGLE FLIGHTS PRICE
+                                "price": exact_price,
+                                "currency": "INR",
+                                "retailBenchmark": "Google Flights Real-Time Live",
+                                "orig": orig,
+                                "dest": dest,
+                                "departureDate": formatted_date
+                            })
+        except Exception as err:
+            print(f"⚠️ Secondary scrape notice: {err}")
+
+    # Sort flights strictly by price ascending
+    parsed_flights.sort(key=lambda f: f["basePrice"])
 
     # Mark the cheapest flight
     if parsed_flights:
-        min_price = min(f["basePrice"] for f in parsed_flights)
-        for f in parsed_flights:
-            if f["basePrice"] == min_price:
-                f["isCheapest"] = True
-                break
+        for idx, f in enumerate(parsed_flights):
+            f["isCheapest"] = (idx == 0)
 
     response_data = {
         "status": "success" if parsed_flights else "fallback",
@@ -169,7 +277,7 @@ def scrape_google_flights_live(orig, dest, travel_date, cabin_class="economy"):
     }
 
     if parsed_flights:
-        print(f" Successfully scraped {len(parsed_flights)} live flights! Lowest: ₹{response_data['cheapestPrice']}")
+        print(f"✅ [Google Flights] Scraped {len(parsed_flights)} live flights! Lowest: ₹{response_data['cheapestPrice']:,}")
         CACHE[cache_key] = {"data": response_data, "timestamp": now}
 
     return response_data
