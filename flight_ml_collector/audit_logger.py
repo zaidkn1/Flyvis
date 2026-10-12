@@ -112,7 +112,14 @@ def score_and_audit_sweep(conn: sqlite3.Connection, run_id: str, is_backfilled: 
     total_logged = 0
     now_utc = now_dt.isoformat()
 
-    for (origin, dest) in [("DEL", "DXB"), ("BOM", "LHR")]:
+    target_corridors = []
+    for model_path in sorted(MODELS_DIR.iterdir()):
+        if model_path.is_dir() and (model_path / "manifest.json").exists():
+            parts = model_path.name.split("_")
+            if len(parts) == 2:
+                target_corridors.append((parts[0].upper(), parts[1].upper()))
+
+    for (origin, dest) in target_corridors:
         route_key = f"{origin.lower()}_{dest.lower()}"
         model_dir = MODELS_DIR / route_key
         manifest_file = model_dir / "manifest.json"

@@ -255,11 +255,24 @@ def evaluate_stored_decisions(origin: str, destination: str, db_path: Path, rech
 def main():
     parser = argparse.ArgumentParser(description="Evaluate prospective fixed-dates-12h cohort")
     parser.add_argument("--db-path", type=str, default=str(DB_PATH))
+    parser.add_argument("--route", type=str, default="all", help="Corridor to evaluate, e.g. DEL-DXB, BOM-LHR, DEL-BOM, or 'all'")
     parser.add_argument("--recheck-reproducibility", action="store_true", help="Recompute predictions and verify exact match with logged decisions")
     args = parser.parse_args()
 
-    evaluate_stored_decisions("DEL", "DXB", Path(args.db_path), recheck_reproducibility=args.recheck_reproducibility)
-    evaluate_stored_decisions("BOM", "LHR", Path(args.db_path), recheck_reproducibility=args.recheck_reproducibility)
+    target_routes = []
+    if args.route.lower() == "all":
+        for m_dir in sorted(MODELS_DIR.iterdir()):
+            if m_dir.is_dir() and (m_dir / "manifest.json").exists():
+                parts = m_dir.name.split("_")
+                if len(parts) == 2:
+                    target_routes.append((parts[0].upper(), parts[1].upper()))
+    else:
+        parts = args.route.replace("_", "-").split("-")
+        if len(parts) == 2:
+            target_routes.append((parts[0].upper(), parts[1].upper()))
+
+    for orig, dest in target_routes:
+        evaluate_stored_decisions(orig, dest, Path(args.db_path), recheck_reproducibility=args.recheck_reproducibility)
 
 
 if __name__ == '__main__':

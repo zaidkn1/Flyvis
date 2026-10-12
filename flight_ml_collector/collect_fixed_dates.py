@@ -46,19 +46,58 @@ except ImportError:
         print("Missing dependencies: pip install primp fast-flights selectolax")
         sys.exit(1)
 
-# 10 Pinned Calendar Dates Per Corridor (Unchanged across sweeps)
-FIXED_TARGETS = {
-    ("DEL", "DXB"): [
-        "2026-10-18", "2026-10-22", "2026-10-26", "2026-11-01",
-        "2026-11-05", "2026-11-10", "2026-11-15", "2026-11-20",
-        "2026-11-28", "2026-12-05"
-    ],
-    ("BOM", "LHR"): [
-        "2026-10-18", "2026-10-22", "2026-10-26", "2026-11-01",
-        "2026-11-05", "2026-11-10", "2026-11-15", "2026-11-20",
-        "2026-11-28", "2026-12-05"
-    ]
-}
+# 10 Pinned Calendar Dates Per Corridor (Unchanged across sweeps to build unbroken trajectories)
+PINNED_DATES = [
+    "2026-10-18", "2026-10-22", "2026-10-26", "2026-11-01",
+    "2026-11-05", "2026-11-10", "2026-11-15", "2026-11-20",
+    "2026-11-28", "2026-12-05"
+]
+
+# 40 Strategic High-Volume Corridors:
+# 1. Top 10 Domestic India Trunk Corridors
+DOMESTIC_INDIA_TOP10 = [
+    ("DEL", "BOM"), ("BOM", "DEL"),
+    ("DEL", "BLR"), ("BLR", "DEL"),
+    ("BOM", "BLR"), ("BLR", "BOM"),
+    ("DEL", "HYD"), ("HYD", "DEL"),
+    ("DEL", "CCU"), ("BOM", "GOI")
+]
+
+# 2. Top 10 India -> Outside (Outbound International)
+INDIA_OUTBOUND_TOP10 = [
+    ("DEL", "DXB"), ("BOM", "DXB"),
+    ("DEL", "LHR"), ("BOM", "LHR"),
+    ("DEL", "BKK"), ("BOM", "SIN"),
+    ("BLR", "SIN"), ("DEL", "SIN"),
+    ("COK", "DXB"), ("DEL", "JFK")
+]
+
+# 3. Top 10 Outside -> India (Inbound International)
+INDIA_INBOUND_TOP10 = [
+    ("DXB", "DEL"), ("DXB", "BOM"),
+    ("LHR", "DEL"), ("LHR", "BOM"),
+    ("BKK", "DEL"), ("SIN", "BOM"),
+    ("SIN", "BLR"), ("SIN", "DEL"),
+    ("DXB", "COK"), ("JFK", "DEL")
+]
+
+# 4. Top 10 World Mega-Routes (Busiest Global International Corridors)
+WORLD_MEGA_TOP10 = [
+    ("KUL", "SIN"), ("SIN", "KUL"),
+    ("CAI", "JED"), ("JED", "CAI"),
+    ("LHR", "JFK"), ("JFK", "LHR"),
+    ("DXB", "LHR"), ("LHR", "DXB"),
+    ("HND", "GMP"), ("SIN", "CGK")
+]
+
+ALL_40_CORRIDORS = (
+    DOMESTIC_INDIA_TOP10 +
+    INDIA_OUTBOUND_TOP10 +
+    INDIA_INBOUND_TOP10 +
+    WORLD_MEGA_TOP10
+)
+
+FIXED_TARGETS = {corridor: PINNED_DATES for corridor in ALL_40_CORRIDORS}
 
 
 def get_client():
